@@ -1,0 +1,578 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "add": "Add",
+    "remove": "Remove",
+    "search": "Search",
+    "filter": "Filter",
+    "export": "Export",
+    "import": "Import",
+    "download": "Download",
+    "upload": "Upload",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "close": "Close",
+    "confirm": "Confirm",
+    "yes": "Yes",
+    "no": "No",
+    "all": "All",
+    "none": "None",
+    "select": "Select",
+    "noResults": "No results found",
+    "showingResults": "Showing {start}-{end} of {total} {items}",
+    "required": "Required",
+    "optional": "Optional"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "invoices": "Invoices",
+    "clients": "Clients",
+    "transactions": "Transactions",
+    "bankConnections": "Bank Connections",
+    "reports": "Reports",
+    "taxes": "Taxes",
+    "subscription": "Subscription",
+    "settings": "Settings",
+    "logout": "Logout"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "totalRevenue": "Total Revenue",
+    "outstanding": "Outstanding",
+    "activeClients": "Active Clients",
+    "profitMargin": "Profit Margin",
+    "revenueVsExpenses": "Revenue vs Expenses",
+    "revenueByCategory": "Revenue by Category",
+    "recentTransactions": "Recent Transactions",
+    "fromLastMonth": "from last month",
+    "overdueInvoices": "{count} overdue invoices",
+    "newThisMonth": "{count} new this month",
+    "yearInTaxes": {
+      "title": "Your Year in Taxes - {year}",
+      "description": "Review your annual P&L statement and VAT summary for tax preparation.",
+      "viewReport": "View Year Report"
+    },
+    "uncheckedTransactions": {
+      "title": "You have {count} unchecked transactions synced from your bank account(s)",
+      "description": "Review and categorize your synced transactions to keep your books accurate.",
+      "viewPending": "View Pending"
+    },
+    "quickActions": {
+      "newInvoice": "New Invoice",
+      "addExpense": "Add Expense",
+      "vatDue": "VAT {quarter} Due {date}"
+    }
+  },
+  "invoices": {
+    "title": "Invoices",
+    "newInvoice": "New Invoice",
+    "editInvoice": "Edit Invoice",
+    "searchPlaceholder": "Search by invoice number or client...",
+    "showingInvoices": "Showing {start}-{end} of {total} invoices",
+    "columns": {
+      "invoiceNumber": "Invoice Number",
+      "client": "Client",
+      "invoiceDate": "Invoice Date",
+      "dueDate": "Due Date",
+      "total": "Total",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "tabs": {
+      "all": "All"
+    },
+    "status": {
+      "draft": "Draft",
+      "sent": "Sent",
+      "paid": "Paid",
+      "overdue": "Overdue",
+      "cancelled": "Cancelled"
+    },
+    "form": {
+      "invoiceDetails": "Invoice Details",
+      "category": "Category",
+      "client": "Client",
+      "currency": "Currency",
+      "language": "Language",
+      "invoiceDate": "Invoice Date",
+      "dueDate": "Due Date",
+      "lineItems": "Line Items",
+      "description": "Description",
+      "price": "Price",
+      "unit": "Unit",
+      "quantity": "Quantity",
+      "addLineItem": "Add line item",
+      "summary": "Summary",
+      "subtotal": "Subtotal",
+      "total": "Total",
+      "saveInvoice": "Save Invoice",
+      "placeholders": {
+        "selectCategory": "Please select",
+        "selectClient": "Select client",
+        "itemDescription": "Item description"
+      }
+    },
+    "units": {
+      "pc": "pc",
+      "hr": "hr",
+      "day": "day",
+      "month": "month"
+    },
+    "noInvoices": "No invoices found"
+  },
+  "clients": {
+    "title": "Clients",
+    "newClient": "New Client",
+    "addClient": "Add Client",
+    "editClient": "Edit Client",
+    "searchPlaceholder": "Search clients...",
+    "loadingClients": "Loading clients...",
+    "totalInvoiced": "Total Invoiced",
+    "outstanding": "Outstanding",
+    "invoiceCount": "{count} invoice | {count} invoices",
+    "noClients": "No clients found",
+    "form": {
+      "name": "Name",
+      "email": "Email",
+      "phone": "Phone number",
+      "businessName": "Business name",
+      "taxNumber": "Tax number",
+      "vatId": "VAT ID",
+      "address": "Address",
+      "street": "Street",
+      "city": "City",
+      "state": "State",
+      "zipCode": "Zip code",
+      "country": "Country",
+      "createClient": "Create Client"
+    }
+  },
+  "transactions": {
+    "title": "Transactions",
+    "newExpense": "New Expense",
+    "newIncome": "New Income",
+    "addExpense": "Add Expense",
+    "addIncome": "Add Income",
+    "import": "Import",
+    "importTransactions": "Import Transactions",
+    "searchPlaceholder": "Search transactions...",
+    "loadingTransactions": "Loading transactions...",
+    "columns": {
+      "description": "Description",
+      "date": "Date",
+      "amount": "Amount",
+      "receipt": "Receipt",
+      "actions": "Actions"
+    },
+    "types": {
+      "all": "All",
+      "income": "Income",
+      "expense": "Expense"
+    },
+    "uncheckedAlert": "You have {count} unchecked transactions synced from your bank account(s)",
+    "viewPending": "View Pending",
+    "noTransactions": "No transactions found",
+    "form": {
+      "transactionInfo": "Transaction Information",
+      "type": "Type",
+      "category": "Category",
+      "date": "Date",
+      "amount": "Amount (€)",
+      "description": "Description",
+      "receipt": "Receipt / Attachment",
+      "notes": "Notes (Optional)",
+      "summary": "Summary",
+      "transactionType": "Transaction Type",
+      "status": "Status",
+      "noReceipt": "No Receipt",
+      "receiptAttached": "Receipt Attached",
+      "saveTransaction": "Save Transaction",
+      "placeholders": {
+        "selectCategory": "Select category",
+        "enterDescription": "Enter transaction description...",
+        "addNotes": "Add any additional notes..."
+      }
+    },
+    "import": {
+      "title": "Import Transactions",
+      "backToTransactions": "Back to Transactions",
+      "uploadFile": "Upload Your File",
+      "uploadDescription": "Click to upload or drag and drop",
+      "supportedFormats": "Supported formats: csv, xls, xlsx",
+      "importButton": "Import Transactions",
+      "downloadTemplates": "Download Templates",
+      "templatesDescription": "Use our pre-formatted templates to ensure your data imports correctly. Choose the format that works best for you.",
+      "csvTemplate": "CSV Template",
+      "csvDescription": "Simple text format, compatible with most spreadsheet software",
+      "excelTemplate": "Excel Template",
+      "excelDescription": "Native Excel format with data validation",
+      "howItWorks": "How It Works",
+      "step1Title": "Download a Template",
+      "step1Description": "Start by downloading either a CSV or Excel template that matches our required format.",
+      "step2Title": "Fill in Your Data",
+      "step2Description": "Add your transactions to the template. Use negative amounts for expenses and positive for income.",
+      "step3Title": "Upload and Import",
+      "step3Description": "Upload your completed file and we'll import your transactions automatically.",
+      "fileFormat": "File Format",
+      "fileFormatDescription": "Your import file must include the following columns:",
+      "columns": {
+        "column": "Column",
+        "format": "Format",
+        "description": "Description"
+      },
+      "columnDescriptions": {
+        "date": "Transaction date in YYYY-MM-DD format",
+        "description": "Brief description of the transaction",
+        "amount": "Transaction amount (negative for expenses, positive for income)",
+        "vatRate": "VAT rate applicable to this transaction"
+      }
+    },
+    "categories": {
+      "consulting": "Consulting",
+      "development": "Development",
+      "design": "Design",
+      "services": "Services",
+      "products": "Products",
+      "royalties": "Royalties",
+      "office": "Office",
+      "software": "Software",
+      "marketing": "Marketing",
+      "travel": "Travel",
+      "equipment": "Equipment",
+      "utilities": "Utilities",
+      "professional": "Professional Services",
+      "other": "Other"
+    }
+  },
+  "bankConnections": {
+    "title": "Bank Connections",
+    "subtitle": "Sync, update, or connect new accounts easily",
+    "addConnection": "Add Connection",
+    "connected": "Connected",
+    "disconnected": "Disconnected",
+    "lastSync": "Last synced {time}",
+    "syncNow": "Sync Now",
+    "disconnect": "Disconnect",
+    "noConnections": "No bank connections found",
+    "noConnectionsDescription": "Connect your bank account to automatically sync transactions",
+    "currentBalance": "Current Balance",
+    "autoSyncBanner": "Automatic transaction sync enabled. Your bank connections will automatically retrieve new transactions daily. All data is encrypted and securely stored.",
+    "about": {
+      "title": "About Bank Connections",
+      "security": "Your bank credentials are never stored on our servers. We use bank-level encryption.",
+      "syncFrequency": "Transactions are synced automatically every 24 hours. You can manually sync anytime.",
+      "pauseSync": "You can pause sync for any account using the toggle switch without disconnecting.",
+      "reviewTransactions": "All synced transactions appear in the Transactions page for review and categorization."
+    }
+  },
+  "reports": {
+    "title": "Reports",
+    "profitLoss": "Profit & Loss Statement",
+    "profitTrend": "Profit Trend",
+    "expensesByCategory": "Expenses by Category",
+    "revenue": "Revenue",
+    "expenses": "Expenses",
+    "profit": "Profit",
+    "profitMargin": "Profit Margin",
+    "vsLastYear": "{change}% vs last year",
+    "downloadPdf": "Download PDF",
+    "period": {
+      "yearly": "Yearly",
+      "quarterly": "Quarterly",
+      "monthly": "Monthly"
+    }
+  },
+  "taxes": {
+    "title": "Taxes",
+    "vatReports": "VAT Reports",
+    "newReport": "New Report",
+    "submitToElster": "Submit to Elster",
+    "status": {
+      "draft": "Draft",
+      "submitted": "Submitted",
+      "accepted": "Accepted",
+      "rejected": "Rejected"
+    },
+    "columns": {
+      "period": "Period",
+      "netRevenue": "Net Revenue",
+      "vatCollected": "VAT Collected",
+      "vatPaid": "VAT Paid",
+      "vatDue": "VAT Due",
+      "status": "Status",
+      "actions": "Actions"
+    }
+  },
+  "subscription": {
+    "title": "Subscription",
+    "currentPlan": "Current Plan",
+    "changePlan": "Change Plan",
+    "cancelSubscription": "Cancel Subscription",
+    "paymentMethod": "Payment Method",
+    "noPaymentMethod": "No payment method on file",
+    "addPaymentMethodDescription": "Add a payment method to continue your subscription",
+    "updatePaymentMethod": "Update Payment Method",
+    "addPaymentMethod": "Add Payment Method",
+    "popular": "Popular",
+    "expires": "Expires",
+    "flexibleBillingTitle": "Flexible billing",
+    "flexibleBillingMessage": "You can upgrade, downgrade, or cancel your subscription at any time. Changes take effect at the end of your current billing period.",
+    "plans": {
+      "free": {
+        "name": "Free",
+        "price": "€0",
+        "description": "Perfect for getting started"
+      },
+      "pro": {
+        "name": "Pro",
+        "price": "€19",
+        "description": "For growing businesses"
+      },
+      "business": {
+        "name": "Business",
+        "price": "€49",
+        "description": "For established businesses"
+      }
+    },
+    "features": {
+      "manualIncomeExpenses": "Manual income & expenses",
+      "invoicing": "Invoicing",
+      "pdfDownloads": "PDF downloads",
+      "bankSync": "Bank sync",
+      "exportForSteuerberater": "Export for Steuerberater",
+      "vatCsv": "VAT CSV",
+      "everythingInFree": "Everything in Free",
+      "everythingInPro": "Everything in Pro",
+      "vatReminders": "VAT reminders",
+      "prioritySupport": "Priority support",
+      "customReports": "Custom reports",
+      "invoices": "{count} invoices per month",
+      "clients": "{count} clients",
+      "bankConnections": "{count} bank connections",
+      "support": "{type} support",
+      "vatReports": "VAT reports",
+      "elsterIntegration": "Elster integration"
+    },
+    "billingCycle": "per month"
+  },
+  "settings": {
+    "title": "Settings",
+    "tabs": {
+      "profile": "Profile",
+      "appSettings": "App Settings",
+      "invoiceSettings": "Invoice Settings",
+      "vatTax": "VAT & Tax",
+      "notifications": "Notifications",
+      "security": "Security",
+      "privacy": "Privacy & GDPR"
+    },
+    "profile": {
+      "title": "Business Information",
+      "businessName": "Business Name",
+      "email": "Email Address",
+      "phone": "Phone Number",
+      "address": "Business Address",
+      "taxId": "Tax ID / Steuernummer",
+      "website": "Website",
+      "saveChanges": "Save Changes"
+    },
+    "appSettings": {
+      "title": "Regional Settings",
+      "language": "Language",
+      "currency": "Currency",
+      "dateFormat": "Date Format",
+      "timezone": "Timezone",
+      "saveSettings": "Save Settings"
+    },
+    "invoiceSettings": {
+      "title": "Invoice Settings",
+      "bankDetails": {
+        "title": "Bank Account Details",
+        "description": "These details will appear on your invoices",
+        "accountHolder": "Account Holder",
+        "bankName": "Bank Name",
+        "accountNumber": "Account Number",
+        "sortCode": "Sort Code",
+        "iban": "IBAN",
+        "swift": "SWIFT/BIC",
+        "routingNumber": "Routing Number",
+        "save": "Save Bank Details"
+      },
+      "defaults": {
+        "title": "Invoice Defaults",
+        "paymentTerms": "Payment Terms",
+        "invoicePrefix": "Invoice Number Prefix",
+        "defaultNotes": "Default Notes",
+        "save": "Save Invoice Defaults"
+      },
+      "paymentTermsOptions": {
+        "net7": "Net 7 Days",
+        "net14": "Net 14 Days",
+        "net30": "Net 30 Days",
+        "net60": "Net 60 Days",
+        "dueOnReceipt": "Due on Receipt"
+      }
+    },
+    "vatTax": {
+      "title": "VAT Registration",
+      "registrationStatus": "VAT Registration Status",
+      "vatNumber": "VAT Number",
+      "declarationPeriod": "Declaration Period",
+      "scheme": "VAT Scheme",
+      "elsterCertificate": {
+        "title": "Elster Certificate",
+        "description": "Upload your .p12 or .pfx certificate file for Elster integration",
+        "upload": "Upload Certificate",
+        "password": "Certificate Password"
+      },
+      "saveSettings": "Save Tax Settings"
+    },
+    "notifications": {
+      "title": "Notification Preferences",
+      "email": {
+        "title": "Email Notifications",
+        "invoiceSent": "Invoice Sent",
+        "invoicePaid": "Invoice Paid",
+        "invoiceOverdue": "Invoice Overdue",
+        "newClient": "New Client Added"
+      },
+      "vatReminders": {
+        "title": "VAT & Tax Reminders",
+        "declarationDue": "Declaration Due",
+        "declarationSubmitted": "Declaration Submitted",
+        "taxYearEnd": "Tax Year End Reminder"
+      },
+      "transactionAlerts": {
+        "title": "Transaction Alerts",
+        "largeExpense": "Large Expense Alert",
+        "dailySummary": "Daily Transaction Summary",
+        "weeklySummary": "Weekly Transaction Summary"
+      },
+      "savePreferences": "Save Preferences"
+    },
+    "security": {
+      "title": "Security Settings",
+      "changePassword": "Change Password",
+      "currentPassword": "Current Password",
+      "newPassword": "New Password",
+      "confirmPassword": "Confirm New Password",
+      "twoFactor": {
+        "title": "Two-Factor Authentication",
+        "description": "Add an extra layer of security to your account",
+        "enable": "Enable 2FA",
+        "disable": "Disable 2FA"
+      },
+      "sessions": {
+        "title": "Active Sessions",
+        "current": "Current Session",
+        "logoutAll": "Log Out All Other Sessions"
+      },
+      "updatePassword": "Update Password"
+    },
+    "privacy": {
+      "title": "Privacy & GDPR",
+      "dataExport": {
+        "title": "Export Your Data",
+        "description": "Download a copy of all your data stored in Solobooks",
+        "export": "Export Data"
+      },
+      "dataRetention": {
+        "title": "Data Retention",
+        "description": "Choose how long we keep your data after account deletion"
+      },
+      "deleteAccount": {
+        "title": "Delete Account",
+        "description": "Permanently delete your account and all associated data",
+        "warning": "This action cannot be undone. All your data will be permanently deleted.",
+        "delete": "Delete My Account"
+      }
+    }
+  },
+  "countries": {
+    "germany": "Germany",
+    "austria": "Austria",
+    "switzerland": "Switzerland",
+    "unitedKingdom": "United Kingdom",
+    "france": "France",
+    "netherlands": "Netherlands",
+    "belgium": "Belgium",
+    "other": "Other"
+  },
+  "currencies": {
+    "eur": "EUR",
+    "usd": "USD",
+    "gbp": "GBP"
+  },
+  "languages": {
+    "english": "English",
+    "german": "German",
+    "french": "French"
+  },
+  "auth": {
+    "login": {
+      "title": "Welcome back",
+      "subtitle": "Sign in to your Solobooks account",
+      "email": "Email",
+      "password": "Password",
+      "forgotPassword": "Forgot password?",
+      "rememberMe": "Remember me for 30 days",
+      "signIn": "Sign in",
+      "continueWithGoogle": "Continue with Google",
+      "or": "OR",
+      "noAccount": "Don't have an account?",
+      "signUp": "Sign up for free",
+      "protectedBy": "Protected by industry-standard encryption.",
+      "privacyPolicy": "Privacy Policy"
+    },
+    "register": {
+      "title": "Get started free",
+      "subtitle": "Create your Solobooks account in seconds",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "email": "Email",
+      "password": "Password",
+      "passwordPlaceholder": "Create a strong password",
+      "agreeToTerms": "I agree to the",
+      "termsOfService": "Terms of Service",
+      "and": "and",
+      "privacyPolicy": "Privacy Policy",
+      "createAccount": "Create account",
+      "signUpWithGoogle": "Sign up with Google",
+      "or": "OR",
+      "alreadyHaveAccount": "Already have an account?",
+      "signIn": "Sign in",
+      "gdprCompliant": "GDPR/DSGVO compliant • German tax requirements supported",
+      "selectPlan": "Select your plan",
+      "planSubtitle": "Choose the plan that's right for you"
+    },
+    "plans": {
+      "starter": "Starter",
+      "plus": "Plus",
+      "pro": "Pro",
+      "perMonth": "per month",
+      "billed": "Billed {billing}",
+      "monthly": "monthly",
+      "annually": "annually",
+      "mostPopular": "Most Popular",
+      "freeTrial": "14-day Pro trial included",
+      "continue": "Continue with {plan}"
+    }
+  },
+  "errors": {
+    "generic": "Something went wrong. Please try again.",
+    "notFound": "Page not found",
+    "unauthorized": "You are not authorized to view this page",
+    "validation": {
+      "required": "This field is required",
+      "email": "Please enter a valid email address",
+      "minLength": "Must be at least {min} characters",
+      "maxLength": "Must be at most {max} characters"
+    }
+  }
+}

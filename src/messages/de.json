@@ -1,0 +1,578 @@
+{
+  "common": {
+    "loading": "Laden...",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "create": "Erstellen",
+    "add": "Hinzufügen",
+    "remove": "Entfernen",
+    "search": "Suchen",
+    "filter": "Filtern",
+    "export": "Exportieren",
+    "import": "Importieren",
+    "download": "Herunterladen",
+    "upload": "Hochladen",
+    "back": "Zurück",
+    "next": "Weiter",
+    "previous": "Zurück",
+    "close": "Schließen",
+    "confirm": "Bestätigen",
+    "yes": "Ja",
+    "no": "Nein",
+    "all": "Alle",
+    "none": "Keine",
+    "select": "Auswählen",
+    "noResults": "Keine Ergebnisse gefunden",
+    "showingResults": "Zeige {start}-{end} von {total} {items}",
+    "required": "Erforderlich",
+    "optional": "Optional"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "invoices": "Rechnungen",
+    "clients": "Kunden",
+    "transactions": "Transaktionen",
+    "bankConnections": "Bankverbindungen",
+    "reports": "Berichte",
+    "taxes": "Steuern",
+    "subscription": "Abonnement",
+    "settings": "Einstellungen",
+    "logout": "Abmelden"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "totalRevenue": "Gesamtumsatz",
+    "outstanding": "Ausstehend",
+    "activeClients": "Aktive Kunden",
+    "profitMargin": "Gewinnmarge",
+    "revenueVsExpenses": "Einnahmen vs. Ausgaben",
+    "revenueByCategory": "Einnahmen nach Kategorie",
+    "recentTransactions": "Letzte Transaktionen",
+    "fromLastMonth": "seit letztem Monat",
+    "overdueInvoices": "{count} überfällige Rechnungen",
+    "newThisMonth": "{count} neu diesen Monat",
+    "yearInTaxes": {
+      "title": "Ihr Steuerjahr - {year}",
+      "description": "Überprüfen Sie Ihre jährliche GuV-Rechnung und USt-Zusammenfassung für die Steuervorbereitung.",
+      "viewReport": "Jahresbericht anzeigen"
+    },
+    "uncheckedTransactions": {
+      "title": "Sie haben {count} ungeprüfte Transaktionen von Ihrem Bankkonto synchronisiert",
+      "description": "Überprüfen und kategorisieren Sie Ihre synchronisierten Transaktionen, um Ihre Buchhaltung aktuell zu halten.",
+      "viewPending": "Ausstehende anzeigen"
+    },
+    "quickActions": {
+      "newInvoice": "Neue Rechnung",
+      "addExpense": "Ausgabe hinzufügen",
+      "vatDue": "USt {quarter} fällig am {date}"
+    }
+  },
+  "invoices": {
+    "title": "Rechnungen",
+    "newInvoice": "Neue Rechnung",
+    "editInvoice": "Rechnung bearbeiten",
+    "searchPlaceholder": "Nach Rechnungsnummer oder Kunde suchen...",
+    "showingInvoices": "Zeige {start}-{end} von {total} Rechnungen",
+    "columns": {
+      "invoiceNumber": "Rechnungsnummer",
+      "client": "Kunde",
+      "invoiceDate": "Rechnungsdatum",
+      "dueDate": "Fälligkeitsdatum",
+      "total": "Gesamt",
+      "status": "Status",
+      "actions": "Aktionen"
+    },
+    "tabs": {
+      "all": "Alle"
+    },
+    "status": {
+      "draft": "Entwurf",
+      "sent": "Gesendet",
+      "paid": "Bezahlt",
+      "overdue": "Überfällig",
+      "cancelled": "Storniert"
+    },
+    "form": {
+      "invoiceDetails": "Rechnungsdetails",
+      "category": "Kategorie",
+      "client": "Kunde",
+      "currency": "Währung",
+      "language": "Sprache",
+      "invoiceDate": "Rechnungsdatum",
+      "dueDate": "Fälligkeitsdatum",
+      "lineItems": "Positionen",
+      "description": "Beschreibung",
+      "price": "Preis",
+      "unit": "Einheit",
+      "quantity": "Menge",
+      "addLineItem": "Position hinzufügen",
+      "summary": "Zusammenfassung",
+      "subtotal": "Zwischensumme",
+      "total": "Gesamt",
+      "saveInvoice": "Rechnung speichern",
+      "placeholders": {
+        "selectCategory": "Bitte auswählen",
+        "selectClient": "Kunde auswählen",
+        "itemDescription": "Positionsbeschreibung"
+      }
+    },
+    "units": {
+      "pc": "Stk",
+      "hr": "Std",
+      "day": "Tag",
+      "month": "Monat"
+    },
+    "noInvoices": "Keine Rechnungen gefunden"
+  },
+  "clients": {
+    "title": "Kunden",
+    "newClient": "Neuer Kunde",
+    "addClient": "Kunde hinzufügen",
+    "editClient": "Kunde bearbeiten",
+    "searchPlaceholder": "Kunden suchen...",
+    "loadingClients": "Kunden werden geladen...",
+    "totalInvoiced": "Gesamt fakturiert",
+    "outstanding": "Ausstehend",
+    "invoiceCount": "{count} Rechnung | {count} Rechnungen",
+    "noClients": "Keine Kunden gefunden",
+    "form": {
+      "name": "Name",
+      "email": "E-Mail",
+      "phone": "Telefonnummer",
+      "businessName": "Firmenname",
+      "taxNumber": "Steuernummer",
+      "vatId": "USt-IdNr.",
+      "address": "Adresse",
+      "street": "Straße",
+      "city": "Stadt",
+      "state": "Bundesland",
+      "zipCode": "PLZ",
+      "country": "Land",
+      "createClient": "Kunde erstellen"
+    }
+  },
+  "transactions": {
+    "title": "Transaktionen",
+    "newExpense": "Neue Ausgabe",
+    "newIncome": "Neue Einnahme",
+    "addExpense": "Ausgabe hinzufügen",
+    "addIncome": "Einnahme hinzufügen",
+    "import": "Importieren",
+    "importTransactions": "Transaktionen importieren",
+    "searchPlaceholder": "Transaktionen suchen...",
+    "loadingTransactions": "Transaktionen werden geladen...",
+    "columns": {
+      "description": "Beschreibung",
+      "date": "Datum",
+      "amount": "Betrag",
+      "receipt": "Beleg",
+      "actions": "Aktionen"
+    },
+    "types": {
+      "all": "Alle",
+      "income": "Einnahmen",
+      "expense": "Ausgaben"
+    },
+    "uncheckedAlert": "Sie haben {count} ungeprüfte Transaktionen von Ihrem Bankkonto synchronisiert",
+    "viewPending": "Ausstehende anzeigen",
+    "noTransactions": "Keine Transaktionen gefunden",
+    "form": {
+      "transactionInfo": "Transaktionsinformationen",
+      "type": "Typ",
+      "category": "Kategorie",
+      "date": "Datum",
+      "amount": "Betrag (€)",
+      "description": "Beschreibung",
+      "receipt": "Beleg / Anhang",
+      "notes": "Notizen (Optional)",
+      "summary": "Zusammenfassung",
+      "transactionType": "Transaktionstyp",
+      "status": "Status",
+      "noReceipt": "Kein Beleg",
+      "receiptAttached": "Beleg angehängt",
+      "saveTransaction": "Transaktion speichern",
+      "placeholders": {
+        "selectCategory": "Kategorie auswählen",
+        "enterDescription": "Transaktionsbeschreibung eingeben...",
+        "addNotes": "Zusätzliche Notizen hinzufügen..."
+      }
+    },
+    "import": {
+      "title": "Transaktionen importieren",
+      "backToTransactions": "Zurück zu Transaktionen",
+      "uploadFile": "Datei hochladen",
+      "uploadDescription": "Klicken zum Hochladen oder Drag & Drop",
+      "supportedFormats": "Unterstützte Formate: csv, xls, xlsx",
+      "importButton": "Transaktionen importieren",
+      "downloadTemplates": "Vorlagen herunterladen",
+      "templatesDescription": "Verwenden Sie unsere vorformatierten Vorlagen, um sicherzustellen, dass Ihre Daten korrekt importiert werden.",
+      "csvTemplate": "CSV-Vorlage",
+      "csvDescription": "Einfaches Textformat, kompatibel mit den meisten Tabellenkalkulationen",
+      "excelTemplate": "Excel-Vorlage",
+      "excelDescription": "Natives Excel-Format mit Datenvalidierung",
+      "howItWorks": "So funktioniert's",
+      "step1Title": "Vorlage herunterladen",
+      "step1Description": "Laden Sie entweder eine CSV- oder Excel-Vorlage herunter, die unserem erforderlichen Format entspricht.",
+      "step2Title": "Daten eintragen",
+      "step2Description": "Fügen Sie Ihre Transaktionen zur Vorlage hinzu. Verwenden Sie negative Beträge für Ausgaben und positive für Einnahmen.",
+      "step3Title": "Hochladen und importieren",
+      "step3Description": "Laden Sie Ihre fertige Datei hoch und wir importieren Ihre Transaktionen automatisch.",
+      "fileFormat": "Dateiformat",
+      "fileFormatDescription": "Ihre Importdatei muss die folgenden Spalten enthalten:",
+      "columns": {
+        "column": "Spalte",
+        "format": "Format",
+        "description": "Beschreibung"
+      },
+      "columnDescriptions": {
+        "date": "Transaktionsdatum im Format JJJJ-MM-TT",
+        "description": "Kurze Beschreibung der Transaktion",
+        "amount": "Transaktionsbetrag (negativ für Ausgaben, positiv für Einnahmen)",
+        "vatRate": "Auf diese Transaktion anwendbarer USt-Satz"
+      }
+    },
+    "categories": {
+      "consulting": "Beratung",
+      "development": "Entwicklung",
+      "design": "Design",
+      "services": "Dienstleistungen",
+      "products": "Produkte",
+      "royalties": "Lizenzen",
+      "office": "Büro",
+      "software": "Software",
+      "marketing": "Marketing",
+      "travel": "Reisen",
+      "equipment": "Ausrüstung",
+      "utilities": "Nebenkosten",
+      "professional": "Freiberufliche Leistungen",
+      "other": "Sonstiges"
+    }
+  },
+  "bankConnections": {
+    "title": "Bankverbindungen",
+    "subtitle": "Konten einfach synchronisieren, aktualisieren oder verbinden",
+    "addConnection": "Verbindung hinzufügen",
+    "connected": "Verbunden",
+    "disconnected": "Getrennt",
+    "lastSync": "Zuletzt synchronisiert {time}",
+    "syncNow": "Jetzt synchronisieren",
+    "disconnect": "Trennen",
+    "noConnections": "Keine Bankverbindungen gefunden",
+    "noConnectionsDescription": "Verbinden Sie Ihr Bankkonto, um Transaktionen automatisch zu synchronisieren",
+    "currentBalance": "Aktueller Kontostand",
+    "autoSyncBanner": "Automatische Transaktionssynchronisation aktiviert. Ihre Bankverbindungen rufen täglich automatisch neue Transaktionen ab. Alle Daten sind verschlüsselt und sicher gespeichert.",
+    "about": {
+      "title": "Über Bankverbindungen",
+      "security": "Ihre Bankzugangsdaten werden niemals auf unseren Servern gespeichert. Wir verwenden banksichere Verschlüsselung.",
+      "syncFrequency": "Transaktionen werden automatisch alle 24 Stunden synchronisiert. Sie können jederzeit manuell synchronisieren.",
+      "pauseSync": "Sie können die Synchronisation für jedes Konto mit dem Umschalter pausieren, ohne die Verbindung zu trennen.",
+      "reviewTransactions": "Alle synchronisierten Transaktionen erscheinen auf der Transaktionsseite zur Überprüfung und Kategorisierung."
+    }
+  },
+  "reports": {
+    "title": "Berichte",
+    "profitLoss": "Gewinn- und Verlustrechnung",
+    "profitTrend": "Gewinnentwicklung",
+    "expensesByCategory": "Ausgaben nach Kategorie",
+    "revenue": "Einnahmen",
+    "expenses": "Ausgaben",
+    "profit": "Gewinn",
+    "profitMargin": "Gewinnmarge",
+    "vsLastYear": "{change}% vs. Vorjahr",
+    "downloadPdf": "PDF herunterladen",
+    "period": {
+      "yearly": "Jährlich",
+      "quarterly": "Vierteljährlich",
+      "monthly": "Monatlich"
+    }
+  },
+  "taxes": {
+    "title": "Steuern",
+    "vatReports": "USt-Voranmeldungen",
+    "newReport": "Neue Meldung",
+    "submitToElster": "An Elster übermitteln",
+    "status": {
+      "draft": "Entwurf",
+      "submitted": "Eingereicht",
+      "accepted": "Akzeptiert",
+      "rejected": "Abgelehnt"
+    },
+    "columns": {
+      "period": "Zeitraum",
+      "netRevenue": "Nettoumsatz",
+      "vatCollected": "USt vereinnahmt",
+      "vatPaid": "Vorsteuer",
+      "vatDue": "USt-Zahllast",
+      "status": "Status",
+      "actions": "Aktionen"
+    }
+  },
+  "subscription": {
+    "title": "Abonnement",
+    "currentPlan": "Aktueller Tarif",
+    "changePlan": "Tarif wechseln",
+    "cancelSubscription": "Abonnement kündigen",
+    "paymentMethod": "Zahlungsmethode",
+    "noPaymentMethod": "Keine Zahlungsmethode hinterlegt",
+    "addPaymentMethodDescription": "Fügen Sie eine Zahlungsmethode hinzu, um Ihr Abonnement fortzusetzen",
+    "updatePaymentMethod": "Zahlungsmethode aktualisieren",
+    "addPaymentMethod": "Zahlungsmethode hinzufügen",
+    "popular": "Beliebt",
+    "expires": "Läuft ab",
+    "flexibleBillingTitle": "Flexible Abrechnung",
+    "flexibleBillingMessage": "Sie können Ihr Abonnement jederzeit upgraden, downgraden oder kündigen. Änderungen werden am Ende des aktuellen Abrechnungszeitraums wirksam.",
+    "plans": {
+      "free": {
+        "name": "Kostenlos",
+        "price": "0 €",
+        "description": "Perfekt für den Einstieg"
+      },
+      "pro": {
+        "name": "Pro",
+        "price": "19 €",
+        "description": "Für wachsende Unternehmen"
+      },
+      "business": {
+        "name": "Business",
+        "price": "49 €",
+        "description": "Für etablierte Unternehmen"
+      }
+    },
+    "features": {
+      "manualIncomeExpenses": "Manuelle Einnahmen & Ausgaben",
+      "invoicing": "Rechnungsstellung",
+      "pdfDownloads": "PDF-Downloads",
+      "bankSync": "Banksynchronisation",
+      "exportForSteuerberater": "Export für Steuerberater",
+      "vatCsv": "USt-CSV",
+      "everythingInFree": "Alles aus Kostenlos",
+      "everythingInPro": "Alles aus Pro",
+      "vatReminders": "USt-Erinnerungen",
+      "prioritySupport": "Priority Support",
+      "customReports": "Individuelle Berichte",
+      "invoices": "{count} Rechnungen pro Monat",
+      "clients": "{count} Kunden",
+      "bankConnections": "{count} Bankverbindungen",
+      "support": "{type} Support",
+      "vatReports": "USt-Voranmeldungen",
+      "elsterIntegration": "Elster-Integration"
+    },
+    "billingCycle": "pro Monat"
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "tabs": {
+      "profile": "Profil",
+      "appSettings": "App-Einstellungen",
+      "invoiceSettings": "Rechnungseinstellungen",
+      "vatTax": "USt & Steuern",
+      "notifications": "Benachrichtigungen",
+      "security": "Sicherheit",
+      "privacy": "Datenschutz & DSGVO"
+    },
+    "profile": {
+      "title": "Unternehmensinformationen",
+      "businessName": "Firmenname",
+      "email": "E-Mail-Adresse",
+      "phone": "Telefonnummer",
+      "address": "Geschäftsadresse",
+      "taxId": "Steuernummer",
+      "website": "Website",
+      "saveChanges": "Änderungen speichern"
+    },
+    "appSettings": {
+      "title": "Regionale Einstellungen",
+      "language": "Sprache",
+      "currency": "Währung",
+      "dateFormat": "Datumsformat",
+      "timezone": "Zeitzone",
+      "saveSettings": "Einstellungen speichern"
+    },
+    "invoiceSettings": {
+      "title": "Rechnungseinstellungen",
+      "bankDetails": {
+        "title": "Bankverbindung",
+        "description": "Diese Daten erscheinen auf Ihren Rechnungen",
+        "accountHolder": "Kontoinhaber",
+        "bankName": "Bankname",
+        "accountNumber": "Kontonummer",
+        "sortCode": "BLZ",
+        "iban": "IBAN",
+        "swift": "SWIFT/BIC",
+        "routingNumber": "Routing-Nummer",
+        "save": "Bankdaten speichern"
+      },
+      "defaults": {
+        "title": "Rechnungs-Standardwerte",
+        "paymentTerms": "Zahlungsbedingungen",
+        "invoicePrefix": "Rechnungsnummer-Präfix",
+        "defaultNotes": "Standard-Notizen",
+        "save": "Standardwerte speichern"
+      },
+      "paymentTermsOptions": {
+        "net7": "7 Tage netto",
+        "net14": "14 Tage netto",
+        "net30": "30 Tage netto",
+        "net60": "60 Tage netto",
+        "dueOnReceipt": "Sofort fällig"
+      }
+    },
+    "vatTax": {
+      "title": "USt-Registrierung",
+      "registrationStatus": "USt-Registrierungsstatus",
+      "vatNumber": "USt-IdNr.",
+      "declarationPeriod": "Anmeldezeitraum",
+      "scheme": "USt-Verfahren",
+      "elsterCertificate": {
+        "title": "Elster-Zertifikat",
+        "description": "Laden Sie Ihre .p12- oder .pfx-Zertifikatsdatei für die Elster-Integration hoch",
+        "upload": "Zertifikat hochladen",
+        "password": "Zertifikat-Passwort"
+      },
+      "saveSettings": "Steuereinstellungen speichern"
+    },
+    "notifications": {
+      "title": "Benachrichtigungseinstellungen",
+      "email": {
+        "title": "E-Mail-Benachrichtigungen",
+        "invoiceSent": "Rechnung gesendet",
+        "invoicePaid": "Rechnung bezahlt",
+        "invoiceOverdue": "Rechnung überfällig",
+        "newClient": "Neuer Kunde hinzugefügt"
+      },
+      "vatReminders": {
+        "title": "USt- & Steuer-Erinnerungen",
+        "declarationDue": "Voranmeldung fällig",
+        "declarationSubmitted": "Voranmeldung eingereicht",
+        "taxYearEnd": "Steuerjahresende-Erinnerung"
+      },
+      "transactionAlerts": {
+        "title": "Transaktions-Benachrichtigungen",
+        "largeExpense": "Große Ausgabe-Warnung",
+        "dailySummary": "Tägliche Transaktionsübersicht",
+        "weeklySummary": "Wöchentliche Transaktionsübersicht"
+      },
+      "savePreferences": "Einstellungen speichern"
+    },
+    "security": {
+      "title": "Sicherheitseinstellungen",
+      "changePassword": "Passwort ändern",
+      "currentPassword": "Aktuelles Passwort",
+      "newPassword": "Neues Passwort",
+      "confirmPassword": "Neues Passwort bestätigen",
+      "twoFactor": {
+        "title": "Zwei-Faktor-Authentifizierung",
+        "description": "Fügen Sie eine zusätzliche Sicherheitsebene zu Ihrem Konto hinzu",
+        "enable": "2FA aktivieren",
+        "disable": "2FA deaktivieren"
+      },
+      "sessions": {
+        "title": "Aktive Sitzungen",
+        "current": "Aktuelle Sitzung",
+        "logoutAll": "Alle anderen Sitzungen abmelden"
+      },
+      "updatePassword": "Passwort aktualisieren"
+    },
+    "privacy": {
+      "title": "Datenschutz & DSGVO",
+      "dataExport": {
+        "title": "Daten exportieren",
+        "description": "Laden Sie eine Kopie aller Ihrer in Solobooks gespeicherten Daten herunter",
+        "export": "Daten exportieren"
+      },
+      "dataRetention": {
+        "title": "Datenaufbewahrung",
+        "description": "Wählen Sie, wie lange wir Ihre Daten nach der Kontolöschung aufbewahren"
+      },
+      "deleteAccount": {
+        "title": "Konto löschen",
+        "description": "Löschen Sie Ihr Konto und alle zugehörigen Daten dauerhaft",
+        "warning": "Diese Aktion kann nicht rückgängig gemacht werden. Alle Ihre Daten werden dauerhaft gelöscht.",
+        "delete": "Mein Konto löschen"
+      }
+    }
+  },
+  "countries": {
+    "germany": "Deutschland",
+    "austria": "Österreich",
+    "switzerland": "Schweiz",
+    "unitedKingdom": "Vereinigtes Königreich",
+    "france": "Frankreich",
+    "netherlands": "Niederlande",
+    "belgium": "Belgien",
+    "other": "Sonstige"
+  },
+  "currencies": {
+    "eur": "EUR",
+    "usd": "USD",
+    "gbp": "GBP"
+  },
+  "languages": {
+    "english": "Englisch",
+    "german": "Deutsch",
+    "french": "Französisch"
+  },
+  "auth": {
+    "login": {
+      "title": "Willkommen zurück",
+      "subtitle": "Melden Sie sich bei Ihrem Solobooks-Konto an",
+      "email": "E-Mail",
+      "password": "Passwort",
+      "forgotPassword": "Passwort vergessen?",
+      "rememberMe": "30 Tage angemeldet bleiben",
+      "signIn": "Anmelden",
+      "continueWithGoogle": "Mit Google fortfahren",
+      "or": "ODER",
+      "noAccount": "Noch kein Konto?",
+      "signUp": "Kostenlos registrieren",
+      "protectedBy": "Geschützt durch branchenübliche Verschlüsselung.",
+      "privacyPolicy": "Datenschutzrichtlinie"
+    },
+    "register": {
+      "title": "Kostenlos starten",
+      "subtitle": "Erstellen Sie Ihr Solobooks-Konto in Sekunden",
+      "firstName": "Vorname",
+      "lastName": "Nachname",
+      "email": "E-Mail",
+      "password": "Passwort",
+      "passwordPlaceholder": "Erstellen Sie ein sicheres Passwort",
+      "agreeToTerms": "Ich stimme den",
+      "termsOfService": "Nutzungsbedingungen",
+      "and": "und der",
+      "privacyPolicy": "Datenschutzrichtlinie",
+      "createAccount": "Konto erstellen",
+      "signUpWithGoogle": "Mit Google registrieren",
+      "or": "ODER",
+      "alreadyHaveAccount": "Bereits ein Konto?",
+      "signIn": "Anmelden",
+      "gdprCompliant": "DSGVO-konform • Unterstützt deutsche Steueranforderungen",
+      "selectPlan": "Wählen Sie Ihren Tarif",
+      "planSubtitle": "Wählen Sie den Tarif, der zu Ihnen passt"
+    },
+    "plans": {
+      "starter": "Starter",
+      "plus": "Plus",
+      "pro": "Pro",
+      "perMonth": "pro Monat",
+      "freeTrial": "14-Tage Pro-Testversion inklusive",
+      "billed": "Abgerechnet {billing}",
+      "monthly": "monatlich",
+      "annually": "jährlich",
+      "mostPopular": "Am beliebtesten",
+      "continue": "Weiter mit {plan}"
+    }
+  },
+  "errors": {
+    "generic": "Etwas ist schief gelaufen. Bitte versuchen Sie es erneut.",
+    "notFound": "Seite nicht gefunden",
+    "unauthorized": "Sie sind nicht berechtigt, diese Seite anzuzeigen",
+    "validation": {
+      "required": "Dieses Feld ist erforderlich",
+      "email": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
+      "minLength": "Muss mindestens {min} Zeichen haben",
+      "maxLength": "Darf höchstens {max} Zeichen haben"
+    }
+  }
+}
