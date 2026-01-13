@@ -5,19 +5,26 @@ import { useTranslations } from "next-intl";
 import { Eye, EyeOff, Calculator } from "lucide-react";
 import Link from "next/link";
 import { Button, Card, Input, Label } from "@/components/atoms";
-import { cn } from "@/lib/utils";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function LoginPage() {
   const t = useTranslations();
+  const { login, error, clearError, isLoading } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle login logic
-    console.log({ email, password, rememberMe });
+    clearError();
+
+    try {
+      await login(email, password);
+      // Redirect is handled by the auth context
+    } catch (error) {
+      // Error is handled by the auth context
+    }
   };
 
   const handleGoogleLogin = () => {
@@ -46,6 +53,13 @@ export default function LoginPage() {
         {/* Form Card */}
         <Card className="p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Error Message */}
+            {error && (
+              <div className="rounded-lg bg-red-50 p-4 text-sm text-red-800">
+                {error}
+              </div>
+            )}
+
             {/* Email */}
             <div>
               <Label htmlFor="email">{t("auth.login.email")}</Label>
@@ -113,8 +127,15 @@ export default function LoginPage() {
             </div>
 
             {/* Sign In Button */}
-            <Button type="submit" variant="primary" className="w-full">
-              {t("auth.login.signIn")}
+            <Button
+              type="submit"
+              variant="primary"
+              className="w-full"
+              disabled={isLoading}
+            >
+              {isLoading
+                ? t("auth.login.signingIn") || "Signing in..."
+                : t("auth.login.signIn")}
             </Button>
 
             {/* Divider */}

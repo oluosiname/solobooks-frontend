@@ -6,6 +6,7 @@ import { Eye, EyeOff, Calculator, Check, Sparkles, CheckCircle2 } from "lucide-r
 import Link from "next/link";
 import { Button, Card, Input, Label } from "@/components/atoms";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/contexts/AuthContext";
 
 const plans = [
   {
@@ -44,6 +45,7 @@ const plans = [
 
 export default function RegisterPage() {
   const t = useTranslations();
+  const { register, error, clearError, isLoading } = useAuth();
   const [step, setStep] = useState<"plan" | "details">("plan");
   const [selectedPlan, setSelectedPlan] = useState("pro");
   const [showPassword, setShowPassword] = useState(false);
@@ -60,10 +62,16 @@ export default function RegisterPage() {
     setStep("details");
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle registration logic
-    console.log({ ...formData, plan: selectedPlan });
+    clearError();
+
+    try {
+      await register(formData.email, formData.password, selectedPlan);
+      // Redirect is handled by the auth context
+    } catch (error) {
+      // Error is handled by the auth context
+    }
   };
 
   const handleGoogleSignUp = () => {
@@ -191,6 +199,13 @@ export default function RegisterPage() {
         {/* Form Card */}
         <Card className="p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Error Message */}
+            {error && (
+              <div className="rounded-lg bg-red-50 p-4 text-sm text-red-800">
+                {error}
+              </div>
+            )}
+
             {/* Google Sign Up */}
             <button
               type="button"
@@ -342,9 +357,9 @@ export default function RegisterPage() {
               type="submit"
               variant="primary"
               className="w-full"
-              disabled={!formData.agreeToTerms}
+              disabled={!formData.agreeToTerms || isLoading}
             >
-              {t("auth.register.createAccount")}
+              {isLoading ? t("auth.register.creatingAccount") || "Creating account..." : t("auth.register.createAccount")}
             </Button>
           </form>
         </Card>
