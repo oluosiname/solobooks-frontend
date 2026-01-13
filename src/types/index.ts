@@ -1,0 +1,171 @@
+// Core business types for Solobooks
+
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  businessName: string;
+  phone: string;
+  address: string;
+  taxId: string;
+  vatNumber?: string;
+  website?: string;
+  language: "en" | "de";
+  currency: string;
+  createdAt: string;
+}
+
+export interface ClientAddress {
+  street: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  country: string;
+}
+
+export interface Client {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  location: string;
+  businessName?: string;
+  taxNumber?: string;
+  vatId?: string;
+  address?: ClientAddress;
+  totalInvoiced: number;
+  outstanding: number;
+  invoiceCount: number;
+  createdAt: string;
+}
+
+export type InvoiceStatus = "draft" | "sent" | "paid" | "overdue" | "cancelled";
+
+export interface InvoiceLineItem {
+  id: string;
+  description: string;
+  quantity: number;
+  unit: string;
+  unitPrice: number;
+  total: number;
+}
+
+export interface Invoice {
+  id: string;
+  invoiceNumber: string;
+  clientId: string;
+  clientName: string;
+  invoiceDate: string;
+  dueDate: string;
+  total: number;
+  status: InvoiceStatus;
+  lineItems: InvoiceLineItem[];
+  currency: string;
+  notes?: string;
+  createdAt: string;
+}
+
+export type TransactionType = "income" | "expense";
+
+export interface Transaction {
+  id: string;
+  description: string;
+  category: string;
+  date: string;
+  amount: number;
+  type: TransactionType;
+  receiptUrl: string | null;
+  notes: string;
+  bankAccountId?: string;
+  checked?: boolean;
+  createdAt: string;
+}
+
+export type BankConnectionStatus = "connected" | "disconnected" | "error";
+
+export interface BankConnection {
+  id: string;
+  bankName: string;
+  accountName: string;
+  accountNumber: string;
+  balance: number;
+  currency: string;
+  lastSynced: string;
+  status: BankConnectionStatus;
+}
+
+export type VatReportStatus = "draft" | "submitted" | "accepted" | "rejected";
+
+export interface VatReport {
+  id: string;
+  period: string;
+  startDate: string;
+  endDate: string;
+  netRevenue: number;
+  vatCollected: number;
+  vatPaid: number;
+  vatDue: number;
+  status: VatReportStatus;
+  submittedAt: string | null;
+  createdAt: string;
+}
+
+export type SubscriptionPlan = "free" | "pro" | "business";
+export type SubscriptionStatus = "active" | "trial" | "cancelled" | "past_due";
+
+export interface Subscription {
+  id: string;
+  plan: SubscriptionPlan;
+  status: SubscriptionStatus;
+  currentPeriodStart: string;
+  currentPeriodEnd: string;
+  cancelAtPeriodEnd: boolean;
+  price: number;
+  currency: string;
+}
+
+export interface PaymentMethod {
+  id: string;
+  type: "card" | "sepa";
+  last4: string;
+  brand: string;
+  expiryMonth: number;
+  expiryYear: number;
+  isDefault: boolean;
+}
+
+export interface DashboardStats {
+  totalRevenue: number;
+  revenueChange: number;
+  outstanding: number;
+  overdueInvoices: number;
+  activeClients: number;
+  newClientsThisMonth: number;
+  profitMargin: number;
+  profitMarginChange: number;
+}
+
+export interface RevenueExpenseData {
+  month: string;
+  revenue: number;
+  expenses: number;
+  [key: string]: string | number;
+}
+
+export interface CategoryData {
+  category: string;
+  amount: number;
+  color: string;
+  [key: string]: string | number;
+}
+
+export interface ProfitLossData {
+  month: string;
+  profit: number;
+  [key: string]: string | number;
+}
+
+// Chart data input type for Recharts compatibility
+export interface ChartDataInput {
+  [key: string]: string | number;
+}
