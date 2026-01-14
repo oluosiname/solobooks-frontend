@@ -169,3 +169,43 @@ export interface ProfitLossData {
 export interface ChartDataInput {
   [key: string]: string | number;
 }
+
+// Invoice Settings types
+export interface Currency {
+  id: number;
+  code: string;
+  symbol: string;
+  name: string;
+  default: boolean;
+}
+
+export interface InvoiceSettings {
+  id: number;
+  prefix: string;
+  language: "en" | "de";
+  accountHolder: string;
+  accountNumber: string | null;
+  bankName: string | null;
+  iban: string | null;
+  bic: string | null;
+  swift: string | null;
+  sortCode: string | null;
+  routingNumber: string | null;
+  defaultNote: string | null;
+  currency: Currency;
+}
+
+export interface InvoiceSettingsInput {
+  prefix: string;
+  currencyId: number;
+  language: "en" | "de";
+  accountHolder: string;
+  accountNumber?: string;
+  bankName?: string;
+  iban?: string;
+  bic?: string;
+  swift?: string;
+  sortCode?: string;
+  routingNumber?: string;
+  defaultNote?: string;
+}

@@ -9,7 +9,6 @@
 
 import {
   mockUser,
-  clients,
   invoices,
   transactions,
   uncheckedTransactions,
@@ -22,6 +21,11 @@ import {
   subscription,
   paymentMethod,
 } from "@/data";
+
+import { clientsApi } from "@/lib/clients-api";
+import type { ClientData } from "@/lib/clients-api";
+import { invoiceSettingsApi } from "@/lib/invoice-settings-api";
+import type { InvoiceSettingData, CurrencyData } from "@/lib/invoice-settings-api";
 
 import type {
   User,
@@ -36,6 +40,9 @@ import type {
   RevenueExpenseData,
   CategoryData,
   ProfitLossData,
+  InvoiceSettings,
+  InvoiceSettingsInput,
+  Currency,
 } from "@/types";
 
 // Simulate network delay
@@ -60,44 +67,95 @@ export async function updateUser(data: Partial<User>): Promise<User> {
 // Clients API
 // ============================================
 
+/**
+ * Helper to transform backend ClientData to frontend Client type
+ */
+function transformClientData(data: ClientData): Client {
+  return {
+    id: data.id.toString(),
+    name: data.name,
+    email: data.email,
+    phone: data.phone_number,
+    location: data.address?.full_address || data.full_address || '',
+    businessName: data.business_name,
+    taxNumber: data.business_tax_id,
+    vatId: data.vat_number,
+    address: data.address ? {
+      street: data.address.street_address,
+      city: data.address.city,
+      state: data.address.state,
+      zipCode: data.address.postal_code,
+      country: data.address.country,
+    } : undefined,
+    totalInvoiced: 0, // TODO: Add when backend provides this
+    outstanding: 0, // TODO: Add when backend provides this
+    invoiceCount: 0, // TODO: Add when backend provides this
+    createdAt: new Date().toISOString(), // TODO: Add when backend provides this
+  };
+}
+
 export async function fetchClients(): Promise<Client[]> {
-  await delay();
-  return clients;
+  const response = await clientsApi.listClients();
+  return response.data.map(transformClientData);
 }
 
 export async function fetchClient(id: string): Promise<Client | null> {
-  await delay();
-  return clients.find((c) => c.id === id) || null;
+  const response = await clientsApi.getClient(id);
+  return transformClientData(response.data);
 }
 
 export async function createClient(
   data: Omit<Client, "id" | "createdAt" | "totalInvoiced" | "outstanding" | "invoiceCount">
 ): Promise<Client> {
-  await delay();
-  const newClient: Client = {
-    ...data,
-    id: `client-${Date.now()}`,
-    totalInvoiced: 0,
-    outstanding: 0,
-    invoiceCount: 0,
-    createdAt: new Date().toISOString(),
-  };
-  return newClient;
+  const response = await clientsApi.createClient({
+    client: {
+      name: data.name,
+      email: data.email,
+      phone_number: data.phone,
+      business_name: data.businessName,
+      business_tax_id: data.taxNumber,
+      vat_number: data.vatId,
+      address: data.address ? {
+        street_address: data.address.street,
+        city: data.address.city,
+        state: data.address.state,
+        postal_code: data.address.zipCode,
+        country: data.address.country,
+      } : undefined,
+    },
+  });
+  return transformClientData(response.data);
 }
 
 export async function updateClient(
   id: string,
   data: Partial<Client>
 ): Promise<Client | null> {
-  await delay();
-  const client = clients.find((c) => c.id === id);
-  if (!client) return null;
-  return { ...client, ...data };
+  const response = await clientsApi.updateClient(id, {
+    client: {
+      ...(data.name && { name: data.name }),
+      ...(data.email && { email: data.email }),
+      ...(data.phone && { phone_number: data.phone }),
+      ...(data.businessName && { business_name: data.businessName }),
+      ...(data.taxNumber && { business_tax_id: data.taxNumber }),
+      ...(data.vatId && { vat_number: data.vatId }),
+      ...(data.address && {
+        address: {
+          street_address: data.address.street,
+          city: data.address.city,
+          state: data.address.state,
+          postal_code: data.address.zipCode,
+          country: data.address.country,
+        },
+      }),
+    },
+  });
+  return transformClientData(response.data);
 }
 
 export async function deleteClient(id: string): Promise<boolean> {
-  await delay();
-  return clients.some((c) => c.id === id);
+  await clientsApi.deleteClient(id);
+  return true;
 }
 
 // ============================================
@@ -305,6 +363,108 @@ export async function cancelSubscription(): Promise<Subscription> {
 }
 
 // ============================================
+// Invoice Settings API
+// ============================================
+
+/**
+ * Helper to transform backend InvoiceSettingData to frontend InvoiceSettings type
+ */
+function transformInvoiceSettingData(data: InvoiceSettingData): InvoiceSettings {
+  return {
+    id: data.id,
+    prefix: data.prefix,
+    language: data.language,
+    accountHolder: data.account_holder,
+    accountNumber: data.account_number,
+    bankName: data.bank_name,
+    iban: data.iban,
+    bic: data.bic,
+    swift: data.swift,
+    sortCode: data.sort_code,
+    routingNumber: data.routing_number,
+    defaultNote: data.default_note,
+    currency: transformCurrencyData(data.currency),
+  };
+}
+
+/**
+ * Helper to transform backend CurrencyData to frontend Currency type
+ */
+function transformCurrencyData(data: CurrencyData): Currency {
+  return {
+    id: data.id,
+    code: data.code,
+    symbol: data.symbol,
+    name: data.name,
+    default: data.default,
+  };
+}
+
+export async function fetchInvoiceSettings(): Promise<InvoiceSettings | null> {
+  const response = await invoiceSettingsApi.getInvoiceSettings();
+  return response.data ? transformInvoiceSettingData(response.data) : null;
+}
+
+export async function fetchCurrencies(): Promise<Currency[]> {
+  const response = await invoiceSettingsApi.getCurrencies();
+  return response.data.map(transformCurrencyData);
+}
+
+export async function createInvoiceSettings(
+  data: InvoiceSettingsInput
+): Promise<InvoiceSettings> {
+  const response = await invoiceSettingsApi.createInvoiceSettings({
+    invoice_setting: {
+      prefix: data.prefix,
+      currency_id: data.currencyId,
+      language: data.language,
+      account_holder: data.accountHolder,
+      account_number: data.accountNumber,
+      bank_name: data.bankName,
+      iban: data.iban,
+      bic: data.bic,
+      swift: data.swift,
+      sort_code: data.sortCode,
+      routing_number: data.routingNumber,
+      default_note: data.defaultNote,
+    },
+  });
+
+  if (!response.data) {
+    throw new Error("Failed to create invoice settings");
+  }
+
+  return transformInvoiceSettingData(response.data);
+}
+
+export async function updateInvoiceSettings(
+  data: InvoiceSettingsInput
+): Promise<InvoiceSettings> {
+  const response = await invoiceSettingsApi.updateInvoiceSettings({
+    invoice_setting: {
+      prefix: data.prefix,
+      currency_id: data.currencyId,
+      language: data.language,
+      account_holder: data.accountHolder,
+      account_number: data.accountNumber,
+      bank_name: data.bankName,
+      iban: data.iban,
+      bic: data.bic,
+      swift: data.swift,
+      sort_code: data.sortCode,
+      routing_number: data.routingNumber,
+      default_note: data.defaultNote,
+    },
+  });
+
+  if (!response.data) {
+    throw new Error("Failed to update invoice settings");
+  }
+
+  return transformInvoiceSettingData(response.data);
+}
+
+// ============================================
 // Export all API functions
 // ============================================
 
@@ -358,4 +518,10 @@ export const api = {
   fetchPaymentMethod,
   updateSubscription,
   cancelSubscription,
+
+  // Invoice Settings
+  fetchInvoiceSettings,
+  fetchCurrencies,
+  createInvoiceSettings,
+  updateInvoiceSettings,
 };

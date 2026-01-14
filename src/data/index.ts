@@ -1,9 +1,6 @@
 // Users
 export { mockUser, users } from "./users";
 
-// Clients
-export { clients } from "./clients";
-
 // Invoices
 export { invoices } from "./invoices";
 

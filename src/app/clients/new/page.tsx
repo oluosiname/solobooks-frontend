@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Check } from "lucide-react";
 import { AppShell } from "@/components/layout";
+import { showToast } from "@/lib/toast";
 import {
   Button,
   Card,
@@ -34,14 +35,27 @@ export default function NewClientPage() {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string[]>>({});
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   const handleChange = (field: string, value: string) => {
     setFormData({ ...formData, [field]: value });
+    // Clear field-specific errors when user types
+    if (errors[field]) {
+      const newErrors = { ...errors };
+      delete newErrors[field];
+      setErrors(newErrors);
+    }
+    if (errorMessage) {
+      setErrorMessage("");
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setErrors({});
+    setErrorMessage("");
 
     try {
       await api.createClient({
@@ -60,14 +74,36 @@ export default function NewClientPage() {
           country: formData.country,
         },
       });
+
+      // Show success toast
+      showToast.created("Client");
+
+      // Redirect to clients list
       router.push("/clients");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to create client:", error);
+
+      // Handle API errors
+      if (error?.error) {
+        const errorMsg = error.error.message || "Failed to create client";
+        setErrorMessage(errorMsg);
+        showToast.error(errorMsg);
+
+        // Set field-specific validation errors
+        if (error.error.details) {
+          setErrors(error.error.details);
+        }
+      } else {
+        const errorMsg = "An unexpected error occurred";
+        setErrorMessage(errorMsg);
+        showToast.error(errorMsg);
+      }
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  console.log({ errors, errorMessage });
   const countryOptions: SelectOption[] = [
     { value: "Germany", label: t("countries.germany") },
     { value: "Austria", label: t("countries.austria") },
@@ -87,6 +123,28 @@ export default function NewClientPage() {
         <Card>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Error Message Banner */}
+              {errorMessage && (
+                <div className="rounded-lg bg-red-50 border border-red-200 p-4">
+                  <div className="flex">
+                    <div className="flex-1">
+                      <h3 className="text-sm font-medium text-red-800">
+                        {errorMessage}
+                      </h3>
+                      {Object.keys(errors.base).length > 0 && (
+                        <div className="mt-2 text-sm text-red-700">
+                          <ul className="list-disc list-inside space-y-1">
+                            {errors.base.map((msg, idx) => (
+                              <li key={idx}>{msg}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* Basic Information */}
               <InputField
                 label={t("clients.form.name")}
@@ -94,6 +152,7 @@ export default function NewClientPage() {
                 type="text"
                 value={formData.name}
                 onChange={(e) => handleChange("name", e.target.value)}
+                error={errors.name?.[0]}
                 required
               />
 
@@ -103,6 +162,7 @@ export default function NewClientPage() {
                 type="email"
                 value={formData.email}
                 onChange={(e) => handleChange("email", e.target.value)}
+                error={errors.email?.[0]}
                 required
               />
 
@@ -112,6 +172,7 @@ export default function NewClientPage() {
                 type="tel"
                 value={formData.phone}
                 onChange={(e) => handleChange("phone", e.target.value)}
+                error={errors.phone_number?.[0]}
               />
 
               <InputField
@@ -120,6 +181,7 @@ export default function NewClientPage() {
                 type="text"
                 value={formData.businessName}
                 onChange={(e) => handleChange("businessName", e.target.value)}
+                error={errors.business_name?.[0]}
               />
 
               <div className="grid gap-6 md:grid-cols-2">

@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useState, useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import {
   User,
@@ -18,11 +18,15 @@ import {
   Edit,
   AlertTriangle,
   FileText,
+  Loader2,
 } from 'lucide-react';
 import { AppShell } from '@/components/layout';
 import { api } from '@/lib/api';
 import { cn } from '@/lib/utils';
 import { styles, buttonStyles } from '@/lib/styles';
+import { api as newApi } from '@/services/api';
+import type { InvoiceSettingsInput } from '@/types';
+import { showToast } from '@/lib/toast';
 
 // We'll initialize this inside the component to access translations
 
@@ -50,6 +54,7 @@ function Toggle({ enabled, onChange }: { enabled: boolean; onChange?: () => void
 export default function SettingsPage() {
   const t = useTranslations();
   const [activeTab, setActiveTab] = useState('profile');
+  const queryClient = useQueryClient();
 
   const settingsTabs = [
     { id: 'profile', label: t('settings.tabs.profile'), icon: User },
@@ -94,6 +99,78 @@ export default function SettingsPage() {
     queryKey: ['user'],
     queryFn: api.getUser,
   });
+
+  // Fetch invoice settings and currencies
+  const { data: invoiceSettings, isLoading: isLoadingSettings } = useQuery({
+    queryKey: ['invoiceSettings'],
+    queryFn: newApi.fetchInvoiceSettings,
+  });
+
+  const { data: currencies } = useQuery({
+    queryKey: ['currencies'],
+    queryFn: newApi.fetchCurrencies,
+  });
+
+  // Invoice settings form state
+  const [invoiceFormData, setInvoiceFormData] = useState<InvoiceSettingsInput>({
+    prefix: '',
+    currencyId: 1,
+    language: 'en',
+    accountHolder: '',
+    accountNumber: '',
+    bankName: '',
+    iban: '',
+    bic: '',
+    swift: '',
+    sortCode: '',
+    routingNumber: '',
+    defaultNote: '',
+  });
+
+  // Update form when settings are loaded
+  useEffect(() => {
+    if (invoiceSettings) {
+      setInvoiceFormData({
+        prefix: invoiceSettings.prefix,
+        currencyId: invoiceSettings.currency.id,
+        language: invoiceSettings.language,
+        accountHolder: invoiceSettings.accountHolder,
+        accountNumber: invoiceSettings.accountNumber || '',
+        bankName: invoiceSettings.bankName || '',
+        iban: invoiceSettings.iban || '',
+        bic: invoiceSettings.bic || '',
+        swift: invoiceSettings.swift || '',
+        sortCode: invoiceSettings.sortCode || '',
+        routingNumber: invoiceSettings.routingNumber || '',
+        defaultNote: invoiceSettings.defaultNote || '',
+      });
+    }
+  }, [invoiceSettings]);
+
+  // Mutation for creating/updating invoice settings
+  const saveInvoiceSettingsMutation = useMutation({
+    mutationFn: (data: InvoiceSettingsInput) => {
+      if (invoiceSettings) {
+        return newApi.updateInvoiceSettings(data);
+      }
+      return newApi.createInvoiceSettings(data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['invoiceSettings'] });
+      showToast.success('Invoice settings saved successfully');
+    },
+    onError: (error: any) => {
+      showToast.apiError(error, 'Failed to save invoice settings');
+    },
+  });
+
+  const handleInvoiceSettingsSave = async () => {
+    try {
+      await saveInvoiceSettingsMutation.mutateAsync(invoiceFormData);
+    } catch (error) {
+      // Error is handled by onError callback
+    }
+  };
 
   return (
     <AppShell title={t('settings.title')}>
@@ -253,116 +330,169 @@ export default function SettingsPage() {
           {/* Invoice Settings Tab */}
           {activeTab === 'invoice' && (
             <>
-              {/* Bank Account Details */}
-              <div className={cn(styles.card)}>
-                <div className={styles.cardContent}>
-                  <h3 className="text-lg font-semibold text-slate-900">{t('settings.invoiceSettings.bankDetails.title')}</h3>
-                  <p className="mt-1 text-sm text-slate-500">{t('settings.invoiceSettings.bankDetails.description')}</p>
-                  <div className="mt-6 grid gap-6 md:grid-cols-2">
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700">{t('settings.invoiceSettings.bankDetails.accountHolder')}</label>
-                      <input
-                        type="text"
-                        className={cn(styles.input, 'mt-1.5')}
-                        defaultValue="Kayla Moerman"
-                      />
+              {isLoadingSettings ? (
+                <div className={cn(styles.card)}>
+                  <div className={styles.cardContent}>
+                    <div className="flex items-center justify-center py-12">
+                      <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700">{t('settings.invoiceSettings.bankDetails.bankName')}</label>
-                      <input
-                        type="text"
-                        className={cn(styles.input, 'mt-1.5')}
-                        defaultValue="MINSWORTH MANAGEMENT LIMITED"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700">{t('settings.invoiceSettings.bankDetails.accountNumber')}</label>
-                      <input
-                        type="text"
-                        className={cn(styles.input, 'mt-1.5')}
-                        defaultValue="12345678"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700">{t('settings.invoiceSettings.bankDetails.sortCode')}</label>
-                      <input
-                        type="text"
-                        className={cn(styles.input, 'mt-1.5')}
-                        defaultValue="12-34-56"
-                      />
-                    </div>
-                    <div className="md:col-span-2">
-                      <label className="block text-sm font-medium text-slate-700">{t('settings.invoiceSettings.bankDetails.iban')}</label>
-                      <input
-                        type="text"
-                        className={cn(styles.input, 'mt-1.5')}
-                        defaultValue="GB29NWBK60161331926819"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700">{t('settings.invoiceSettings.bankDetails.swift')}</label>
-                      <input
-                        type="text"
-                        className={cn(styles.input, 'mt-1.5')}
-                        defaultValue="NWBKGB2L"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700">{t('settings.invoiceSettings.bankDetails.routingNumber')}</label>
-                      <input
-                        type="text"
-                        className={cn(styles.input, 'mt-1.5')}
-                        defaultValue="021000021"
-                      />
-                    </div>
-                  </div>
-                  <div className="mt-6 flex justify-end border-t border-slate-100 pt-6">
-                    <button className={buttonStyles('primary')}>
-                      <Check className="h-4 w-4" />
-                      {t('settings.invoiceSettings.bankDetails.save')}
-                    </button>
                   </div>
                 </div>
-              </div>
+              ) : (
+                <>
+                  {/* Bank Account Details */}
+                  <div className={cn(styles.card)}>
+                    <div className={styles.cardContent}>
+                      <h3 className="text-lg font-semibold text-slate-900">{t('settings.invoiceSettings.bankDetails.title')}</h3>
+                      <p className="mt-1 text-sm text-slate-500">{t('settings.invoiceSettings.bankDetails.description')}</p>
+                      <div className="mt-6 grid gap-6 md:grid-cols-2">
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700">{t('settings.invoiceSettings.bankDetails.accountHolder')}</label>
+                          <input
+                            type="text"
+                            className={cn(styles.input, 'mt-1.5')}
+                            value={invoiceFormData.accountHolder}
+                            onChange={(e) => setInvoiceFormData({ ...invoiceFormData, accountHolder: e.target.value })}
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700">{t('settings.invoiceSettings.bankDetails.bankName')}</label>
+                          <input
+                            type="text"
+                            className={cn(styles.input, 'mt-1.5')}
+                            value={invoiceFormData.bankName}
+                            onChange={(e) => setInvoiceFormData({ ...invoiceFormData, bankName: e.target.value })}
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700">{t('settings.invoiceSettings.bankDetails.accountNumber')}</label>
+                          <input
+                            type="text"
+                            className={cn(styles.input, 'mt-1.5')}
+                            value={invoiceFormData.accountNumber}
+                            onChange={(e) => setInvoiceFormData({ ...invoiceFormData, accountNumber: e.target.value })}
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700">{t('settings.invoiceSettings.bankDetails.sortCode')}</label>
+                          <input
+                            type="text"
+                            className={cn(styles.input, 'mt-1.5')}
+                            value={invoiceFormData.sortCode}
+                            onChange={(e) => setInvoiceFormData({ ...invoiceFormData, sortCode: e.target.value })}
+                          />
+                        </div>
+                        <div className="md:col-span-2">
+                          <label className="block text-sm font-medium text-slate-700">{t('settings.invoiceSettings.bankDetails.iban')}</label>
+                          <input
+                            type="text"
+                            className={cn(styles.input, 'mt-1.5')}
+                            value={invoiceFormData.iban}
+                            onChange={(e) => setInvoiceFormData({ ...invoiceFormData, iban: e.target.value })}
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700">BIC</label>
+                          <input
+                            type="text"
+                            className={cn(styles.input, 'mt-1.5')}
+                            value={invoiceFormData.bic}
+                            onChange={(e) => setInvoiceFormData({ ...invoiceFormData, bic: e.target.value })}
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700">{t('settings.invoiceSettings.bankDetails.swift')}</label>
+                          <input
+                            type="text"
+                            className={cn(styles.input, 'mt-1.5')}
+                            value={invoiceFormData.swift}
+                            onChange={(e) => setInvoiceFormData({ ...invoiceFormData, swift: e.target.value })}
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700">{t('settings.invoiceSettings.bankDetails.routingNumber')}</label>
+                          <input
+                            type="text"
+                            className={cn(styles.input, 'mt-1.5')}
+                            value={invoiceFormData.routingNumber}
+                            onChange={(e) => setInvoiceFormData({ ...invoiceFormData, routingNumber: e.target.value })}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
 
-              {/* Invoice Defaults */}
-              <div className={cn(styles.card)}>
-                <div className={styles.cardContent}>
-                  <h3 className="text-lg font-semibold text-slate-900">{t('settings.invoiceSettings.defaults.title')}</h3>
-                  <div className="mt-6 grid gap-6 md:grid-cols-2">
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700">{t('settings.invoiceSettings.defaults.paymentTerms')}</label>
-                      <select className={cn(styles.input, 'mt-1.5')}>
-                        <option>30 days</option>
-                        <option>14 days</option>
-                        <option>7 days</option>
-                        <option>Due on receipt</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700">{t('settings.invoiceSettings.defaults.invoicePrefix')}</label>
-                      <input
-                        type="text"
-                        className={cn(styles.input, 'mt-1.5')}
-                        defaultValue="INV-"
-                      />
-                    </div>
-                    <div className="md:col-span-2">
-                      <label className="block text-sm font-medium text-slate-700">{t('settings.invoiceSettings.defaults.defaultNotes')}</label>
-                      <textarea
-                        className={cn(styles.input, 'mt-1.5 h-24 resize-none')}
-                        defaultValue="Thank you for your business. Payment is due within the specified terms."
-                      />
+                  {/* Invoice Defaults */}
+                  <div className={cn(styles.card)}>
+                    <div className={styles.cardContent}>
+                      <h3 className="text-lg font-semibold text-slate-900">{t('settings.invoiceSettings.defaults.title')}</h3>
+                      <div className="mt-6 grid gap-6 md:grid-cols-2">
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700">Currency</label>
+                          <select
+                            className={cn(styles.input, 'mt-1.5')}
+                            value={invoiceFormData.currencyId}
+                            onChange={(e) => setInvoiceFormData({ ...invoiceFormData, currencyId: Number(e.target.value) })}
+                          >
+                            {currencies?.map((currency) => (
+                              <option key={currency.id} value={currency.id}>
+                                {currency.code} - {currency.name} ({currency.symbol})
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700">Language</label>
+                          <select
+                            className={cn(styles.input, 'mt-1.5')}
+                            value={invoiceFormData.language}
+                            onChange={(e) => setInvoiceFormData({ ...invoiceFormData, language: e.target.value as 'en' | 'de' })}
+                          >
+                            <option value="en">English</option>
+                            <option value="de">German</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700">{t('settings.invoiceSettings.defaults.invoicePrefix')}</label>
+                          <input
+                            type="text"
+                            className={cn(styles.input, 'mt-1.5')}
+                            value={invoiceFormData.prefix}
+                            onChange={(e) => setInvoiceFormData({ ...invoiceFormData, prefix: e.target.value })}
+                          />
+                        </div>
+                        <div className="md:col-span-2">
+                          <label className="block text-sm font-medium text-slate-700">{t('settings.invoiceSettings.defaults.defaultNotes')}</label>
+                          <textarea
+                            className={cn(styles.input, 'mt-1.5 h-24 resize-none')}
+                            value={invoiceFormData.defaultNote}
+                            onChange={(e) => setInvoiceFormData({ ...invoiceFormData, defaultNote: e.target.value })}
+                          />
+                        </div>
+                      </div>
+                      <div className="mt-6 flex justify-end border-t border-slate-100 pt-6">
+                        <button
+                          className={buttonStyles('primary')}
+                          onClick={handleInvoiceSettingsSave}
+                          disabled={saveInvoiceSettingsMutation.isPending}
+                        >
+                          {saveInvoiceSettingsMutation.isPending ? (
+                            <>
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                              Saving...
+                            </>
+                          ) : (
+                            <>
+                              <Check className="h-4 w-4" />
+                              {t('settings.invoiceSettings.defaults.save')}
+                            </>
+                          )}
+                        </button>
+                      </div>
                     </div>
                   </div>
-                  <div className="mt-6 flex justify-end border-t border-slate-100 pt-6">
-                    <button className={buttonStyles('primary')}>
-                      <Check className="h-4 w-4" />
-                      {t('settings.invoiceSettings.defaults.save')}
-                    </button>
-                  </div>
-                </div>
-              </div>
+                </>
+              )}
             </>
           )}
 
