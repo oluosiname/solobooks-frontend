@@ -140,15 +140,15 @@
     "form": {
       "name": "Name",
       "email": "Email",
-      "phone": "Phone number",
+      "phoneNumber": "Phone number",
       "businessName": "Business name",
       "taxNumber": "Tax number",
       "vatId": "VAT ID",
       "address": "Address",
-      "street": "Street",
+      "streetAddress": "Street",
       "city": "City",
       "state": "State",
-      "zipCode": "Zip code",
+      "postalCode": "Zip code",
       "country": "Country",
       "createClient": "Create Client"
     }
@@ -376,7 +376,7 @@
       "title": "Business Information",
       "businessName": "Business Name",
       "email": "Email Address",
-      "phone": "Phone Number",
+      "phoneNumber": "Phone Number",
       "address": "Business Address",
       "taxId": "Tax ID / Steuernummer",
       "website": "Website",

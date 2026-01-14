@@ -23,14 +23,14 @@ export default function NewClientPage() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    phone: "",
+    phoneNumber: "",
     businessName: "",
     taxNumber: "",
     vatId: "",
-    street: "",
+    streetAddress: "",
     city: "",
     state: "",
-    zipCode: "",
+    postalCode: "",
     country: "Germany",
   });
 
@@ -61,16 +61,15 @@ export default function NewClientPage() {
       await api.createClient({
         name: formData.name,
         email: formData.email,
-        phone: formData.phone,
-        location: `${formData.city}, ${formData.country}`,
+        phoneNumber: formData.phoneNumber,
         businessName: formData.businessName,
         taxNumber: formData.taxNumber,
         vatId: formData.vatId,
         address: {
-          street: formData.street,
+          streetAddress: formData.streetAddress,
           city: formData.city,
           state: formData.state,
-          zipCode: formData.zipCode,
+          postalCode: formData.postalCode,
           country: formData.country,
         },
       });
@@ -131,7 +130,7 @@ export default function NewClientPage() {
                       <h3 className="text-sm font-medium text-red-800">
                         {errorMessage}
                       </h3>
-                      {Object.keys(errors.base).length > 0 && (
+                      {errors.base.length > 0 && (
                         <div className="mt-2 text-sm text-red-700">
                           <ul className="list-disc list-inside space-y-1">
                             {errors.base.map((msg, idx) => (
@@ -167,11 +166,11 @@ export default function NewClientPage() {
               />
 
               <InputField
-                label={t("clients.form.phone")}
-                name="phone"
+                label={t("clients.form.phoneNumber")}
+                name="phoneNumber"
                 type="tel"
-                value={formData.phone}
-                onChange={(e) => handleChange("phone", e.target.value)}
+                value={formData.phoneNumber}
+                onChange={(e) => handleChange("phoneNumber", e.target.value)}
                 error={errors.phone_number?.[0]}
               />
 
@@ -209,11 +208,13 @@ export default function NewClientPage() {
 
                 <div className="space-y-6">
                   <InputField
-                    label={t("clients.form.street")}
-                    name="street"
+                    label={t("clients.form.streetAddress")}
+                    name="streetAddress"
                     type="text"
-                    value={formData.street}
-                    onChange={(e) => handleChange("street", e.target.value)}
+                    value={formData.streetAddress}
+                    onChange={(e) =>
+                      handleChange("streetAddress", e.target.value)
+                    }
                   />
 
                   <div className="grid gap-6 md:grid-cols-2">
@@ -235,11 +236,13 @@ export default function NewClientPage() {
 
                   <div className="grid gap-6 md:grid-cols-2">
                     <InputField
-                      label={t("clients.form.zipCode")}
-                      name="zipCode"
+                      label={t("clients.form.postalCode")}
+                      name="postalCode"
                       type="text"
-                      value={formData.zipCode}
-                      onChange={(e) => handleChange("zipCode", e.target.value)}
+                      value={formData.postalCode}
+                      onChange={(e) =>
+                        handleChange("postalCode", e.target.value)
+                      }
                     />
                     <SelectField
                       label={t("clients.form.country")}

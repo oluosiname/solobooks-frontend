@@ -23,9 +23,12 @@ import {
 } from "@/data";
 
 import { clientsApi } from "@/lib/clients-api";
-import type { ClientData } from "@/lib/clients-api";
+import type { ClientData, CreateClientRequest } from "@/lib/clients-api";
 import { invoiceSettingsApi } from "@/lib/invoice-settings-api";
-import type { InvoiceSettingData, CurrencyData } from "@/lib/invoice-settings-api";
+import type {
+  InvoiceSettingData,
+  CurrencyData,
+} from "@/lib/invoice-settings-api";
 
 import type {
   User,
@@ -44,6 +47,9 @@ import type {
   InvoiceSettingsInput,
   Currency,
 } from "@/types";
+
+import { transformClientData } from "./api-transformer";
+import humps from "humps";
 
 // Simulate network delay
 const delay = (ms: number = 300) =>
@@ -70,29 +76,6 @@ export async function updateUser(data: Partial<User>): Promise<User> {
 /**
  * Helper to transform backend ClientData to frontend Client type
  */
-function transformClientData(data: ClientData): Client {
-  return {
-    id: data.id.toString(),
-    name: data.name,
-    email: data.email,
-    phone: data.phone_number,
-    location: data.address?.full_address || data.full_address || '',
-    businessName: data.business_name,
-    taxNumber: data.business_tax_id,
-    vatId: data.vat_number,
-    address: data.address ? {
-      street: data.address.street_address,
-      city: data.address.city,
-      state: data.address.state,
-      zipCode: data.address.postal_code,
-      country: data.address.country,
-    } : undefined,
-    totalInvoiced: 0, // TODO: Add when backend provides this
-    outstanding: 0, // TODO: Add when backend provides this
-    invoiceCount: 0, // TODO: Add when backend provides this
-    createdAt: new Date().toISOString(), // TODO: Add when backend provides this
-  };
-}
 
 export async function fetchClients(): Promise<Client[]> {
   const response = await clientsApi.listClients();
@@ -105,25 +88,15 @@ export async function fetchClient(id: string): Promise<Client | null> {
 }
 
 export async function createClient(
-  data: Omit<Client, "id" | "createdAt" | "totalInvoiced" | "outstanding" | "invoiceCount">
+  data: Omit<
+    Client,
+    "id" | "createdAt" | "totalInvoiced" | "outstanding" | "invoiceCount"
+  >
 ): Promise<Client> {
-  const response = await clientsApi.createClient({
-    client: {
-      name: data.name,
-      email: data.email,
-      phone_number: data.phone,
-      business_name: data.businessName,
-      business_tax_id: data.taxNumber,
-      vat_number: data.vatId,
-      address: data.address ? {
-        street_address: data.address.street,
-        city: data.address.city,
-        state: data.address.state,
-        postal_code: data.address.zipCode,
-        country: data.address.country,
-      } : undefined,
-    },
-  });
+  const client = humps.decamelizeKeys(data);
+  const requestObject = { client } as CreateClientRequest;
+
+  const response = await clientsApi.createClient(requestObject);
   return transformClientData(response.data);
 }
 
@@ -135,16 +108,16 @@ export async function updateClient(
     client: {
       ...(data.name && { name: data.name }),
       ...(data.email && { email: data.email }),
-      ...(data.phone && { phone_number: data.phone }),
+      ...(data.phoneNumber && { phone_number: data.phoneNumber }),
       ...(data.businessName && { business_name: data.businessName }),
       ...(data.taxNumber && { business_tax_id: data.taxNumber }),
       ...(data.vatId && { vat_number: data.vatId }),
       ...(data.address && {
         address: {
-          street_address: data.address.street,
+          street_address: data.address.streetAddress,
           city: data.address.city,
           state: data.address.state,
-          postal_code: data.address.zipCode,
+          postal_code: data.address.postalCode,
           country: data.address.country,
         },
       }),
@@ -287,7 +260,9 @@ export async function fetchBankConnection(
   return bankConnections.find((b) => b.id === id) || null;
 }
 
-export async function syncBankConnection(id: string): Promise<BankConnection | null> {
+export async function syncBankConnection(
+  id: string
+): Promise<BankConnection | null> {
   await delay(1000); // Longer delay to simulate sync
   const connection = bankConnections.find((b) => b.id === id);
   if (!connection) return null;
@@ -369,7 +344,9 @@ export async function cancelSubscription(): Promise<Subscription> {
 /**
  * Helper to transform backend InvoiceSettingData to frontend InvoiceSettings type
  */
-function transformInvoiceSettingData(data: InvoiceSettingData): InvoiceSettings {
+function transformInvoiceSettingData(
+  data: InvoiceSettingData
+): InvoiceSettings {
   return {
     id: data.id,
     prefix: data.prefix,

@@ -140,7 +140,7 @@
     "form": {
       "name": "Name",
       "email": "E-Mail",
-      "phone": "Telefonnummer",
+      "phoneNumber": "Telefonnummer",
       "businessName": "Firmenname",
       "taxNumber": "Steuernummer",
       "vatId": "USt-IdNr.",
@@ -148,7 +148,7 @@
       "street": "Straße",
       "city": "Stadt",
       "state": "Bundesland",
-      "zipCode": "PLZ",
+      "postalCode": "PLZ",
       "country": "Land",
       "createClient": "Kunde erstellen"
     }
@@ -376,7 +376,7 @@
       "title": "Unternehmensinformationen",
       "businessName": "Firmenname",
       "email": "E-Mail-Adresse",
-      "phone": "Telefonnummer",
+      "phoneNumber": "Telefonnummer",
       "address": "Geschäftsadresse",
       "taxId": "Steuernummer",
       "website": "Website",

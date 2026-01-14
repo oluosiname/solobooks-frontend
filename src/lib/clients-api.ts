@@ -4,7 +4,7 @@
  * Handles all client-related API calls to the backend
  */
 
-import { BaseApiClient } from './base-api';
+import { BaseApiClient } from "./base-api";
 
 // ============================================
 // Types
@@ -52,18 +52,6 @@ export interface CreateClientRequest {
   client: {
     name: string;
     email: string;
-    phone_number: string;
-    business_name?: string;
-    business_tax_id?: string;
-    vat_number?: string;
-    vat_strategy?: string;
-    address?: {
-      street_address: string;
-      city: string;
-      state: string;
-      postal_code: string;
-      country: string;
-    };
   };
 }
 
@@ -99,7 +87,7 @@ class ClientsApiClient extends BaseApiClient {
     page?: number;
     per_page?: number;
   }): Promise<ClientListResponse> {
-    return this.get<ClientListResponse>('/api/v1/clients', params);
+    return this.get<ClientListResponse>("/api/v1/clients", params);
   }
 
   /**
@@ -107,7 +95,7 @@ class ClientsApiClient extends BaseApiClient {
    * POST /api/v1/clients
    */
   async createClient(data: CreateClientRequest): Promise<ClientResponse> {
-    return this.post<ClientResponse>('/api/v1/clients', data);
+    return this.post<ClientResponse>("/api/v1/clients", data);
   }
 
   /**

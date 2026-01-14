@@ -5,7 +5,8 @@ export interface User {
   email: string;
   name: string;
   businessName: string;
-  phone: string;
+  fullAddress?: string;
+  phoneNumber: string;
   address: string;
   taxId: string;
   vatNumber?: string;
@@ -16,10 +17,10 @@ export interface User {
 }
 
 export interface ClientAddress {
-  street: string;
+  streetAddress: string;
   city: string;
   state: string;
-  zipCode: string;
+  postalCode: string;
   country: string;
 }
 
@@ -27,8 +28,7 @@ export interface Client {
   id: string;
   name: string;
   email: string;
-  phone: string;
-  location: string;
+  phoneNumber: string;
   businessName?: string;
   taxNumber?: string;
   vatId?: string;
