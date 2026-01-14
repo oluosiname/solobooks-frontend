@@ -25,10 +25,6 @@ import {
 import { clientsApi } from "@/lib/clients-api";
 import type { ClientData, CreateClientRequest } from "@/lib/clients-api";
 import { invoiceSettingsApi } from "@/lib/invoice-settings-api";
-import type {
-  InvoiceSettingData,
-  CurrencyData,
-} from "@/lib/invoice-settings-api";
 
 import type {
   User,
@@ -48,7 +44,11 @@ import type {
   Currency,
 } from "@/types";
 
-import { transformClientData } from "./api-transformer";
+import {
+  transformClientData,
+  transformInvoiceSettingData,
+  transformCurrencyData,
+} from "./api-transformer";
 import humps from "humps";
 
 // Simulate network delay
@@ -340,42 +340,6 @@ export async function cancelSubscription(): Promise<Subscription> {
 // ============================================
 // Invoice Settings API
 // ============================================
-
-/**
- * Helper to transform backend InvoiceSettingData to frontend InvoiceSettings type
- */
-function transformInvoiceSettingData(
-  data: InvoiceSettingData
-): InvoiceSettings {
-  return {
-    id: data.id,
-    prefix: data.prefix,
-    language: data.language,
-    accountHolder: data.account_holder,
-    accountNumber: data.account_number,
-    bankName: data.bank_name,
-    iban: data.iban,
-    bic: data.bic,
-    swift: data.swift,
-    sortCode: data.sort_code,
-    routingNumber: data.routing_number,
-    defaultNote: data.default_note,
-    currency: transformCurrencyData(data.currency),
-  };
-}
-
-/**
- * Helper to transform backend CurrencyData to frontend Currency type
- */
-function transformCurrencyData(data: CurrencyData): Currency {
-  return {
-    id: data.id,
-    code: data.code,
-    symbol: data.symbol,
-    name: data.name,
-    default: data.default,
-  };
-}
 
 export async function fetchInvoiceSettings(): Promise<InvoiceSettings | null> {
   const response = await invoiceSettingsApi.getInvoiceSettings();

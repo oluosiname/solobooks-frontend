@@ -14,3 +14,4 @@ export {
   type CardContentProps,
   type CardFooterProps,
 } from "./Card";
+export { Toggle, type ToggleProps } from "./Toggle";

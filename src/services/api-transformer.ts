@@ -1,5 +1,9 @@
 import { ClientData } from "@/lib/clients-api";
-import { Client } from "@/types";
+import {
+  InvoiceSettingData,
+  CurrencyData,
+} from "@/lib/invoice-settings-api";
+import { Client, InvoiceSettings, Currency } from "@/types";
 import humps from "humps";
 
 function camelize<T>(input: unknown): T {
@@ -24,4 +28,18 @@ export function transformClientData(data: ClientData): Client {
     invoiceCount: 0, // TODO: Add when backend provides this
     createdAt: new Date().toISOString(), // TODO: Add when backend provides this
   };
+}
+
+export function transformInvoiceSettingData(
+  data: InvoiceSettingData
+): InvoiceSettings {
+  const base = camelize<InvoiceSettings>(data);
+  return {
+    ...base,
+    currency: transformCurrencyData(data.currency),
+  };
+}
+
+export function transformCurrencyData(data: CurrencyData): Currency {
+  return camelize<Currency>(data);
 }
