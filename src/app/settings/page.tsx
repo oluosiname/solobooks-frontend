@@ -16,7 +16,7 @@ import { AppShell } from "@/components/layout";
 import { api } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { api as newApi } from "@/services/api";
-import type { InvoiceSettingsInput } from "@/types";
+import type { InvoiceSettingsInput, User as UserType } from "@/types";
 import { showToast } from "@/lib/toast";
 import {
   ProfileSettings,
@@ -82,7 +82,19 @@ export default function SettingsPage() {
 
   const { data: user } = useQuery({
     queryKey: ["user"],
-    queryFn: api.getUser,
+    queryFn: newApi.fetchProfile,
+  });
+
+  // Mutation for updating profile
+  const updateProfileMutation = useMutation({
+    mutationFn: (data: Partial<User>) => newApi.updateProfile(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["user"] });
+      showToast.success("Profile updated successfully");
+    },
+    onError: (error: any) => {
+      showToast.apiError(error, "Failed to update profile");
+    },
   });
 
   // Fetch invoice settings and currencies
@@ -187,7 +199,13 @@ export default function SettingsPage() {
 
         {/* Content */}
         <div className="flex-1 space-y-6">
-          {activeTab === "profile" && <ProfileSettings profile={user} />}
+          {activeTab === "profile" && (
+            <ProfileSettings
+              profile={user}
+              onSave={(data) => updateProfileMutation.mutate(data)}
+              isSaving={updateProfileMutation.isPending}
+            />
+          )}
           {activeTab === "app" && <AppSettings />}
           {activeTab === "invoice" && (
             <InvoiceSettings

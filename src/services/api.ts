@@ -8,7 +8,6 @@
  */
 
 import {
-  mockUser,
   invoices,
   transactions,
   uncheckedTransactions,
@@ -30,6 +29,8 @@ import type {
   CreateVatStatusRequest,
   UpdateVatStatusRequest,
 } from "@/lib/vat-status-api";
+import { profileApi } from "@/lib/profile-api";
+import type { UpdateProfileRequest } from "@/lib/profile-api";
 
 import type {
   User,
@@ -56,6 +57,7 @@ import {
   transformInvoiceSettingData,
   transformCurrencyData,
   transformVatStatusData,
+  transformProfileData,
 } from "./api-transformer";
 import humps from "humps";
 
@@ -64,17 +66,25 @@ const delay = (ms: number = 300) =>
   new Promise((resolve) => setTimeout(resolve, ms));
 
 // ============================================
-// User API
+// Profile API
 // ============================================
 
-export async function fetchUser(): Promise<User> {
-  await delay();
-  return mockUser;
+export async function fetchProfile(): Promise<User> {
+  const response = await profileApi.getProfile();
+  return transformProfileData(response.data);
 }
 
-export async function updateUser(data: Partial<User>): Promise<User> {
-  await delay();
-  return { ...mockUser, ...data };
+export async function updateProfile(data: Partial<User>): Promise<User> {
+  const profile = humps.decamelizeKeys({
+    fullName: data.name,
+    businessName: data.businessName,
+    phoneNumber: data.phoneNumber,
+    taxNumber: data.taxId,
+  });
+  const requestObject = { profile } as UpdateProfileRequest;
+
+  const response = await profileApi.updateProfile(requestObject);
+  return transformProfileData(response.data);
 }
 
 // ============================================
@@ -464,9 +474,10 @@ export async function updateVatStatus(
 // ============================================
 
 export const api = {
-  // User
-  fetchUser,
-  updateUser,
+  // Profile
+  getUser: fetchProfile,
+  fetchProfile,
+  updateProfile,
 
   // Clients
   fetchClients,

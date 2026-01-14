@@ -4,7 +4,8 @@ import {
   CurrencyData,
 } from "@/lib/invoice-settings-api";
 import { VatStatusData } from "@/lib/vat-status-api";
-import { Client, InvoiceSettings, Currency, VatStatus } from "@/types";
+import { ProfileData } from "@/lib/profile-api";
+import { Client, InvoiceSettings, Currency, VatStatus, User } from "@/types";
 import humps from "humps";
 
 function camelize<T>(input: unknown): T {
@@ -47,4 +48,23 @@ export function transformCurrencyData(data: CurrencyData): Currency {
 
 export function transformVatStatusData(data: VatStatusData): VatStatus {
   return camelize<VatStatus>(data);
+}
+
+export function transformProfileData(data: ProfileData): User {
+  const base = camelize<any>(data);
+  return {
+    id: String(data.id),
+    email: "", // TODO: Add when backend provides this
+    name: base.fullName,
+    businessName: base.businessName || "",
+    fullAddress: data.address?.full_address,
+    phoneNumber: base.phoneNumber || "",
+    address: data.address?.full_address || "",
+    taxId: base.taxNumber || "",
+    vatNumber: "", // TODO: Add when backend provides this
+    website: "", // TODO: Add when backend provides this
+    language: "en" as const, // TODO: Add when backend provides this
+    currency: "EUR", // TODO: Add when backend provides this
+    createdAt: base.createdAt,
+  };
 }
