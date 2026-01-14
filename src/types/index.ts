@@ -209,3 +209,27 @@ export interface InvoiceSettingsInput {
   routingNumber?: string;
   defaultNote?: string;
 }
+
+// VAT Status types
+export type DeclarationPeriod = "monthly" | "quarterly" | "yearly";
+
+export interface VatStatus {
+  id: number;
+  vatRegistered: boolean;
+  declarationPeriod: DeclarationPeriod;
+  vatNumber: string | null;
+  startsOn: string | null;
+  kleinunternehmer: boolean;
+  taxExemptReason: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface VatStatusInput {
+  vatRegistered: boolean;
+  declarationPeriod: DeclarationPeriod;
+  vatNumber?: string | null;
+  startsOn?: string | null;
+  kleinunternehmer: boolean;
+  taxExemptReason?: string | null;
+}

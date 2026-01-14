@@ -23,8 +23,13 @@ import {
 } from "@/data";
 
 import { clientsApi } from "@/lib/clients-api";
-import type { ClientData, CreateClientRequest } from "@/lib/clients-api";
+import type { CreateClientRequest } from "@/lib/clients-api";
 import { invoiceSettingsApi } from "@/lib/invoice-settings-api";
+import { vatStatusApi } from "@/lib/vat-status-api";
+import type {
+  CreateVatStatusRequest,
+  UpdateVatStatusRequest,
+} from "@/lib/vat-status-api";
 
 import type {
   User,
@@ -42,12 +47,15 @@ import type {
   InvoiceSettings,
   InvoiceSettingsInput,
   Currency,
+  VatStatus,
+  VatStatusInput,
 } from "@/types";
 
 import {
   transformClientData,
   transformInvoiceSettingData,
   transformCurrencyData,
+  transformVatStatusData,
 } from "./api-transformer";
 import humps from "humps";
 
@@ -406,6 +414,52 @@ export async function updateInvoiceSettings(
 }
 
 // ============================================
+// VAT Status API
+// ============================================
+
+/**
+ * Fetch VAT status
+ * GET /api/v1/vat_status
+ */
+export async function fetchVatStatus(): Promise<VatStatus | null> {
+  try {
+    const response = await vatStatusApi.getVatStatus();
+    return transformVatStatusData(response.data);
+  } catch {
+    // Return null if VAT status doesn't exist (404)
+    return null;
+  }
+}
+
+/**
+ * Create VAT status
+ * POST /api/v1/vat_status
+ */
+export async function createVatStatus(
+  data: VatStatusInput
+): Promise<VatStatus> {
+  const vatStatus = humps.decamelizeKeys(data);
+  const requestObject = { vat_status: vatStatus } as CreateVatStatusRequest;
+
+  const response = await vatStatusApi.createVatStatus(requestObject);
+  return transformVatStatusData(response.data);
+}
+
+/**
+ * Update VAT status
+ * PUT /api/v1/vat_status
+ */
+export async function updateVatStatus(
+  data: Partial<VatStatusInput>
+): Promise<VatStatus> {
+  const vatStatus = humps.decamelizeKeys(data);
+  const requestObject = { vat_status: vatStatus } as UpdateVatStatusRequest;
+
+  const response = await vatStatusApi.updateVatStatus(requestObject);
+  return transformVatStatusData(response.data);
+}
+
+// ============================================
 // Export all API functions
 // ============================================
 
@@ -465,4 +519,9 @@ export const api = {
   fetchCurrencies,
   createInvoiceSettings,
   updateInvoiceSettings,
+
+  // VAT Status
+  fetchVatStatus,
+  createVatStatus,
+  updateVatStatus,
 };

@@ -3,7 +3,8 @@ import {
   InvoiceSettingData,
   CurrencyData,
 } from "@/lib/invoice-settings-api";
-import { Client, InvoiceSettings, Currency } from "@/types";
+import { VatStatusData } from "@/lib/vat-status-api";
+import { Client, InvoiceSettings, Currency, VatStatus } from "@/types";
 import humps from "humps";
 
 function camelize<T>(input: unknown): T {
@@ -42,4 +43,8 @@ export function transformInvoiceSettingData(
 
 export function transformCurrencyData(data: CurrencyData): Currency {
   return camelize<Currency>(data);
+}
+
+export function transformVatStatusData(data: VatStatusData): VatStatus {
+  return camelize<VatStatus>(data);
 }
