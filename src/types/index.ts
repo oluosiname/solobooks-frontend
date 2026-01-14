@@ -25,6 +25,7 @@ export interface ClientAddress {
 }
 
 export interface Client {
+  fullAddress: string;
   id: string;
   name: string;
   email: string;

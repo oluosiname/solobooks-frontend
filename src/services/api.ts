@@ -108,7 +108,12 @@ export async function fetchClient(id: string): Promise<Client | null> {
 export async function createClient(
   data: Omit<
     Client,
-    "id" | "createdAt" | "totalInvoiced" | "outstanding" | "invoiceCount"
+    | "id"
+    | "createdAt"
+    | "totalInvoiced"
+    | "outstanding"
+    | "invoiceCount"
+    | "fullAddress"
   >
 ): Promise<Client> {
   const client = humps.decamelizeKeys(data);
