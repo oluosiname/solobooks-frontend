@@ -5,9 +5,14 @@ import { Check, Upload } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { styles, buttonStyles } from "@/lib/styles";
 import { useState, useEffect } from "react";
-import { fetchVatStatus, createVatStatus, updateVatStatus } from "@/services/api";
+import {
+  fetchVatStatus,
+  createVatStatus,
+  updateVatStatus,
+} from "@/services/api";
 import { showToast } from "@/lib/toast";
 import type { VatStatus, DeclarationPeriod } from "@/types";
+import type { AppError } from "@/lib/base-api";
 
 export function VatSettings() {
   const t = useTranslations();
@@ -21,7 +26,8 @@ export function VatSettings() {
   const [vatRegistered, setVatRegistered] = useState(true);
   const [kleinunternehmer, setKleinunternehmer] = useState(false);
   const [vatNumber, setVatNumber] = useState("");
-  const [declarationPeriod, setDeclarationPeriod] = useState<DeclarationPeriod>("monthly");
+  const [declarationPeriod, setDeclarationPeriod] =
+    useState<DeclarationPeriod>("monthly");
   const [startsOn, setStartsOn] = useState("");
   const [taxExemptReason, setTaxExemptReason] = useState("");
 
@@ -87,7 +93,7 @@ export function VatSettings() {
         setVatStatus(created);
         showToast.created("VAT settings");
       }
-    } catch (error: any) {
+    } catch (error: AppError) {
       console.error("Failed to save VAT status:", error);
 
       // Handle API errors
@@ -159,9 +165,16 @@ export function VatSettings() {
                 className={cn(
                   styles.input,
                   "mt-1.5",
-                  errors.vat_registered && "border-red-300 focus:border-red-500 focus:ring-red-500"
+                  errors.vat_registered &&
+                    "border-red-300 focus:border-red-500 focus:ring-red-500"
                 )}
-                value={kleinunternehmer ? "kleinunternehmer" : (vatRegistered ? "registered" : "not_registered")}
+                value={
+                  kleinunternehmer
+                    ? "kleinunternehmer"
+                    : vatRegistered
+                    ? "registered"
+                    : "not_registered"
+                }
                 onChange={(e) => {
                   const value = e.target.value;
                   if (value === "kleinunternehmer") {
@@ -179,10 +192,14 @@ export function VatSettings() {
               >
                 <option value="registered">I am VAT registered</option>
                 <option value="not_registered">I am not VAT registered</option>
-                <option value="kleinunternehmer">Small business exemption (Kleinunternehmer)</option>
+                <option value="kleinunternehmer">
+                  Small business exemption (Kleinunternehmer)
+                </option>
               </select>
               {errors.vat_registered && (
-                <p className="mt-1.5 text-sm text-red-600">{errors.vat_registered[0]}</p>
+                <p className="mt-1.5 text-sm text-red-600">
+                  {errors.vat_registered[0]}
+                </p>
               )}
             </div>
             <div>
@@ -194,7 +211,8 @@ export function VatSettings() {
                 className={cn(
                   styles.input,
                   "mt-1.5",
-                  errors.vat_number && "border-red-300 focus:border-red-500 focus:ring-red-500"
+                  errors.vat_number &&
+                    "border-red-300 focus:border-red-500 focus:ring-red-500"
                 )}
                 value={vatNumber}
                 onChange={(e) => {
@@ -204,7 +222,9 @@ export function VatSettings() {
                 placeholder="DE123456789"
               />
               {errors.vat_number && (
-                <p className="mt-1.5 text-sm text-red-600">{errors.vat_number[0]}</p>
+                <p className="mt-1.5 text-sm text-red-600">
+                  {errors.vat_number[0]}
+                </p>
               )}
             </div>
             <div>
@@ -215,7 +235,8 @@ export function VatSettings() {
                 className={cn(
                   styles.input,
                   "mt-1.5",
-                  errors.declaration_period && "border-red-300 focus:border-red-500 focus:ring-red-500"
+                  errors.declaration_period &&
+                    "border-red-300 focus:border-red-500 focus:ring-red-500"
                 )}
                 value={declarationPeriod}
                 onChange={(e) => {
@@ -228,7 +249,9 @@ export function VatSettings() {
                 <option value="yearly">Yearly</option>
               </select>
               {errors.declaration_period && (
-                <p className="mt-1.5 text-sm text-red-600">{errors.declaration_period[0]}</p>
+                <p className="mt-1.5 text-sm text-red-600">
+                  {errors.declaration_period[0]}
+                </p>
               )}
             </div>
             <div>
@@ -240,7 +263,8 @@ export function VatSettings() {
                 className={cn(
                   styles.input,
                   "mt-1.5",
-                  errors.starts_on && "border-red-300 focus:border-red-500 focus:ring-red-500"
+                  errors.starts_on &&
+                    "border-red-300 focus:border-red-500 focus:ring-red-500"
                 )}
                 value={startsOn}
                 onChange={(e) => {
@@ -249,7 +273,9 @@ export function VatSettings() {
                 }}
               />
               {errors.starts_on && (
-                <p className="mt-1.5 text-sm text-red-600">{errors.starts_on[0]}</p>
+                <p className="mt-1.5 text-sm text-red-600">
+                  {errors.starts_on[0]}
+                </p>
               )}
             </div>
             {!vatRegistered && !kleinunternehmer && (
@@ -261,7 +287,8 @@ export function VatSettings() {
                   className={cn(
                     styles.input,
                     "mt-1.5",
-                    errors.tax_exempt_reason && "border-red-300 focus:border-red-500 focus:ring-red-500"
+                    errors.tax_exempt_reason &&
+                      "border-red-300 focus:border-red-500 focus:ring-red-500"
                   )}
                   value={taxExemptReason}
                   onChange={(e) => {
@@ -272,7 +299,9 @@ export function VatSettings() {
                   placeholder="Explain why you are not VAT registered..."
                 />
                 {errors.tax_exempt_reason && (
-                  <p className="mt-1.5 text-sm text-red-600">{errors.tax_exempt_reason[0]}</p>
+                  <p className="mt-1.5 text-sm text-red-600">
+                    {errors.tax_exempt_reason[0]}
+                  </p>
                 )}
               </div>
             )}

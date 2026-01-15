@@ -4,12 +4,15 @@ import Link from 'next/link';
 import { FileSpreadsheet, AlertCircle, Plus, Receipt, Calendar } from 'lucide-react';
 import { styles, buttonStyles } from '@/lib/styles';
 import { cn } from '@/lib/utils';
+import { useTranslations } from 'next-intl';
 
 interface AlertBannersProps {
   uncheckedCount: number;
 }
 
 export function AlertBanners({ uncheckedCount }: AlertBannersProps) {
+  const t = useTranslations();
+
   return (
     <div className="space-y-4 animate-slide-up stagger-1">
       {/* Year in Taxes Banner */}
@@ -38,18 +41,24 @@ export function AlertBanners({ uncheckedCount }: AlertBannersProps) {
         <div className={cn(styles.alert, styles.alertWarning)}>
           <AlertCircle className="h-5 w-5 text-amber-600" />
           <div className="flex-1">
-            <p className="font-medium text-amber-900">
-              You have <span className="font-semibold">{uncheckedCount}</span> unchecked transactions synced from your bank account(s)
-            </p>
+            <p
+              className="font-medium text-amber-900"
+              dangerouslySetInnerHTML={{
+                __html: t("dashboard.uncheckedTransactions.title", { count: uncheckedCount }).replace(
+                  String(uncheckedCount),
+                  `<span class="font-semibold">${uncheckedCount}</span>`
+                ),
+              }}
+            />
             <p className="text-sm text-amber-700">
-              Review and categorize your synced transactions to keep your books accurate.
+              {t("dashboard.uncheckedTransactions.description")}
             </p>
           </div>
           <Link
             href="/transactions/synced"
             className="rounded-lg border border-amber-300 bg-white px-4 py-2 text-sm font-medium text-amber-700 transition-colors hover:bg-amber-50"
           >
-            View Pending
+            {t("dashboard.uncheckedTransactions.viewPending")}
           </Link>
         </div>
       )}

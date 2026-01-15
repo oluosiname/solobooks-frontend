@@ -94,7 +94,7 @@ export default function SyncedTransactionsPage() {
                 {t("transactions.noSyncedTransactions") || "No synced transactions"}
               </p>
               <p className="text-sm text-slate-400">
-                Transactions synced from your bank accounts will appear here
+                {t("transactions.syncedDescriptionEmpty")}
               </p>
               <Link
                 href="/bank-connections"

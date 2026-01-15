@@ -18,6 +18,8 @@ export interface ApiError {
   };
 }
 
+export type AppError = ApiError | Error | { message: string } | unknown;
+
 export class BaseApiClient {
   protected baseUrl: string;
 
@@ -159,7 +161,7 @@ export class BaseApiClient {
       return data;
     } catch (error) {
       // Re-throw API errors
-      if ((error as any)?.error) {
+      if ((error as AppError)?.error) {
         throw error;
       }
 

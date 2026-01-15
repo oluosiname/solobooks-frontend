@@ -8,6 +8,7 @@ import { api } from "@/services/api";
 import { showToast } from "@/lib/toast";
 import type { Settings } from "@/types";
 import type { SettingsData as ApiSettingsData } from "@/lib/settings-api";
+import type { AppError } from "@/lib/base-api";
 
 interface AppSettingsProps {
   settings?: Settings;
@@ -38,7 +39,7 @@ export function AppSettings({ settings }: AppSettingsProps) {
       queryClient.invalidateQueries({ queryKey: ["unifiedSettings"] });
       showToast.success("App settings saved successfully");
     },
-    onError: (error: any) => {
+    onError: (error: AppError) => {
       showToast.apiError(error, "Failed to save app settings");
     },
   });

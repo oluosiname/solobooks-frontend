@@ -6,14 +6,16 @@ import type {
 } from "@/types";
 
 export const dashboardStats: DashboardStats = {
-  totalRevenue: 328000,
-  outstanding: 89450,
-  activeClients: 47,
-  profitMargin: 32.8,
-  revenueChange: 12.5,
-  overdueInvoices: 8,
+  totalIncomeMtd: 328000,
+  incomeChangePercent: 12.5,
+  expensesMtd: 89450,
+  expenseChangePercent: -2.3,
+  outstandingAmount: 89450,
+  overdueInvoicesCount: 8,
+  activeClientsCount: 47,
   newClientsThisMonth: 3,
-  profitMarginChange: 2.3,
+  clientGrowthPercent: 6.8,
+  profitMargin: 32.8,
 };
 
 export const revenueExpenseData: RevenueExpenseData[] = [

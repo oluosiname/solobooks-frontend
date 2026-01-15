@@ -16,7 +16,13 @@ import {
   Area,
 } from "recharts";
 import { AppShell } from "@/components/layout";
-import { Button, Card, CardHeader, CardContent, Select } from "@/components/atoms";
+import {
+  Button,
+  Card,
+  CardHeader,
+  CardContent,
+  Select,
+} from "@/components/atoms";
 import { api } from "@/services/api";
 import { formatCurrency, cn } from "@/lib/utils";
 
@@ -103,7 +109,7 @@ export default function ReportsPage() {
     {
       title: t("reports.revenue"),
       value: summaryStats?.totalRevenue || 0,
-      change: dashboardStats?.revenueChange || 0,
+      change: dashboardStats?.incomeChangePercent || 0,
     },
     {
       title: t("reports.expenses"),
@@ -114,7 +120,7 @@ export default function ReportsPage() {
     {
       title: t("reports.profit"),
       value: summaryStats?.netProfit || 0,
-      change: dashboardStats?.profitMarginChange || 0,
+      change: dashboardStats?.profitMargin || 0,
     },
     {
       title: t("reports.profitMargin"),
@@ -142,7 +148,11 @@ export default function ReportsPage() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex gap-3">
-            <Select options={yearOptions} defaultValue="2025" className="w-32" />
+            <Select
+              options={yearOptions}
+              defaultValue="2025"
+              className="w-32"
+            />
             <Select
               options={periodOptions}
               defaultValue="yearly"
@@ -163,7 +173,9 @@ export default function ReportsPage() {
               className="p-6"
               style={{ animationDelay: `${index * 50}ms` }}
             >
-              <h4 className="text-sm font-medium text-slate-500">{stat.title}</h4>
+              <h4 className="text-sm font-medium text-slate-500">
+                {stat.title}
+              </h4>
               <p className="mt-2 text-3xl font-semibold text-slate-900">
                 {stat.isPercentage
                   ? `${stat.value}%`
@@ -277,75 +289,73 @@ export default function ReportsPage() {
             </CardHeader>
             <CardContent>
               <div ref={profitChartRef} style={{ width: "100%", height: 250 }}>
-                {isMounted &&
-                  profitLossData &&
-                  profitDimensions.width > 0 && (
-                    <AreaChart
-                      width={profitDimensions.width}
-                      height={profitDimensions.height}
-                      data={profitLossData}
-                      margin={{ top: 10, right: 10, left: 10, bottom: 0 }}
-                    >
-                      <defs>
-                        <linearGradient
-                          id="profitGradient"
-                          x1="0"
-                          y1="0"
-                          x2="0"
-                          y2="1"
-                        >
-                          <stop
-                            offset="5%"
-                            stopColor="#10b981"
-                            stopOpacity={0.3}
-                          />
-                          <stop
-                            offset="95%"
-                            stopColor="#10b981"
-                            stopOpacity={0}
-                          />
-                        </linearGradient>
-                      </defs>
-                      <CartesianGrid
-                        strokeDasharray="3 3"
-                        stroke="#e2e8f0"
-                        vertical={false}
-                      />
-                      <XAxis
-                        dataKey="month"
-                        axisLine={false}
-                        tickLine={false}
-                        tick={{ fill: "#64748b", fontSize: 12 }}
-                      />
-                      <YAxis
-                        axisLine={false}
-                        tickLine={false}
-                        tick={{ fill: "#64748b", fontSize: 12 }}
-                        tickFormatter={(value) =>
-                          `€${(value / 1000).toFixed(0)}k`
-                        }
-                      />
-                      <Tooltip
-                        contentStyle={{
-                          backgroundColor: "#fff",
-                          border: "1px solid #e2e8f0",
-                          borderRadius: "8px",
-                          boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
-                        }}
-                        formatter={(value) => [
-                          `€${Number(value).toLocaleString()}`,
-                          t("reports.profit"),
-                        ]}
-                      />
-                      <Area
-                        type="monotone"
-                        dataKey="profit"
-                        stroke="#10b981"
-                        strokeWidth={2}
-                        fill="url(#profitGradient)"
-                      />
-                    </AreaChart>
-                  )}
+                {isMounted && profitLossData && profitDimensions.width > 0 && (
+                  <AreaChart
+                    width={profitDimensions.width}
+                    height={profitDimensions.height}
+                    data={profitLossData}
+                    margin={{ top: 10, right: 10, left: 10, bottom: 0 }}
+                  >
+                    <defs>
+                      <linearGradient
+                        id="profitGradient"
+                        x1="0"
+                        y1="0"
+                        x2="0"
+                        y2="1"
+                      >
+                        <stop
+                          offset="5%"
+                          stopColor="#10b981"
+                          stopOpacity={0.3}
+                        />
+                        <stop
+                          offset="95%"
+                          stopColor="#10b981"
+                          stopOpacity={0}
+                        />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      stroke="#e2e8f0"
+                      vertical={false}
+                    />
+                    <XAxis
+                      dataKey="month"
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{ fill: "#64748b", fontSize: 12 }}
+                    />
+                    <YAxis
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{ fill: "#64748b", fontSize: 12 }}
+                      tickFormatter={(value) =>
+                        `€${(value / 1000).toFixed(0)}k`
+                      }
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: "#fff",
+                        border: "1px solid #e2e8f0",
+                        borderRadius: "8px",
+                        boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
+                      }}
+                      formatter={(value) => [
+                        `€${Number(value).toLocaleString()}`,
+                        t("reports.profit"),
+                      ]}
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="profit"
+                      stroke="#10b981"
+                      strokeWidth={2}
+                      fill="url(#profitGradient)"
+                    />
+                  </AreaChart>
+                )}
               </div>
             </CardContent>
           </Card>

@@ -43,8 +43,9 @@
   },
   "dashboard": {
     "title": "Dashboard",
-    "totalRevenue": "Gesamtumsatz",
-    "outstanding": "Ausstehend",
+    "totalIncome": "Gesamteinnahmen",
+    "expenses": "Ausgaben",
+    "outstandingAmount": "Ausstehender Betrag",
     "activeClients": "Aktive Kunden",
     "profitMargin": "Gewinnmarge",
     "revenueVsExpenses": "Einnahmen vs. Ausgaben",

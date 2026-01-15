@@ -37,6 +37,7 @@ import { plansApi } from "@/lib/plans-api";
 import { subscriptionApi } from "@/lib/subscription-api";
 import { settingsApi } from "@/lib/settings-api";
 import type { SettingsData as ApiSettingsData } from "@/lib/settings-api";
+import { dashboardApi } from "@/lib/dashboard-api";
 import { paymentMethodApi } from "@/lib/payment-method-api";
 import { bankConnectionsApi } from "@/lib/bank-connections-api";
 
@@ -52,6 +53,7 @@ import type {
   Subscription,
   PaymentMethod,
   DashboardStats,
+  Settings,
   RevenueExpenseData,
   CategoryData,
   ProfitLossData,
@@ -76,6 +78,7 @@ import {
   transformBankConnectionData,
   transformSyncedTransactionData,
   transformSettingsData,
+  transformDashboardStatsData,
 } from "./api-transformer";
 
 // Simulate network delay
@@ -347,8 +350,8 @@ export async function deleteTransaction(id: string | number): Promise<boolean> {
 // ============================================
 
 export async function fetchDashboardStats(): Promise<DashboardStats> {
-  await delay();
-  return dashboardStats;
+  const response = await dashboardApi.getDashboardStats();
+  return transformDashboardStatsData(response.data);
 }
 
 export async function fetchRevenueExpenseData(): Promise<RevenueExpenseData[]> {
