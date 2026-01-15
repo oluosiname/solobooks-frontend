@@ -14,6 +14,16 @@ export default function DashboardPage() {
     queryFn: api.getDashboardStats,
   });
 
+  const { data: revenueData } = useQuery({
+    queryKey: ["revenue-expense-data"],
+    queryFn: api.getRevenueExpenseData,
+  });
+
+  // Calculate YTD expenses from revenue data
+  const ytdExpenses = revenueData
+    ? revenueData.reduce((total, month) => total + month.expenses, 0)
+    : 0;
+
   const { data: transactions } = useQuery({
     queryKey: ["recent-transactions"],
     queryFn: () => api.getRecentTransactions(15),
@@ -33,12 +43,19 @@ export default function DashboardPage() {
         {/* Stats Grid */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <StatCard
-            title="Total Revenue"
+            title="Total Income (YTD)"
             value={stats ? formatCurrency(stats.totalRevenue) : "€0"}
             change={stats?.revenueChange}
             changeLabel="from last month"
             icon={DollarSign}
             className="stagger-1"
+          />
+          <StatCard
+            title="Expenses (YTD)"
+            value={formatCurrency(ytdExpenses)}
+            changeLabel="from last month"
+            icon={TrendingUp}
+            className="stagger-2"
           />
           <StatCard
             title="Outstanding"
@@ -47,7 +64,7 @@ export default function DashboardPage() {
               stats ? `${stats.overdueInvoices} overdue invoices` : ""
             }
             icon={Clock}
-            className="stagger-2"
+            className="stagger-3"
           />
           <StatCard
             title="Active Clients"
@@ -55,14 +72,6 @@ export default function DashboardPage() {
             change={stats?.newClientsThisMonth}
             changeLabel="new this month"
             icon={Users}
-            className="stagger-3"
-          />
-          <StatCard
-            title="Profit Margin"
-            value={stats ? `${stats.profitMargin}%` : "0%"}
-            change={stats?.profitMarginChange}
-            changeLabel="from last month"
-            icon={TrendingUp}
             className="stagger-4"
           />
         </div>
