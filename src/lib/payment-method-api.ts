@@ -5,7 +5,6 @@
  */
 
 import { BaseApiClient } from "./base-api";
-import type { PaymentMethod } from "@/types";
 
 // ============================================
 // Types

@@ -8,7 +8,7 @@ import { AppShell } from "@/components/layout";
 import { Button, Card, Badge } from "@/components/atoms";
 import { Tabs } from "@/components/molecules";
 import { api } from "@/services/api";
-import { formatCurrency, cn } from "@/lib/utils";
+import { formatCurrency } from "@/lib/utils";
 
 export default function TaxesPage() {
   const t = useTranslations();
