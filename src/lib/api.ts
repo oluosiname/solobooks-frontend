@@ -15,8 +15,16 @@ export const api = {
   getRevenueExpenseData: newApi.fetchRevenueExpenseData,
   getCategoryData: newApi.fetchCategoryData,
   async getRecentTransactions(limit = 5) {
-    const transactions = await newApi.fetchTransactions();
-    return transactions.slice(0, limit);
+    try {
+      const transactions = await newApi.fetchTransactions();
+      return transactions.data.slice(0, limit);
+    } catch (error) {
+      console.warn(
+        "Failed to fetch transactions from API, falling back to empty array:",
+        error
+      );
+      return [];
+    }
   },
 
   // Clients
