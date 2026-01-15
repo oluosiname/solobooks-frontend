@@ -45,6 +45,13 @@ export interface UpdateProfileRequest {
     business_name?: string;
     phone_number?: string;
     tax_number?: string;
+    address?: {
+      street_address?: string;
+      city?: string;
+      state?: string;
+      postal_code?: string;
+      country?: string;
+    };
   };
 }
 

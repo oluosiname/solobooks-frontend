@@ -6,23 +6,31 @@ import { styles, buttonStyles } from "@/lib/styles";
 import { Toggle } from "@/components/atoms";
 import { api } from "@/services/api";
 import { showToast } from "@/lib/toast";
-import type { SettingsData } from "@/lib/settings-api";
+import type { Settings } from "@/types";
+import type { SettingsData as ApiSettingsData } from "@/lib/settings-api";
 
 interface NotificationSettingsProps {
   notifications: {
-    invoiceSent: boolean;
-    invoicePaid: boolean;
+    invoiceCreated: boolean;
+    paymentReceived: boolean;
     invoiceOverdue: boolean;
+    monthlySummary: boolean;
     newClient: boolean;
-    vatDue: boolean;
     vatSubmitted: boolean;
     taxYearEnd: boolean;
-    largeExpense: boolean;
-    dailySummary: boolean;
-    weeklyReport: boolean;
   };
-  onNotificationsChange: (notifications: any) => void;
-  unifiedSettings?: SettingsData;
+  onNotificationsChange: (
+    notifications: Partial<{
+      invoiceCreated: boolean;
+      paymentReceived: boolean;
+      invoiceOverdue: boolean;
+      monthlySummary: boolean;
+      newClient: boolean;
+      vatSubmitted: boolean;
+      taxYearEnd: boolean;
+    }>
+  ) => void;
+  unifiedSettings?: Settings;
 }
 
 export function NotificationSettings({
@@ -34,7 +42,7 @@ export function NotificationSettings({
   const queryClient = useQueryClient();
 
   const updateNotificationsMutation = useMutation({
-    mutationFn: (data: Partial<SettingsData>) => api.updateSettings(data),
+    mutationFn: (data: Partial<ApiSettingsData>) => api.updateSettings(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["unifiedSettings"] });
       showToast.success("Notification preferences saved successfully");
@@ -48,10 +56,10 @@ export function NotificationSettings({
     if (unifiedSettings) {
       updateNotificationsMutation.mutate({
         notification_preferences: {
-          invoice_created: notifications.invoiceSent,
-          payment_received: notifications.invoicePaid,
+          invoice_created: notifications.invoiceCreated,
+          payment_received: notifications.paymentReceived,
           invoice_overdue: notifications.invoiceOverdue,
-          monthly_summary: notifications.vatDue,
+          monthly_summary: notifications.monthlySummary,
         },
       });
     }
@@ -75,11 +83,11 @@ export function NotificationSettings({
               </p>
             </div>
             <Toggle
-              enabled={notifications.invoiceSent}
+              enabled={notifications.invoiceCreated}
               onChange={() =>
                 onNotificationsChange({
                   ...notifications,
-                  invoiceSent: !notifications.invoiceSent,
+                  invoiceCreated: !notifications.invoiceCreated,
                 })
               }
             />
@@ -94,11 +102,11 @@ export function NotificationSettings({
               </p>
             </div>
             <Toggle
-              enabled={notifications.invoicePaid}
+              enabled={notifications.paymentReceived}
               onChange={() =>
                 onNotificationsChange({
                   ...notifications,
-                  invoicePaid: !notifications.invoicePaid,
+                  paymentReceived: !notifications.paymentReceived,
                 })
               }
             />
@@ -159,11 +167,11 @@ export function NotificationSettings({
                 </p>
               </div>
               <Toggle
-                enabled={notifications.vatDue}
+                enabled={notifications.monthlySummary}
                 onChange={() =>
                   onNotificationsChange({
                     ...notifications,
-                    vatDue: !notifications.vatDue,
+                    monthlySummary: !notifications.monthlySummary,
                   })
                 }
               />
@@ -171,7 +179,9 @@ export function NotificationSettings({
             <div className="flex items-center justify-between">
               <div>
                 <p className="font-medium text-slate-900">
-                  {t("settings.notifications.vatReminders.declarationSubmitted")}
+                  {t(
+                    "settings.notifications.vatReminders.declarationSubmitted"
+                  )}
                 </p>
                 <p className="text-sm text-slate-500">
                   Confirm when VAT declaration is successfully submitted
@@ -209,72 +219,6 @@ export function NotificationSettings({
           </div>
         </div>
 
-        {/* Transaction Alerts */}
-        <div className="mt-8 border-t border-slate-200 pt-8">
-          <h3 className="text-lg font-semibold text-slate-900">
-            {t("settings.notifications.transactionAlerts.title")}
-          </h3>
-          <div className="mt-6 space-y-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-medium text-slate-900">
-                  {t("settings.notifications.transactionAlerts.largeExpense")}
-                </p>
-                <p className="text-sm text-slate-500">
-                  Get notified for expenses over €1,000
-                </p>
-              </div>
-              <Toggle
-                enabled={notifications.largeExpense}
-                onChange={() =>
-                  onNotificationsChange({
-                    ...notifications,
-                    largeExpense: !notifications.largeExpense,
-                  })
-                }
-              />
-            </div>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-medium text-slate-900">
-                  {t("settings.notifications.transactionAlerts.dailySummary")}
-                </p>
-                <p className="text-sm text-slate-500">
-                  Receive a daily summary of all transactions
-                </p>
-              </div>
-              <Toggle
-                enabled={notifications.dailySummary}
-                onChange={() =>
-                  onNotificationsChange({
-                    ...notifications,
-                    dailySummary: !notifications.dailySummary,
-                  })
-                }
-              />
-            </div>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-medium text-slate-900">
-                  {t("settings.notifications.transactionAlerts.weeklySummary")}
-                </p>
-                <p className="text-sm text-slate-500">
-                  Receive a weekly summary of income and expenses
-                </p>
-              </div>
-              <Toggle
-                enabled={notifications.weeklyReport}
-                onChange={() =>
-                  onNotificationsChange({
-                    ...notifications,
-                    weeklyReport: !notifications.weeklyReport,
-                  })
-                }
-              />
-            </div>
-          </div>
-        </div>
-
         <div className="mt-6 flex justify-end border-t border-slate-100 pt-6">
           <button
             className={buttonStyles("primary")}
@@ -282,7 +226,9 @@ export function NotificationSettings({
             disabled={updateNotificationsMutation.isPending}
           >
             <Check className="h-4 w-4" />
-            {updateNotificationsMutation.isPending ? "Saving..." : t("settings.notifications.savePreferences")}
+            {updateNotificationsMutation.isPending
+              ? "Saving..."
+              : t("settings.notifications.savePreferences")}
           </button>
         </div>
       </div>

@@ -5,7 +5,6 @@
  */
 
 import { BaseApiClient } from "./base-api";
-import type { BankConnection } from "@/types";
 
 // ============================================
 // Types
@@ -66,8 +65,12 @@ export class BankConnectionsApiClient extends BaseApiClient {
    * Toggle bank connection sync
    * PATCH /api/v1/bank_connections/{id}/toggle
    */
-  async toggleBankConnection(id: string | number): Promise<BankConnectionResponse> {
-    return this.patch<BankConnectionResponse>(`/api/v1/bank_connections/${id}/toggle`);
+  async toggleBankConnection(
+    id: string | number
+  ): Promise<BankConnectionResponse> {
+    return this.patch<BankConnectionResponse>(
+      `/api/v1/bank_connections/${id}/toggle`
+    );
   }
 
   /**

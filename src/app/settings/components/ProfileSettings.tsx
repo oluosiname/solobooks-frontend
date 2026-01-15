@@ -3,11 +3,11 @@ import { useTranslations } from "next-intl";
 import { Save, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { styles, buttonStyles } from "@/lib/styles";
-import type { User } from "@/types";
+import type { Profile } from "@/types";
 
 interface ProfileSettingsProps {
-  profile?: User;
-  onSave: (data: Partial<User>) => void;
+  profile?: Profile;
+  onSave: (data: Partial<Profile>) => void;
   isSaving: boolean;
 }
 
@@ -19,9 +19,16 @@ export function ProfileSettings({
   const t = useTranslations();
   const [formData, setFormData] = useState({
     businessName: profile?.businessName || "",
-    fullName: profile?.name || "",
+    fullName: profile?.fullName || "",
     phoneNumber: profile?.phoneNumber || "",
-    taxNumber: profile?.taxId || "",
+    taxNumber: profile?.taxNumber || "",
+    address: {
+      streetAddress: profile?.address?.streetAddress || "",
+      city: profile?.address?.city || "",
+      state: profile?.address?.state || "",
+      postalCode: profile?.address?.postalCode || "",
+      country: profile?.address?.country || "",
+    },
   });
 
   // Update form when profile loads
@@ -29,21 +36,34 @@ export function ProfileSettings({
     if (profile) {
       setFormData({
         businessName: profile.businessName || "",
-        fullName: profile.name || "",
+        fullName: profile.fullName || "",
         phoneNumber: profile.phoneNumber || "",
-        taxNumber: profile.taxId || "",
+        taxNumber: profile.taxNumber || "",
+        address: {
+          streetAddress: profile.address?.streetAddress || "",
+          city: profile.address?.city || "",
+          state: profile.address?.state || "",
+          postalCode: profile.address?.postalCode || "",
+          country: profile.address?.country || "",
+        },
       });
     }
   }, [profile]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Transform camelCase field names to User type field names
     onSave({
-      name: formData.fullName,
+      fullName: formData.fullName,
       businessName: formData.businessName,
       phoneNumber: formData.phoneNumber,
-      taxId: formData.taxNumber,
+      taxNumber: formData.taxNumber,
+      address: {
+        streetAddress: formData.address.streetAddress,
+        city: formData.address.city,
+        state: formData.address.state,
+        postalCode: formData.address.postalCode,
+        country: formData.address.country,
+      },
     });
   };
 
@@ -110,6 +130,96 @@ export function ProfileSettings({
               />
             </div>
           </div>
+
+          {/* Address Section */}
+          <div className="mt-8 border-t border-slate-200 pt-8">
+            <h3 className="text-lg font-semibold text-slate-900 mb-6">
+              {t("settings.profile.address")}
+            </h3>
+            <div className="grid gap-6 md:grid-cols-2">
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-slate-700">
+                  {t("clients.form.streetAddress")}
+                </label>
+                <input
+                  type="text"
+                  className={cn(styles.input, "mt-1.5")}
+                  value={formData.address.streetAddress}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      address: { ...formData.address, streetAddress: e.target.value },
+                    })
+                  }
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700">
+                  {t("clients.form.city")}
+                </label>
+                <input
+                  type="text"
+                  className={cn(styles.input, "mt-1.5")}
+                  value={formData.address.city}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      address: { ...formData.address, city: e.target.value },
+                    })
+                  }
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700">
+                  {t("clients.form.state")}
+                </label>
+                <input
+                  type="text"
+                  className={cn(styles.input, "mt-1.5")}
+                  value={formData.address.state}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      address: { ...formData.address, state: e.target.value },
+                    })
+                  }
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700">
+                  {t("clients.form.postalCode")}
+                </label>
+                <input
+                  type="text"
+                  className={cn(styles.input, "mt-1.5")}
+                  value={formData.address.postalCode}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      address: { ...formData.address, postalCode: e.target.value },
+                    })
+                  }
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700">
+                  {t("clients.form.country")}
+                </label>
+                <input
+                  type="text"
+                  className={cn(styles.input, "mt-1.5")}
+                  value={formData.address.country}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      address: { ...formData.address, country: e.target.value },
+                    })
+                  }
+                />
+              </div>
+            </div>
+          </div>
+
           <div className="mt-6 flex justify-end border-t border-slate-100 pt-6">
             <button
               type="submit"

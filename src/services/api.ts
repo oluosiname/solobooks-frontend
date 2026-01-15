@@ -36,12 +36,12 @@ import type { TransactionFilters as ApiTransactionFilters } from "@/lib/transact
 import { plansApi } from "@/lib/plans-api";
 import { subscriptionApi } from "@/lib/subscription-api";
 import { settingsApi } from "@/lib/settings-api";
-import type { SettingsData } from "@/lib/settings-api";
+import type { SettingsData as ApiSettingsData } from "@/lib/settings-api";
 import { paymentMethodApi } from "@/lib/payment-method-api";
 import { bankConnectionsApi } from "@/lib/bank-connections-api";
 
 import type {
-  User,
+  Profile,
   Client,
   Invoice,
   Transaction,
@@ -55,6 +55,7 @@ import type {
   RevenueExpenseData,
   CategoryData,
   ProfitLossData,
+  Settings,
   InvoiceSettings,
   InvoiceSettingsInput,
   Currency,
@@ -74,6 +75,7 @@ import {
   transformPaymentMethodData,
   transformBankConnectionData,
   transformSyncedTransactionData,
+  transformSettingsData,
 } from "./api-transformer";
 
 // Simulate network delay
@@ -84,18 +86,14 @@ const delay = (ms: number = 300) =>
 // Profile API
 // ============================================
 
-export async function fetchProfile(): Promise<User> {
+export async function fetchProfile(): Promise<Profile> {
   const response = await profileApi.getProfile();
   return transformProfileData(response.data);
 }
 
-export async function updateProfile(data: Partial<User>): Promise<User> {
-  const profile = humps.decamelizeKeys({
-    fullName: data.name,
-    businessName: data.businessName,
-    phoneNumber: data.phoneNumber,
-    taxNumber: data.taxId,
-  });
+export async function updateProfile(data: Partial<Profile>): Promise<Profile> {
+  const profile: UpdateProfileRequest["profile"] = humps.decamelizeKeys(data);
+
   const requestObject = { profile } as UpdateProfileRequest;
 
   const response = await profileApi.updateProfile(requestObject);
@@ -272,7 +270,9 @@ export async function fetchUncheckedTransactions(): Promise<Transaction[]> {
  * Discard synced transaction
  * PATCH /api/v1/synced_transactions/{id}/discard
  */
-export async function discardSyncedTransaction(id: string | number): Promise<{ message: string }> {
+export async function discardSyncedTransaction(
+  id: string | number
+): Promise<{ message: string }> {
   return await transactionsApi.discardSyncedTransaction(id);
 }
 
@@ -521,14 +521,16 @@ export async function updateInvoiceSettings(
 // Settings API
 // ============================================
 
-export async function fetchSettings(): Promise<SettingsData> {
+export async function fetchSettings(): Promise<Settings> {
   const response = await settingsApi.getSettings();
-  return response.data;
+  return transformSettingsData(response.data);
 }
 
-export async function updateSettings(data: Partial<SettingsData>): Promise<SettingsData> {
+export async function updateSettings(
+  data: Partial<ApiSettingsData>
+): Promise<Settings> {
   const response = await settingsApi.updateSettings(data);
-  return response.data;
+  return transformSettingsData(response.data);
 }
 
 // ============================================

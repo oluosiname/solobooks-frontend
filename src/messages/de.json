@@ -145,7 +145,7 @@
       "taxNumber": "Steuernummer",
       "vatId": "USt-IdNr.",
       "address": "Adresse",
-      "street": "Straße",
+      "streetAddress": "Straße",
       "city": "Stadt",
       "state": "Bundesland",
       "postalCode": "PLZ",
@@ -456,12 +456,7 @@
         "declarationSubmitted": "Voranmeldung eingereicht",
         "taxYearEnd": "Steuerjahresende-Erinnerung"
       },
-      "transactionAlerts": {
-        "title": "Transaktions-Benachrichtigungen",
-        "largeExpense": "Große Ausgabe-Warnung",
-        "dailySummary": "Tägliche Transaktionsübersicht",
-        "weeklySummary": "Wöchentliche Transaktionsübersicht"
-      },
+
       "savePreferences": "Einstellungen speichern"
     },
     "security": {

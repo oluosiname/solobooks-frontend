@@ -1,17 +1,19 @@
-import type { User } from "@/types";
+import type { Profile } from "@/types";
 
-export const mockUser: User = {
+export const mockUser: Profile = {
   id: "user-1",
-  name: "Niklas Braun",
-  email: "niklas@braunsons.com",
+  fullName: "Niklas Braun",
   businessName: "Braun and Sons",
   phoneNumber: "+49 30 12345678",
-  address: "Hauptstraße 123, 10115 Berlin, Germany",
-  taxId: "DE123456789",
-  vatNumber: "DE123456789",
-  language: "en",
-  currency: "EUR",
+  address: {
+    streetAddress: "Hauptstraße 123",
+    city: "Berlin",
+    state: "Berlin",
+    postalCode: "10115",
+    country: "Germany",
+  },
+  taxNumber: "DE123456789",
   createdAt: "2024-01-15T10:30:00Z",
 };
 
-export const users: User[] = [mockUser];
+export const users: Profile[] = [mockUser];
