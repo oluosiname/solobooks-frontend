@@ -64,6 +64,7 @@ describe('AuthContext', () => {
 
     it('should load token from localStorage on mount', async () => {
       const mockToken = 'stored-token';
+      const mockRefreshToken = 'stored-refresh-token';
       const mockUser = {
         id: 'user-123',
         email: 'test@example.com',
@@ -73,6 +74,7 @@ describe('AuthContext', () => {
       };
 
       localStorage.setItem('solobooks_auth_token', mockToken);
+      localStorage.setItem('solobooks_refresh_token', mockRefreshToken);
       localStorage.setItem('solobooks_user', JSON.stringify(mockUser));
 
       const wrapper = ({ children }: { children: React.ReactNode }) => (
@@ -101,7 +103,12 @@ describe('AuthContext', () => {
       };
 
       (authApiModule.authApi.login as any).mockResolvedValueOnce({
-        data: { token: mockToken },
+        data: {
+          access_token: mockToken,
+          refresh_token: 'refresh-token-123',
+          expires_in: 900,
+          token_type: 'Bearer'
+        },
       });
 
       (authApiModule.authApi.me as any).mockResolvedValueOnce({
@@ -172,7 +179,12 @@ describe('AuthContext', () => {
       };
 
       (authApiModule.authApi.register as any).mockResolvedValueOnce({
-        data: { token: mockToken },
+        data: {
+          access_token: mockToken,
+          refresh_token: 'refresh-token-456',
+          expires_in: 900,
+          token_type: 'Bearer'
+        },
       });
 
       (authApiModule.authApi.me as any).mockResolvedValueOnce({
@@ -259,12 +271,14 @@ describe('AuthContext', () => {
       expect(result.current.user).toBeNull();
       expect(result.current.isAuthenticated).toBe(false);
       expect(localStorage.getItem('solobooks_auth_token')).toBeNull();
+      expect(localStorage.getItem('solobooks_refresh_token')).toBeNull();
       expect(localStorage.getItem('solobooks_user')).toBeNull();
       expect(mockPush).toHaveBeenCalledWith('/login');
     });
 
     it('should clear local state even if API call fails', async () => {
       localStorage.setItem('solobooks_auth_token', 'test-token');
+      localStorage.setItem('solobooks_refresh_token', 'test-refresh-token');
 
       (authApiModule.authApi.logout as any).mockRejectedValueOnce(
         new Error('Network error')
@@ -282,6 +296,7 @@ describe('AuthContext', () => {
 
       expect(result.current.isAuthenticated).toBe(false);
       expect(localStorage.getItem('solobooks_auth_token')).toBeNull();
+      expect(localStorage.getItem('solobooks_refresh_token')).toBeNull();
     });
   });
 
