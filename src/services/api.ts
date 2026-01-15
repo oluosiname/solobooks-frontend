@@ -31,6 +31,7 @@ import { profileApi } from "@/lib/profile-api";
 import type { UpdateProfileRequest } from "@/lib/profile-api";
 import { transactionsApi } from "@/lib/transactions-api";
 import type { TransactionFilters as ApiTransactionFilters } from "@/lib/transactions-api";
+import { plansApi } from "@/lib/plans-api";
 
 import type {
   User,
@@ -52,6 +53,7 @@ import type {
   Currency,
   VatStatus,
   VatStatusInput,
+  Plan,
 } from "@/types";
 
 import {
@@ -408,6 +410,11 @@ export async function submitVatReport(id: string): Promise<VatReport | null> {
 // Subscription API
 // ============================================
 
+export async function fetchPlans(): Promise<Plan[]> {
+  const response = await plansApi.listPlans();
+  return response.data;
+}
+
 export async function fetchSubscription(): Promise<Subscription> {
   await delay();
   return subscription;
@@ -594,6 +601,7 @@ export const api = {
   submitVatReport,
 
   // Subscription
+  fetchPlans,
   fetchSubscription,
   fetchPaymentMethod,
   updateSubscription,
