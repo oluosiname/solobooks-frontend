@@ -24,14 +24,14 @@ export function RecentTransactions({ transactions }: RecentTransactionsProps) {
             <div className="min-w-0 flex-1">
               <p className="truncate font-medium text-slate-900">{transaction.description}</p>
               <p className="text-sm text-slate-500">
-                {transaction.category} • {formatDate(transaction.date)}
+                {transaction.category?.translatedName || 'Uncategorized'} • {formatDate(transaction.date)}
               </p>
             </div>
             <div className="ml-4 text-right">
-              <p className={`font-semibold ${transaction.type === 'income' ? 'text-emerald-600' : 'text-slate-700'}`}>
-                {transaction.type === 'income' ? '+' : ''}{formatCurrency(transaction.amount)}
+              <p className={`font-semibold ${transaction.transactionType === 'Income' ? 'text-emerald-600' : 'text-slate-700'}`}>
+                {transaction.transactionType === 'Income' ? '+' : ''}{formatCurrency(transaction.amount)}
               </p>
-              <p className="text-xs text-slate-500 capitalize">{transaction.type}</p>
+              <p className="text-xs text-slate-500 capitalize">{transaction.transactionType.toLowerCase()}</p>
             </div>
           </div>
         ))}

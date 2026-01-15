@@ -18,7 +18,9 @@ import {
 
 import { clientsApi } from "@/lib/clients-api";
 import type { CreateClientRequest } from "@/lib/clients-api";
+import * as humps from "humps";
 import { invoiceSettingsApi } from "@/lib/invoice-settings-api";
+import type { CreateInvoiceSettingRequest, UpdateInvoiceSettingRequest } from "@/lib/invoice-settings-api";
 import { vatStatusApi } from "@/lib/vat-status-api";
 import type {
   CreateVatStatusRequest,
@@ -67,7 +69,6 @@ import {
   transformPaymentMethodData,
   transformBankConnectionData,
 } from "./api-transformer";
-import humps from "humps";
 
 // Simulate network delay
 const delay = (ms: number = 300) =>
@@ -250,6 +251,16 @@ export async function fetchTransaction(
   } catch {
     return null;
   }
+}
+
+/**
+ * Fetch unchecked transactions (simulated bank sync)
+ * GET /api/v1/transactions/unchecked
+ */
+export async function fetchUncheckedTransactions(): Promise<Transaction[]> {
+  await delay();
+  const { uncheckedTransactions } = await import("@/data/transactions");
+  return uncheckedTransactions;
 }
 
 /**
@@ -465,20 +476,7 @@ export async function createInvoiceSettings(
   data: InvoiceSettingsInput
 ): Promise<InvoiceSettings> {
   const response = await invoiceSettingsApi.createInvoiceSettings({
-    invoice_setting: {
-      prefix: data.prefix,
-      currency_id: data.currencyId,
-      language: data.language,
-      account_holder: data.accountHolder,
-      account_number: data.accountNumber,
-      bank_name: data.bankName,
-      iban: data.iban,
-      bic: data.bic,
-      swift: data.swift,
-      sort_code: data.sortCode,
-      routing_number: data.routingNumber,
-      default_note: data.defaultNote,
-    },
+    invoice_setting: humps.decamelizeKeys(data) as CreateInvoiceSettingRequest['invoice_setting'],
   });
 
   if (!response.data) {
@@ -492,20 +490,7 @@ export async function updateInvoiceSettings(
   data: InvoiceSettingsInput
 ): Promise<InvoiceSettings> {
   const response = await invoiceSettingsApi.updateInvoiceSettings({
-    invoice_setting: {
-      prefix: data.prefix,
-      currency_id: data.currencyId,
-      language: data.language,
-      account_holder: data.accountHolder,
-      account_number: data.accountNumber,
-      bank_name: data.bankName,
-      iban: data.iban,
-      bic: data.bic,
-      swift: data.swift,
-      sort_code: data.sortCode,
-      routing_number: data.routingNumber,
-      default_note: data.defaultNote,
-    },
+    invoice_setting: humps.decamelizeKeys(data) as UpdateInvoiceSettingRequest['invoice_setting'],
   });
 
   if (!response.data) {
@@ -588,6 +573,7 @@ export const api = {
   // Transactions
   fetchTransactions,
   fetchTransaction,
+  fetchUncheckedTransactions,
   createTransaction,
   updateTransaction,
   deleteTransaction,
