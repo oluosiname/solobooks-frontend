@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import {
@@ -51,30 +51,6 @@ export default function SettingsPage() {
     { id: "privacy", label: t("settings.tabs.privacy"), icon: Lock },
   ];
 
-  // Initialize state from unified settings when loaded
-  const [notifications, setNotifications] = useState({
-    invoiceCreated: true,
-    paymentReceived: true,
-    invoiceOverdue: true,
-    monthlySummary: true,
-    newClient: false,
-    vatSubmitted: false,
-    taxYearEnd: false,
-  });
-
-  const [privacy, setPrivacy] = useState({
-    essential: true,
-    analytics: true,
-    marketing: false,
-    thirdParty: true,
-    clientConsentTrackingEnabled: true,
-    clientDeletionRequestsEnabled: true,
-    emailBreach: true,
-    smsBreach: true,
-    dataRetentionYears: 10,
-    dataProcessingLocation: "eu_only" as "eu_only" | "global",
-  });
-
   // 2FA state
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
 
@@ -82,6 +58,69 @@ export default function SettingsPage() {
     queryKey: ["user"],
     queryFn: newApi.fetchProfile,
   });
+
+  // Fetch unified settings (for app settings, notifications, privacy)
+  const { data: unifiedSettings } = useQuery({
+    queryKey: ["unifiedSettings"],
+    queryFn: newApi.fetchSettings,
+  });
+
+  // Compute form data from API responses using useMemo
+  const notifications = useMemo(() => {
+    if (unifiedSettings) {
+      return {
+        invoiceCreated: unifiedSettings.notificationPreferences.invoiceCreated,
+        paymentReceived: unifiedSettings.notificationPreferences.paymentReceived,
+        invoiceOverdue: unifiedSettings.notificationPreferences.invoiceOverdue,
+        monthlySummary: unifiedSettings.notificationPreferences.monthlySummary,
+        newClient: false, // Not in unified settings
+        vatSubmitted: false, // Not in unified settings
+        taxYearEnd: false, // Not in unified settings
+      };
+    }
+    return {
+      invoiceCreated: true,
+      paymentReceived: true,
+      invoiceOverdue: true,
+      monthlySummary: true,
+      newClient: false,
+      vatSubmitted: false,
+      taxYearEnd: false,
+    };
+  }, [unifiedSettings]);
+
+  const privacy = useMemo(() => {
+    if (unifiedSettings) {
+      return {
+        essential: true, // Not in unified settings
+        analytics: unifiedSettings.privacyPreferences.analytics,
+        marketing: unifiedSettings.privacyPreferences.marketing,
+        thirdParty: unifiedSettings.privacyPreferences.thirdParty,
+        clientConsentTrackingEnabled:
+          unifiedSettings.privacyPreferences.clientConsentTrackingEnabled,
+        clientDeletionRequestsEnabled:
+          unifiedSettings.privacyPreferences.clientDeletionRequestsEnabled,
+        emailBreach: false, // Not in unified settings
+        smsBreach: false, // Not in unified settings
+        dataRetentionYears:
+          unifiedSettings.privacyPreferences.dataRetentionYears ?? 10,
+        dataProcessingLocation: (unifiedSettings.privacyPreferences
+          .dataProcessingLocation === "eu_only" ? "eu_only" : "global") as "eu_only" | "global",
+      };
+    }
+    return {
+      essential: true,
+      analytics: true,
+      marketing: false,
+      thirdParty: true,
+      clientConsentTrackingEnabled: true,
+      clientDeletionRequestsEnabled: true,
+      emailBreach: true,
+      smsBreach: true,
+      dataRetentionYears: 10,
+      dataProcessingLocation: "eu_only" as "eu_only" | "global",
+    };
+  }, [unifiedSettings]);
 
   // Mutation for updating profile
   const updateProfileMutation = useMutation({
@@ -95,12 +134,6 @@ export default function SettingsPage() {
     },
   });
 
-  // Fetch unified settings (for app settings, notifications, privacy)
-  const { data: unifiedSettings } = useQuery({
-    queryKey: ["unifiedSettings"],
-    queryFn: newApi.fetchSettings,
-  });
-
   // Fetch invoice settings and currencies (separate from unified settings)
   const { data: invoiceSettings, isLoading: isLoadingSettings } = useQuery({
     queryKey: ["invoiceSettings"],
@@ -112,38 +145,6 @@ export default function SettingsPage() {
     queryFn: newApi.fetchCurrencies,
   });
 
-  // Update state when unified settings are loaded
-  useEffect(() => {
-    if (unifiedSettings) {
-      setNotifications({
-        invoiceCreated: unifiedSettings.notificationPreferences.invoiceCreated,
-        paymentReceived:
-          unifiedSettings.notificationPreferences.paymentReceived,
-        invoiceOverdue: unifiedSettings.notificationPreferences.invoiceOverdue,
-        monthlySummary: unifiedSettings.notificationPreferences.monthlySummary,
-        newClient: false, // Not in unified settings
-        vatSubmitted: false, // Not in unified settings
-        taxYearEnd: false, // Not in unified settings
-      });
-
-      setPrivacy({
-        essential: true, // Not in unified settings
-        analytics: unifiedSettings.privacyPreferences.analytics,
-        marketing: unifiedSettings.privacyPreferences.marketing,
-        thirdParty: unifiedSettings.privacyPreferences.thirdParty,
-        clientConsentTrackingEnabled:
-          unifiedSettings.privacyPreferences.clientConsentTrackingEnabled,
-        clientDeletionRequestsEnabled:
-          unifiedSettings.privacyPreferences.clientDeletionRequestsEnabled,
-        emailBreach: false, // Not in unified settings
-        smsBreach: false, // Not in unified settings
-        dataRetentionYears:
-          unifiedSettings.privacyPreferences.dataRetentionYears,
-        dataProcessingLocation: unifiedSettings.privacyPreferences
-          .dataProcessingLocation as "eu_only" | "global",
-      });
-    }
-  }, [unifiedSettings]);
 
   // Invoice settings form state
   const [invoiceFormData, setInvoiceFormData] = useState<InvoiceSettingsInput>({
@@ -193,7 +194,7 @@ export default function SettingsPage() {
       queryClient.invalidateQueries({ queryKey: ["invoiceSettings"] });
       showToast.success("Invoice settings saved successfully");
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       showToast.apiError(error, "Failed to save invoice settings");
     },
   });
@@ -259,9 +260,6 @@ export default function SettingsPage() {
           {activeTab === "notifications" && (
             <NotificationSettings
               notifications={notifications}
-              onNotificationsChange={(updates) =>
-                setNotifications((prev) => ({ ...prev, ...updates }))
-              }
               unifiedSettings={unifiedSettings}
             />
           )}
@@ -275,9 +273,7 @@ export default function SettingsPage() {
           {activeTab === "privacy" && (
             <PrivacySettings
               privacy={privacy}
-              onPrivacyChange={(updates) =>
-                setPrivacy((prev) => ({ ...prev, ...updates }))
-              }
+              onPrivacyChange={() => {}} // Read-only for now
               unifiedSettings={unifiedSettings}
             />
           )}
