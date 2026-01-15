@@ -6,7 +6,6 @@ import { useTranslations } from "next-intl";
 import { Check } from "lucide-react";
 import { AppShell } from "@/components/layout";
 import { showToast } from "@/lib/toast";
-import type { AppError } from "@/lib/base-api";
 import {
   Button,
   Card,
@@ -80,7 +79,7 @@ export default function NewClientPage() {
 
       // Redirect to clients list
       router.push("/clients");
-    } catch (error: AppError) {
+    } catch (error: any) {
       console.error("Failed to create client:", error);
 
       // Handle API errors
