@@ -178,6 +178,11 @@
     "uncheckedAlert": "You have {count} unchecked transactions synced from your bank account(s)",
     "viewPending": "View Pending",
     "noTransactions": "No transactions found",
+    "deleteTitle": "Delete Transaction",
+    "deleteConfirm": "Are you sure you want to delete \"{description}\"? This action cannot be undone.",
+    "deleteSuccess": "Transaction deleted successfully",
+    "deleteError": "Failed to delete transaction",
+    "deleting": "Deleting...",
     "form": {
       "transactionInfo": "Transaction Information",
       "type": "Type",
