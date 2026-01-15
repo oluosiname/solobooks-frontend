@@ -15,6 +15,7 @@ interface AuthUser {
 interface AuthContextType {
   user: AuthUser | null;
   token: string | null;
+  refreshToken: string | null;
   isLoading: boolean;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
@@ -27,28 +28,33 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const TOKEN_KEY = "solobooks_auth_token";
+const REFRESH_TOKEN_KEY = "solobooks_refresh_token";
 const USER_KEY = "solobooks_user";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [token, setToken] = useState<string | null>(null);
+  const [refreshToken, setRefreshToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
-  // Load user and token from localStorage on mount
+  // Load user and tokens from localStorage on mount
   useEffect(() => {
     const storedToken = localStorage.getItem(TOKEN_KEY);
+    const storedRefreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
     const storedUser = localStorage.getItem(USER_KEY);
 
     if (storedToken && storedUser) {
       try {
         const parsedUser = JSON.parse(storedUser);
         setToken(storedToken);
+        setRefreshToken(storedRefreshToken);
         setUser(parsedUser);
       } catch (error) {
         // Invalid stored data, clear it
         localStorage.removeItem(TOKEN_KEY);
+        localStorage.removeItem(REFRESH_TOKEN_KEY);
         localStorage.removeItem(USER_KEY);
       }
     }
@@ -59,13 +65,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const clearError = () => setError(null);
 
   const handleAuthResponse = async (response: AuthResponse) => {
-    const token = response.data.token;
-    setToken(token);
-    localStorage.setItem(TOKEN_KEY, token);
+    const accessToken = response.data.access_token;
+    const refreshToken = response.data.refresh_token;
 
-    // Fetch user details with the token
+    setToken(accessToken);
+    setRefreshToken(refreshToken);
+    localStorage.setItem(TOKEN_KEY, accessToken);
+    localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
+
+    // Fetch user details with the access token
     try {
-      const userResponse = await authApi.me(token);
+      const userResponse = await authApi.me(accessToken);
       setUser(userResponse.data);
       localStorage.setItem(USER_KEY, JSON.stringify(userResponse.data));
     } catch (error) {
@@ -96,11 +106,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const register = async (
-    email: string,
-    password: string,
-    plan: string
-  ) => {
+  const register = async (email: string, password: string, plan: string) => {
     try {
       setIsLoading(true);
       setError(null);
@@ -141,7 +147,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Clear local state and storage
       setUser(null);
       setToken(null);
+      setRefreshToken(null);
       localStorage.removeItem(TOKEN_KEY);
+      localStorage.removeItem(REFRESH_TOKEN_KEY);
       localStorage.removeItem(USER_KEY);
       setIsLoading(false);
 
@@ -153,6 +161,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const value: AuthContextType = {
     user,
     token,
+    refreshToken,
     isLoading,
     isAuthenticated: !!user && !!token,
     login,

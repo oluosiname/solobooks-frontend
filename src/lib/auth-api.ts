@@ -20,7 +20,10 @@ export interface LoginRequest {
 
 export interface AuthResponse {
   data: {
-    token: string;
+    access_token: string;
+    refresh_token: string;
+    expires_in: number;
+    token_type: string;
   };
 }
 
@@ -143,6 +146,19 @@ class AuthApiClient {
       headers: {
         Authorization: `Bearer ${token}`,
       },
+    });
+  }
+
+  /**
+   * Refresh access token
+   * POST /api/v1/auth/refresh
+   */
+  async refresh(refreshToken: string): Promise<AuthResponse> {
+    return this.request<AuthResponse>('/api/v1/auth/refresh', {
+      method: 'POST',
+      body: JSON.stringify({
+        refresh_token: refreshToken,
+      }),
     });
   }
 

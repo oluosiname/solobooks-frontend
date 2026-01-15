@@ -36,6 +36,64 @@ export class BaseApiClient {
   }
 
   /**
+   * Get refresh token from localStorage
+   */
+  protected getRefreshToken(): string | null {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('solobooks_refresh_token');
+    }
+    return null;
+  }
+
+  /**
+   * Refresh the access token using the refresh token
+   */
+  protected async refreshAccessToken(): Promise<string | null> {
+    const refreshToken = this.getRefreshToken();
+    if (!refreshToken) {
+      return null;
+    }
+
+    try {
+      const response = await fetch(`${this.baseUrl}/api/v1/auth/refresh`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          refresh_token: refreshToken,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Refresh failed');
+      }
+
+      const data = await response.json();
+      const newAccessToken = data.data.access_token;
+      const newRefreshToken = data.data.refresh_token;
+
+      // Update stored tokens
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('solobooks_auth_token', newAccessToken);
+        localStorage.setItem('solobooks_refresh_token', newRefreshToken);
+      }
+
+      return newAccessToken;
+    } catch (error) {
+      console.error('Token refresh failed:', error);
+      // If refresh fails, trigger logout by clearing tokens and reloading
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('solobooks_auth_token');
+        localStorage.removeItem('solobooks_refresh_token');
+        localStorage.removeItem('solobooks_user');
+        window.location.href = '/login';
+      }
+      return null;
+    }
+  }
+
+  /**
    * Make an authenticated HTTP request
    */
   protected async request<T>(
@@ -65,6 +123,36 @@ export class BaseApiClient {
       const data = await response.json();
 
       if (!response.ok) {
+        // If we get a 401 and have a refresh token, try to refresh
+        if (response.status === 401 && this.getRefreshToken()) {
+          const newToken = await this.refreshAccessToken();
+          if (newToken) {
+            // Retry the request with the new token
+            const retryConfig: RequestInit = {
+              ...options,
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${newToken}`,
+                ...options.headers,
+              },
+            };
+
+            const retryResponse = await fetch(url, retryConfig);
+
+            if (retryResponse.status === 204) {
+              return undefined as T;
+            }
+
+            const retryData = await retryResponse.json();
+
+            if (!retryResponse.ok) {
+              throw retryData as ApiError;
+            }
+
+            return retryData;
+          }
+        }
+
         throw data as ApiError;
       }
 

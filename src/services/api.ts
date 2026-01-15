@@ -358,9 +358,7 @@ export async function fetchBankConnection(
   return connections.find((b) => b.id === Number(id)) || null;
 }
 
-export async function syncBankConnection(
-  id: string | number
-): Promise<void> {
+export async function syncBankConnection(id: string | number): Promise<void> {
   await bankConnectionsApi.syncBankConnection(id);
 }
 
