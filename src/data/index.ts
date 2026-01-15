@@ -15,8 +15,6 @@ export {
   profitLossData,
 } from "./dashboard";
 
-// Bank Connections
-export { bankConnections } from "./bank-connections";
 
 // VAT Reports
 export { vatReports } from "./vat-reports";

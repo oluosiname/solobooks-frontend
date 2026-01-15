@@ -114,17 +114,20 @@ export interface PaginatedTransactions {
   meta: PaginationMeta;
 }
 
-export type BankConnectionStatus = "connected" | "disconnected" | "error";
+export type BankConnectionStatus = "active" | "inactive" | "error";
 
 export interface BankConnection {
-  id: string;
+  id: number;
+  status: string;
+  syncEnabled: boolean;
   bankName: string;
-  accountName: string;
   accountNumber: string;
-  balance: number;
-  currency: string;
+  institutionId: string;
   lastSynced: string;
-  status: BankConnectionStatus;
+  expiresAt: string;
+  createdAt: string;
+  updatedAt: string;
+  pendingTransactionsCount: number;
 }
 
 export type VatReportStatus = "draft" | "submitted" | "accepted" | "rejected";

@@ -267,6 +267,7 @@
     "noConnections": "No bank connections found",
     "noConnectionsDescription": "Connect your bank account to automatically sync transactions",
     "currentBalance": "Current Balance",
+    "pendingTransactions": "Pending Transactions",
     "autoSyncBanner": "Automatic transaction sync enabled. Your bank connections will automatically retrieve new transactions daily. All data is encrypted and securely stored.",
     "about": {
       "title": "About Bank Connections",
