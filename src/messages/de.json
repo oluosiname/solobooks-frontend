@@ -178,6 +178,11 @@
     "uncheckedAlert": "Sie haben {count} ungeprüfte Transaktionen von Ihrem Bankkonto synchronisiert",
     "viewPending": "Ausstehende anzeigen",
     "noTransactions": "Keine Transaktionen gefunden",
+    "deleteTitle": "Transaktion löschen",
+    "deleteConfirm": "Sind Sie sicher, dass Sie \"{description}\" löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+    "deleteSuccess": "Transaktion erfolgreich gelöscht",
+    "deleteError": "Fehler beim Löschen der Transaktion",
+    "deleting": "Wird gelöscht...",
     "form": {
       "transactionInfo": "Transaktionsinformationen",
       "type": "Typ",

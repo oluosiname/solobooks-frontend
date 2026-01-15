@@ -42,6 +42,7 @@ export const api = {
     return transactions;
   },
   getUncheckedTransactions: newApi.fetchUncheckedTransactions,
+  deleteTransaction: newApi.deleteTransaction,
 
   // Bank Connections
   getBankConnections: newApi.fetchBankConnections,
