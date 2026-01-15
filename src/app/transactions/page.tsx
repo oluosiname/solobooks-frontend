@@ -60,11 +60,17 @@ export default function TransactionsPage() {
           >
             <AlertCircle className="h-5 w-5" />
             <div className="flex-1">
-              <p className="font-medium text-amber-900">
-                You have <span className="font-semibold">{uncheckedTransactions.length}</span> unchecked transactions synced from your bank account(s)
-              </p>
+              <p
+                className="font-medium text-amber-900"
+                dangerouslySetInnerHTML={{
+                  __html: t("dashboard.uncheckedTransactions.title", { count: uncheckedTransactions.length }).replace(
+                    String(uncheckedTransactions.length),
+                    `<span class="font-semibold">${uncheckedTransactions.length}</span>`
+                  ),
+                }}
+              />
               <p className="text-sm text-amber-700">
-                Review and categorize your synced transactions to keep your books accurate.
+                {t("dashboard.uncheckedTransactions.description")}
               </p>
             </div>
             <Link

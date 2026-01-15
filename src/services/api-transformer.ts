@@ -7,6 +7,7 @@ import type { SubscriptionData } from "@/lib/subscription-api";
 import type { PaymentMethodData } from "@/lib/payment-method-api";
 import type { BankConnectionData } from "@/lib/bank-connections-api";
 import { SettingsData as ApiSettingsData } from "@/lib/settings-api";
+import { DashboardStatsData } from "@/lib/dashboard-api";
 import {
   Client,
   InvoiceSettings,
@@ -18,6 +19,7 @@ import {
   PaymentMethod,
   BankConnection,
   Settings,
+  DashboardStats,
 } from "@/types";
 import humps from "humps";
 
@@ -113,4 +115,8 @@ export function transformSettingsData(data: ApiSettingsData): Settings {
     ...base,
     currency: transformCurrencyData(data.currency),
   };
+}
+
+export function transformDashboardStatsData(data: DashboardStatsData): DashboardStats {
+  return camelize<DashboardStats>(data);
 }

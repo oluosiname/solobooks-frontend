@@ -186,14 +186,16 @@ export interface PaymentMethod {
 }
 
 export interface DashboardStats {
-  totalRevenue: number;
-  revenueChange: number;
-  outstanding: number;
-  overdueInvoices: number;
-  activeClients: number;
+  totalIncomeMtd: number;
+  incomeChangePercent: number;
+  expensesMtd: number;
+  expenseChangePercent: number;
+  outstandingAmount: number;
+  overdueInvoicesCount: number;
+  activeClientsCount: number;
   newClientsThisMonth: number;
+  clientGrowthPercent: number;
   profitMargin: number;
-  profitMarginChange: number;
 }
 
 export interface RevenueExpenseData {

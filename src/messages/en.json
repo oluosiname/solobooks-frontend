@@ -44,8 +44,9 @@
   },
   "dashboard": {
     "title": "Dashboard",
-    "totalRevenue": "Total Revenue",
-    "outstanding": "Outstanding",
+    "totalIncome": "Total Income",
+    "expenses": "Expenses",
+    "outstandingAmount": "Outstanding Amount",
     "activeClients": "Active Clients",
     "profitMargin": "Profit Margin",
     "revenueVsExpenses": "Revenue vs Expenses",

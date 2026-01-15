@@ -4,6 +4,8 @@
  * Handles all authentication-related API calls to the backend
  */
 
+import type { AppError } from "./base-api";
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
 export interface RegisterRequest {
@@ -61,7 +63,7 @@ class AuthApiClient {
       return data;
     } catch (error) {
       // Re-throw API errors
-      if ((error as any)?.error) {
+      if ((error as AppError)?.error) {
         throw error;
       }
 

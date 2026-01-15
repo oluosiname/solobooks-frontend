@@ -17,6 +17,7 @@ import { api } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { api as newApi } from "@/services/api";
 import type { InvoiceSettingsInput, Profile } from "@/types";
+import type { AppError } from "@/lib/base-api";
 import { showToast } from "@/lib/toast";
 import {
   ProfileSettings,
@@ -129,7 +130,7 @@ export default function SettingsPage() {
       queryClient.invalidateQueries({ queryKey: ["user"] });
       showToast.success("Profile updated successfully");
     },
-    onError: (error: any) => {
+    onError: (error: AppError) => {
       showToast.apiError(error, "Failed to update profile");
     },
   });
