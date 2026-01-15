@@ -19,29 +19,23 @@ export default function TransactionsPage() {
   const [searchQuery, setSearchQuery] = useState("");
 
   const { data: transactions, isLoading } = useQuery({
-    queryKey: ["transactions", activeTab],
+    queryKey: ["transactions", activeTab, searchQuery],
     queryFn: () =>
       api.getTransactions(
-        activeTab === "all" ? undefined : (activeTab as TransactionType)
+        activeTab === "all" ? undefined : (activeTab as TransactionType),
+        searchQuery || undefined
       ),
   });
 
-  // const { data: uncheckedTransactions } = useQuery({
-  //   queryKey: ["unchecked-transactions"],
-  //   queryFn: api.getUncheckedTransactions,
-  // });
+  const { data: uncheckedTransactions } = useQuery({
+    queryKey: ["unchecked-transactions"],
+    queryFn: api.getUncheckedTransactions,
+  });
 
-  const uncheckedTransactions: Transaction[] = [];
   console.log({ transactions });
 
-  const filteredTransactions = transactions?.data?.filter(
-    (t: Transaction) =>
-      t.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      t.category.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  const groupedTransactions = filteredTransactions
-    ? groupTransactionsByMonth(filteredTransactions, (t: Transaction) => t.date)
+  const groupedTransactions = transactions?.data
+    ? groupTransactionsByMonth(transactions.data, (t: Transaction) => t.date)
     : {};
 
   console.log({ groupedTransactions });
@@ -55,7 +49,7 @@ export default function TransactionsPage() {
   return (
     <AppShell title={t("transactions.title")}>
       <div className="space-y-6">
-        {/* Unchecked Alert */}
+        {/* Unchecked Transactions Alert */}
         {uncheckedTransactions && uncheckedTransactions.length > 0 && (
           <div
             className={cn(
@@ -66,22 +60,18 @@ export default function TransactionsPage() {
           >
             <AlertCircle className="h-5 w-5" />
             <div className="flex-1">
-              <p
-                dangerouslySetInnerHTML={{
-                  __html: t("transactions.uncheckedAlert", {
-                    count: uncheckedTransactions.length,
-                  }).replace(
-                    String(uncheckedTransactions.length),
-                    `<strong>${uncheckedTransactions.length}</strong>`
-                  ),
-                }}
-              />
+              <p className="font-medium text-amber-900">
+                You have <span className="font-semibold">{uncheckedTransactions.length}</span> unchecked transactions synced from your bank account(s)
+              </p>
+              <p className="text-sm text-amber-700">
+                Review and categorize your synced transactions to keep your books accurate.
+              </p>
             </div>
             <Link
-              href="/transactions?filter=pending"
+              href="/transactions/synced"
               className="rounded-lg border border-amber-300 bg-white px-4 py-2 text-sm font-medium text-amber-700 transition-colors hover:bg-amber-50"
             >
-              {t("transactions.viewPending")}
+              View Pending
             </Link>
           </div>
         )}

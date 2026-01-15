@@ -13,10 +13,12 @@ import type { Transaction } from "@/types";
 
 interface GroupedTransactionsTableProps {
   groupedTransactions: Record<string, Transaction[]>;
+  isPendingView?: boolean;
 }
 
 export function GroupedTransactionsTable({
   groupedTransactions,
+  isPendingView = false,
 }: GroupedTransactionsTableProps) {
   const t = useTranslations();
   const queryClient = useQueryClient();
@@ -28,12 +30,28 @@ export function GroupedTransactionsTable({
     onSuccess: () => {
       showToast.success(t("transactions.deleteSuccess"));
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      queryClient.invalidateQueries({ queryKey: ["unchecked-transactions"] });
       setDeleteDialogOpen(false);
       setTransactionToDelete(null);
     },
     onError: (error) => {
       console.error("Failed to delete transaction:", error);
       showToast.error(t("transactions.deleteError"));
+    },
+  });
+
+  const discardTransactionMutation = useMutation({
+    mutationFn: (id: string | number) => api.discardSyncedTransaction(id),
+    onSuccess: () => {
+      showToast.success(t("transactions.discardSuccess") || "Transaction discarded successfully");
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      queryClient.invalidateQueries({ queryKey: ["unchecked-transactions"] });
+      setDeleteDialogOpen(false);
+      setTransactionToDelete(null);
+    },
+    onError: (error) => {
+      console.error("Failed to discard transaction:", error);
+      showToast.error(t("transactions.discardError") || "Failed to discard transaction");
     },
   });
 
@@ -44,7 +62,11 @@ export function GroupedTransactionsTable({
 
   const handleConfirmDelete = () => {
     if (transactionToDelete) {
-      deleteTransactionMutation.mutate(transactionToDelete.id);
+      if (isPendingView) {
+        discardTransactionMutation.mutate(transactionToDelete.id);
+      } else {
+        deleteTransactionMutation.mutate(transactionToDelete.id);
+      }
     }
   };
 
@@ -137,7 +159,7 @@ export function GroupedTransactionsTable({
                         </button>
                         <button
                           onClick={() => handleDeleteClick(transaction)}
-                          disabled={deleteTransactionMutation.isPending}
+                          disabled={deleteTransactionMutation.isPending || discardTransactionMutation.isPending}
                           className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-red-50 hover:text-red-600 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           <Trash2 className="h-4 w-4" />
@@ -162,12 +184,18 @@ export function GroupedTransactionsTable({
               </div>
               <div className="flex-1">
                 <h3 className="font-semibold text-slate-900">
-                  {t("transactions.deleteTitle")}
+                  {isPendingView
+                    ? (t("transactions.discardTitle") || "Discard Transaction")
+                    : t("transactions.deleteTitle")}
                 </h3>
                 <p className="text-sm text-slate-600">
-                  {t("transactions.deleteConfirm", {
-                    description: transactionToDelete.description,
-                  })}
+                  {isPendingView
+                    ? (t("transactions.discardConfirm", {
+                        description: transactionToDelete.description,
+                      }) || `Are you sure you want to discard "${transactionToDelete.description}"? This action cannot be undone.`)
+                    : t("transactions.deleteConfirm", {
+                        description: transactionToDelete.description,
+                      })}
                 </p>
               </div>
               <button
@@ -188,12 +216,12 @@ export function GroupedTransactionsTable({
               </button>
               <button
                 onClick={handleConfirmDelete}
-                disabled={deleteTransactionMutation.isPending}
+                disabled={deleteTransactionMutation.isPending || discardTransactionMutation.isPending}
                 className="flex-1 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {deleteTransactionMutation.isPending
-                  ? t("common.deleting")
-                  : t("common.delete")}
+                {(deleteTransactionMutation.isPending || discardTransactionMutation.isPending)
+                  ? (isPendingView ? (t("common.discarding") || "Discarding...") : t("common.deleting"))
+                  : (isPendingView ? (t("common.discard") || "Discard") : t("common.delete"))}
               </button>
             </div>
           </div>

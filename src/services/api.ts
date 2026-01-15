@@ -20,7 +20,10 @@ import { clientsApi } from "@/lib/clients-api";
 import type { CreateClientRequest } from "@/lib/clients-api";
 import * as humps from "humps";
 import { invoiceSettingsApi } from "@/lib/invoice-settings-api";
-import type { CreateInvoiceSettingRequest, UpdateInvoiceSettingRequest } from "@/lib/invoice-settings-api";
+import type {
+  CreateInvoiceSettingRequest,
+  UpdateInvoiceSettingRequest,
+} from "@/lib/invoice-settings-api";
 import { vatStatusApi } from "@/lib/vat-status-api";
 import type {
   CreateVatStatusRequest,
@@ -32,6 +35,8 @@ import { transactionsApi } from "@/lib/transactions-api";
 import type { TransactionFilters as ApiTransactionFilters } from "@/lib/transactions-api";
 import { plansApi } from "@/lib/plans-api";
 import { subscriptionApi } from "@/lib/subscription-api";
+import { settingsApi } from "@/lib/settings-api";
+import type { SettingsData } from "@/lib/settings-api";
 import { paymentMethodApi } from "@/lib/payment-method-api";
 import { bankConnectionsApi } from "@/lib/bank-connections-api";
 
@@ -68,6 +73,7 @@ import {
   transformSubscriptionData,
   transformPaymentMethodData,
   transformBankConnectionData,
+  transformSyncedTransactionData,
 } from "./api-transformer";
 
 // Simulate network delay
@@ -254,13 +260,20 @@ export async function fetchTransaction(
 }
 
 /**
- * Fetch unchecked transactions (simulated bank sync)
- * GET /api/v1/transactions/unchecked
+ * Fetch unchecked transactions (synced from banks)
+ * GET /api/v1/synced_transactions
  */
 export async function fetchUncheckedTransactions(): Promise<Transaction[]> {
-  await delay();
-  const { uncheckedTransactions } = await import("@/data/transactions");
-  return uncheckedTransactions;
+  const response = await transactionsApi.getSyncedTransactions();
+  return response.data.map(transformSyncedTransactionData);
+}
+
+/**
+ * Discard synced transaction
+ * PATCH /api/v1/synced_transactions/{id}/discard
+ */
+export async function discardSyncedTransaction(id: string | number): Promise<{ message: string }> {
+  return await transactionsApi.discardSyncedTransaction(id);
 }
 
 /**
@@ -476,7 +489,9 @@ export async function createInvoiceSettings(
   data: InvoiceSettingsInput
 ): Promise<InvoiceSettings> {
   const response = await invoiceSettingsApi.createInvoiceSettings({
-    invoice_setting: humps.decamelizeKeys(data) as CreateInvoiceSettingRequest['invoice_setting'],
+    invoice_setting: humps.decamelizeKeys(
+      data
+    ) as CreateInvoiceSettingRequest["invoice_setting"],
   });
 
   if (!response.data) {
@@ -490,7 +505,9 @@ export async function updateInvoiceSettings(
   data: InvoiceSettingsInput
 ): Promise<InvoiceSettings> {
   const response = await invoiceSettingsApi.updateInvoiceSettings({
-    invoice_setting: humps.decamelizeKeys(data) as UpdateInvoiceSettingRequest['invoice_setting'],
+    invoice_setting: humps.decamelizeKeys(
+      data
+    ) as UpdateInvoiceSettingRequest["invoice_setting"],
   });
 
   if (!response.data) {
@@ -498,6 +515,20 @@ export async function updateInvoiceSettings(
   }
 
   return transformInvoiceSettingData(response.data);
+}
+
+// ============================================
+// Settings API
+// ============================================
+
+export async function fetchSettings(): Promise<SettingsData> {
+  const response = await settingsApi.getSettings();
+  return response.data;
+}
+
+export async function updateSettings(data: Partial<SettingsData>): Promise<SettingsData> {
+  const response = await settingsApi.updateSettings(data);
+  return response.data;
 }
 
 // ============================================
@@ -574,6 +605,7 @@ export const api = {
   fetchTransactions,
   fetchTransaction,
   fetchUncheckedTransactions,
+  discardSyncedTransaction,
   createTransaction,
   updateTransaction,
   deleteTransaction,
@@ -613,4 +645,8 @@ export const api = {
   fetchVatStatus,
   createVatStatus,
   updateVatStatus,
+
+  // Settings
+  fetchSettings,
+  updateSettings,
 };

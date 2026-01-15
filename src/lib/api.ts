@@ -5,10 +5,11 @@
  */
 
 import { api as newApi } from "@/services/api";
+import type { TransactionType } from "@/types";
 
 export const api = {
   // User
-  getUser: newApi.fetchUser,
+  getUser: newApi.fetchProfile,
 
   // Dashboard
   getDashboardStats: newApi.fetchDashboardStats,
@@ -42,14 +43,16 @@ export const api = {
   getInvoice: newApi.fetchInvoice,
 
   // Transactions
-  async getTransactions(type?: string) {
-    const transactions = await newApi.fetchTransactions();
-    if (type) {
-      return transactions.filter((t) => t.type === type);
-    }
-    return transactions;
+  async getTransactions(type?: TransactionType, search?: string) {
+    return await newApi.fetchTransactions(
+      type || search ? {
+        transactionType: type,
+        description: search
+      } : undefined
+    );
   },
   getUncheckedTransactions: newApi.fetchUncheckedTransactions,
+  discardSyncedTransaction: newApi.discardSyncedTransaction,
   deleteTransaction: newApi.deleteTransaction,
 
   // Bank Connections

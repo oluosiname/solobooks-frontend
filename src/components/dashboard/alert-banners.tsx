@@ -46,7 +46,7 @@ export function AlertBanners({ uncheckedCount }: AlertBannersProps) {
             </p>
           </div>
           <Link
-            href="/transactions?filter=pending"
+            href="/transactions/synced"
             className="rounded-lg border border-amber-300 bg-white px-4 py-2 text-sm font-medium text-amber-700 transition-colors hover:bg-amber-50"
           >
             View Pending

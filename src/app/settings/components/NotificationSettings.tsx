@@ -1,8 +1,12 @@
 import { useTranslations } from "next-intl";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { styles, buttonStyles } from "@/lib/styles";
 import { Toggle } from "@/components/atoms";
+import { api } from "@/services/api";
+import { showToast } from "@/lib/toast";
+import type { SettingsData } from "@/lib/settings-api";
 
 interface NotificationSettingsProps {
   notifications: {
@@ -18,13 +22,40 @@ interface NotificationSettingsProps {
     weeklyReport: boolean;
   };
   onNotificationsChange: (notifications: any) => void;
+  unifiedSettings?: SettingsData;
 }
 
 export function NotificationSettings({
   notifications,
   onNotificationsChange,
+  unifiedSettings,
 }: NotificationSettingsProps) {
   const t = useTranslations();
+  const queryClient = useQueryClient();
+
+  const updateNotificationsMutation = useMutation({
+    mutationFn: (data: Partial<SettingsData>) => api.updateSettings(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["unifiedSettings"] });
+      showToast.success("Notification preferences saved successfully");
+    },
+    onError: (error: any) => {
+      showToast.apiError(error, "Failed to save notification preferences");
+    },
+  });
+
+  const handleSave = () => {
+    if (unifiedSettings) {
+      updateNotificationsMutation.mutate({
+        notification_preferences: {
+          invoice_created: notifications.invoiceSent,
+          payment_received: notifications.invoicePaid,
+          invoice_overdue: notifications.invoiceOverdue,
+          monthly_summary: notifications.vatDue,
+        },
+      });
+    }
+  };
 
   return (
     <div className={cn(styles.card)}>
@@ -245,9 +276,13 @@ export function NotificationSettings({
         </div>
 
         <div className="mt-6 flex justify-end border-t border-slate-100 pt-6">
-          <button className={buttonStyles("primary")}>
+          <button
+            className={buttonStyles("primary")}
+            onClick={handleSave}
+            disabled={updateNotificationsMutation.isPending}
+          >
             <Check className="h-4 w-4" />
-            {t("settings.notifications.savePreferences")}
+            {updateNotificationsMutation.isPending ? "Saving..." : t("settings.notifications.savePreferences")}
           </button>
         </div>
       </div>

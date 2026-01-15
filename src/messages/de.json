@@ -155,6 +155,7 @@
   },
   "transactions": {
     "title": "Transaktionen",
+    "pendingTitle": "Ausstehende Transaktionen",
     "newExpense": "Neue Ausgabe",
     "newIncome": "Neue Einnahme",
     "addExpense": "Ausgabe hinzufügen",
@@ -173,7 +174,8 @@
     "types": {
       "all": "Alle",
       "income": "Einnahmen",
-      "expense": "Ausgaben"
+      "expense": "Ausgaben",
+      "pending": "Ausstehend"
     },
     "uncheckedAlert": "Sie haben {count} ungeprüfte Transaktionen von Ihrem Bankkonto synchronisiert",
     "viewPending": "Ausstehende anzeigen",
