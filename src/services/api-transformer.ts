@@ -5,7 +5,15 @@ import {
 } from "@/lib/invoice-settings-api";
 import { VatStatusData } from "@/lib/vat-status-api";
 import { ProfileData } from "@/lib/profile-api";
-import { Client, InvoiceSettings, Currency, VatStatus, User } from "@/types";
+import { TransactionData } from "@/lib/transactions-api";
+import {
+  Client,
+  InvoiceSettings,
+  Currency,
+  VatStatus,
+  User,
+  Transaction,
+} from "@/types";
 import humps from "humps";
 
 function camelize<T>(input: unknown): T {
@@ -48,6 +56,10 @@ export function transformCurrencyData(data: CurrencyData): Currency {
 
 export function transformVatStatusData(data: VatStatusData): VatStatus {
   return camelize<VatStatus>(data);
+}
+
+export function transformTransactionData(data: TransactionData): Transaction {
+  return camelize<Transaction>(data);
 }
 
 export function transformProfileData(data: ProfileData): User {
