@@ -466,12 +466,7 @@
         "declarationSubmitted": "Declaration Submitted",
         "taxYearEnd": "Tax Year End Reminder"
       },
-      "transactionAlerts": {
-        "title": "Transaction Alerts",
-        "largeExpense": "Large Expense Alert",
-        "dailySummary": "Daily Transaction Summary",
-        "weeklySummary": "Weekly Transaction Summary"
-      },
+
       "savePreferences": "Save Preferences"
     },
     "security": {

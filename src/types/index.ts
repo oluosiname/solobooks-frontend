@@ -1,18 +1,19 @@
 // Core business types for Solobooks
 
-export interface User {
-  id: string;
-  email: string;
-  name: string;
-  businessName: string;
+export interface Profile {
+  id: number;
+  fullName: string;
+  businessName?: string;
   fullAddress?: string;
-  phoneNumber: string;
-  address: string;
-  taxId: string;
-  vatNumber?: string;
-  website?: string;
-  language: "en" | "de";
-  currency: string;
+  phoneNumber?: string;
+  taxNumber?: string;
+  address?: {
+    streetAddress: string;
+    city: string;
+    state: string;
+    postalCode: string;
+    country: string;
+  };
   createdAt: string;
 }
 
@@ -179,8 +180,8 @@ export interface PaymentMethod {
   type: string;
   brand: string;
   last4: string;
-  expiryMonth: number;
-  expiryYear: number;
+  expMonth: number;
+  expYear: number;
   created: number;
 }
 
@@ -258,6 +259,30 @@ export interface InvoiceSettingsInput {
   sortCode?: string;
   routingNumber?: string;
   defaultNote?: string;
+}
+
+// Settings types
+export interface Settings {
+  id: number;
+  language: string;
+  currency: Currency;
+  notificationPreferences: {
+    invoiceCreated: boolean;
+    paymentReceived: boolean;
+    invoiceOverdue: boolean;
+    monthlySummary: boolean;
+  };
+  privacyPreferences: {
+    analytics: boolean;
+    marketing: boolean;
+    thirdParty: boolean;
+    dataRetentionYears: number;
+    dataProcessingLocation: string;
+    clientConsentTrackingEnabled: boolean;
+    clientDeletionRequestsEnabled: boolean;
+  };
+  createdAt: string;
+  updatedAt: string;
 }
 
 // VAT Status types

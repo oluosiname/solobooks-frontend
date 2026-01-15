@@ -6,10 +6,11 @@ import { cn } from "@/lib/utils";
 import { styles, buttonStyles } from "@/lib/styles";
 import { api } from "@/services/api";
 import { showToast } from "@/lib/toast";
-import type { SettingsData } from "@/lib/settings-api";
+import type { Settings } from "@/types";
+import type { SettingsData as ApiSettingsData } from "@/lib/settings-api";
 
 interface AppSettingsProps {
-  settings?: SettingsData;
+  settings?: Settings;
 }
 
 export function AppSettings({ settings }: AppSettingsProps) {
@@ -32,7 +33,7 @@ export function AppSettings({ settings }: AppSettingsProps) {
   }, [settings]);
 
   const updateSettingsMutation = useMutation({
-    mutationFn: (data: Partial<SettingsData>) => api.updateSettings(data),
+    mutationFn: (data: Partial<ApiSettingsData>) => api.updateSettings(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["unifiedSettings"] });
       showToast.success("App settings saved successfully");
@@ -43,15 +44,16 @@ export function AppSettings({ settings }: AppSettingsProps) {
   });
 
   const handleSave = () => {
-    if (settings) {
-      updateSettingsMutation.mutate({
-        language: formData.language,
-        currency: {
-          ...settings.currency,
-          code: formData.currency,
-        },
-      });
-    }
+    updateSettingsMutation.mutate({
+      language: formData.language,
+      currency: {
+        id: formData.currency === "EUR" ? 1 : formData.currency === "USD" ? 2 : 3,
+        code: formData.currency,
+        symbol: formData.currency === "EUR" ? "€" : formData.currency === "USD" ? "$" : "£",
+        name: formData.currency === "EUR" ? "Euro" : formData.currency === "USD" ? "US Dollar" : "British Pound",
+        default: formData.currency === "EUR",
+      },
+    });
   };
 
   return (

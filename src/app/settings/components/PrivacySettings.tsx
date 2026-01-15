@@ -1,12 +1,21 @@
 import { useTranslations } from "next-intl";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Check, Download, Eye, Edit, AlertTriangle, FileText } from "lucide-react";
+import {
+  Check,
+  Download,
+  Eye,
+  Edit,
+  AlertTriangle,
+  FileText,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { styles, buttonStyles } from "@/lib/styles";
 import { Toggle } from "@/components/atoms";
 import { api } from "@/services/api";
 import { showToast } from "@/lib/toast";
-import type { SettingsData } from "@/lib/settings-api";
+import * as humps from "humps";
+import type { Settings } from "@/types";
+import type { SettingsData as ApiSettingsData } from "@/lib/settings-api";
 
 interface PrivacySettingsProps {
   privacy: {
@@ -14,13 +23,28 @@ interface PrivacySettingsProps {
     analytics: boolean;
     marketing: boolean;
     thirdParty: boolean;
-    clientConsent: boolean;
-    clientDeletion: boolean;
+    clientConsentTrackingEnabled: boolean;
+    clientDeletionRequestsEnabled: boolean;
     emailBreach: boolean;
     smsBreach: boolean;
+    dataRetentionYears: number;
+    dataProcessingLocation: "eu_only" | "global";
   };
-  onPrivacyChange: (privacy: any) => void;
-  unifiedSettings?: SettingsData;
+  onPrivacyChange: (
+    privacy: Partial<{
+      essential: boolean;
+      analytics: boolean;
+      marketing: boolean;
+      thirdParty: boolean;
+      clientConsentTrackingEnabled: boolean;
+      clientDeletionRequestsEnabled: boolean;
+      emailBreach: boolean;
+      smsBreach: boolean;
+      dataRetentionYears: number;
+      dataProcessingLocation: "eu_only" | "global";
+    }>
+  ) => void;
+  unifiedSettings?: Settings;
 }
 
 export function PrivacySettings({
@@ -31,12 +55,12 @@ export function PrivacySettings({
   const queryClient = useQueryClient();
 
   const updatePrivacyMutation = useMutation({
-    mutationFn: (data: Partial<SettingsData>) => api.updateSettings(data),
+    mutationFn: (data: Partial<ApiSettingsData>) => api.updateSettings(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["unifiedSettings"] });
       showToast.success("Privacy preferences saved successfully");
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       showToast.apiError(error, "Failed to save privacy preferences");
     },
   });
@@ -48,10 +72,26 @@ export function PrivacySettings({
           analytics: privacy.analytics,
           marketing: privacy.marketing,
           third_party: privacy.thirdParty,
-          data_retention_years: unifiedSettings.privacy_preferences?.data_retention_years ?? 10,
-          data_processing_location: unifiedSettings.privacy_preferences?.data_processing_location ?? "eu_only",
-          client_consent_tracking_enabled: privacy.clientConsent,
-          client_deletion_requests_enabled: privacy.clientDeletion,
+          data_retention_years: privacy.dataRetentionYears,
+          data_processing_location: privacy.dataProcessingLocation,
+          client_consent_tracking_enabled: privacy.clientConsentTrackingEnabled,
+          client_deletion_requests_enabled: privacy.clientDeletionRequestsEnabled,
+        },
+      });
+    }
+  };
+
+  const handleRetentionSave = () => {
+    if (unifiedSettings) {
+      updatePrivacyMutation.mutate({
+        privacy_preferences: {
+          analytics: unifiedSettings.privacyPreferences.analytics,
+          marketing: unifiedSettings.privacyPreferences.marketing,
+          third_party: unifiedSettings.privacyPreferences.thirdParty,
+          data_retention_years: privacy.dataRetentionYears,
+          data_processing_location: privacy.dataProcessingLocation,
+          client_consent_tracking_enabled: privacy.clientConsentTrackingEnabled,
+          client_deletion_requests_enabled: privacy.clientDeletionRequestsEnabled,
         },
       });
     }
@@ -153,7 +193,9 @@ export function PrivacySettings({
               disabled={updatePrivacyMutation.isPending}
             >
               <Check className="h-4 w-4" />
-              {updatePrivacyMutation.isPending ? "Saving..." : "Save Consent Preferences"}
+              {updatePrivacyMutation.isPending
+                ? "Saving..."
+                : "Save Consent Preferences"}
             </button>
           </div>
         </div>
@@ -242,10 +284,18 @@ export function PrivacySettings({
               <label className="block text-sm font-medium text-slate-700">
                 Data Retention Period
               </label>
-              <select className={cn(styles.input, "mt-1.5")}>
-                <option>10 years (recommended for tax)</option>
-                <option>7 years</option>
-                <option>5 years</option>
+              <select
+                className={cn(styles.input, "mt-1.5")}
+                value={privacy.dataRetentionYears}
+                onChange={(e) =>
+                  onPrivacyChange({
+                    dataRetentionYears: parseInt(e.target.value),
+                  })
+                }
+              >
+                <option value={10}>10 years (recommended for tax)</option>
+                <option value={7}>7 years</option>
+                <option value={5}>5 years</option>
               </select>
               <p className="mt-1.5 text-xs text-slate-500">
                 Note: German tax law requires 10 years retention for accounting
@@ -256,9 +306,19 @@ export function PrivacySettings({
               <label className="block text-sm font-medium text-slate-700">
                 Data Processing Location
               </label>
-              <select className={cn(styles.input, "mt-1.5")}>
-                <option>European Union Only</option>
-                <option>Global (GDPR compliant)</option>
+              <select
+                className={cn(styles.input, "mt-1.5")}
+                value={privacy.dataProcessingLocation}
+                onChange={(e) =>
+                  onPrivacyChange({
+                    dataProcessingLocation: e.target.value as
+                      | "eu_only"
+                      | "global",
+                  })
+                }
+              >
+                <option value="eu_only">European Union Only</option>
+                <option value="global">Global (GDPR compliant)</option>
               </select>
               <p className="mt-1.5 text-xs text-slate-500">
                 Your data will only be processed in these locations
@@ -285,11 +345,11 @@ export function PrivacySettings({
                   </p>
                 </div>
                 <Toggle
-                  enabled={privacy.clientConsent}
+                  enabled={privacy.clientConsentTrackingEnabled}
                   onChange={() =>
                     onPrivacyChange({
                       ...privacy,
-                      clientConsent: !privacy.clientConsent,
+                      clientConsentTrackingEnabled: !privacy.clientConsentTrackingEnabled,
                     })
                   }
                 />
@@ -304,11 +364,11 @@ export function PrivacySettings({
                   </p>
                 </div>
                 <Toggle
-                  enabled={privacy.clientDeletion}
+                  enabled={privacy.clientDeletionRequestsEnabled}
                   onChange={() =>
                     onPrivacyChange({
                       ...privacy,
-                      clientDeletion: !privacy.clientDeletion,
+                      clientDeletionRequestsEnabled: !privacy.clientDeletionRequestsEnabled,
                     })
                   }
                 />
@@ -317,9 +377,15 @@ export function PrivacySettings({
           </div>
 
           <div className="mt-6 flex justify-end border-t border-slate-100 pt-6">
-            <button className={buttonStyles("primary")}>
+            <button
+              className={buttonStyles("primary")}
+              onClick={handleRetentionSave}
+              disabled={updatePrivacyMutation.isPending}
+            >
               <Check className="h-4 w-4" />
-              Save Retention Settings
+              {updatePrivacyMutation.isPending
+                ? "Saving..."
+                : "Save Retention Settings"}
             </button>
           </div>
         </div>

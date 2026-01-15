@@ -16,7 +16,7 @@ import { AppShell } from "@/components/layout";
 import { api } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { api as newApi } from "@/services/api";
-import type { InvoiceSettingsInput, User as UserType } from "@/types";
+import type { InvoiceSettingsInput, Profile } from "@/types";
 import { showToast } from "@/lib/toast";
 import {
   ProfileSettings,
@@ -53,16 +53,13 @@ export default function SettingsPage() {
 
   // Initialize state from unified settings when loaded
   const [notifications, setNotifications] = useState({
-    invoiceSent: true,
-    invoicePaid: true,
+    invoiceCreated: true,
+    paymentReceived: true,
     invoiceOverdue: true,
+    monthlySummary: true,
     newClient: false,
-    vatDue: true,
-    vatSubmitted: true,
-    taxYearEnd: true,
-    largeExpense: false,
-    dailySummary: false,
-    weeklyReport: true,
+    vatSubmitted: false,
+    taxYearEnd: false,
   });
 
   const [privacy, setPrivacy] = useState({
@@ -70,10 +67,12 @@ export default function SettingsPage() {
     analytics: true,
     marketing: false,
     thirdParty: true,
-    clientConsent: true,
-    clientDeletion: true,
+    clientConsentTrackingEnabled: true,
+    clientDeletionRequestsEnabled: true,
     emailBreach: true,
     smsBreach: true,
+    dataRetentionYears: 10,
+    dataProcessingLocation: "eu_only" as "eu_only" | "global",
   });
 
   // 2FA state
@@ -86,7 +85,7 @@ export default function SettingsPage() {
 
   // Mutation for updating profile
   const updateProfileMutation = useMutation({
-    mutationFn: (data: Partial<UserType>) => newApi.updateProfile(data),
+    mutationFn: (data: Partial<Profile>) => newApi.updateProfile(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user"] });
       showToast.success("Profile updated successfully");
@@ -117,27 +116,31 @@ export default function SettingsPage() {
   useEffect(() => {
     if (unifiedSettings) {
       setNotifications({
-        invoiceSent: unifiedSettings.notification_preferences?.invoice_created ?? true,
-        invoicePaid: unifiedSettings.notification_preferences?.payment_received ?? true,
-        invoiceOverdue: unifiedSettings.notification_preferences?.invoice_overdue ?? true,
+        invoiceCreated: unifiedSettings.notificationPreferences.invoiceCreated,
+        paymentReceived:
+          unifiedSettings.notificationPreferences.paymentReceived,
+        invoiceOverdue: unifiedSettings.notificationPreferences.invoiceOverdue,
+        monthlySummary: unifiedSettings.notificationPreferences.monthlySummary,
         newClient: false, // Not in unified settings
-        vatDue: unifiedSettings.notification_preferences?.monthly_summary ?? true,
         vatSubmitted: false, // Not in unified settings
         taxYearEnd: false, // Not in unified settings
-        largeExpense: false, // Not in unified settings
-        dailySummary: false, // Not in unified settings
-        weeklyReport: false, // Not in unified settings
       });
 
       setPrivacy({
         essential: true, // Not in unified settings
-        analytics: unifiedSettings.privacy_preferences?.analytics ?? true,
-        marketing: unifiedSettings.privacy_preferences?.marketing ?? false,
-        thirdParty: unifiedSettings.privacy_preferences?.third_party ?? true,
-        clientConsent: unifiedSettings.privacy_preferences?.client_consent_tracking_enabled === "1" || unifiedSettings.privacy_preferences?.client_consent_tracking_enabled === true,
-        clientDeletion: unifiedSettings.privacy_preferences?.client_deletion_requests_enabled === "1" || unifiedSettings.privacy_preferences?.client_deletion_requests_enabled === true,
+        analytics: unifiedSettings.privacyPreferences.analytics,
+        marketing: unifiedSettings.privacyPreferences.marketing,
+        thirdParty: unifiedSettings.privacyPreferences.thirdParty,
+        clientConsentTrackingEnabled:
+          unifiedSettings.privacyPreferences.clientConsentTrackingEnabled,
+        clientDeletionRequestsEnabled:
+          unifiedSettings.privacyPreferences.clientDeletionRequestsEnabled,
         emailBreach: false, // Not in unified settings
         smsBreach: false, // Not in unified settings
+        dataRetentionYears:
+          unifiedSettings.privacyPreferences.dataRetentionYears,
+        dataProcessingLocation: unifiedSettings.privacyPreferences
+          .dataProcessingLocation as "eu_only" | "global",
       });
     }
   }, [unifiedSettings]);
@@ -256,7 +259,9 @@ export default function SettingsPage() {
           {activeTab === "notifications" && (
             <NotificationSettings
               notifications={notifications}
-              onNotificationsChange={setNotifications}
+              onNotificationsChange={(updates) =>
+                setNotifications((prev) => ({ ...prev, ...updates }))
+              }
               unifiedSettings={unifiedSettings}
             />
           )}
@@ -270,7 +275,9 @@ export default function SettingsPage() {
           {activeTab === "privacy" && (
             <PrivacySettings
               privacy={privacy}
-              onPrivacyChange={setPrivacy}
+              onPrivacyChange={(updates) =>
+                setPrivacy((prev) => ({ ...prev, ...updates }))
+              }
               unifiedSettings={unifiedSettings}
             />
           )}

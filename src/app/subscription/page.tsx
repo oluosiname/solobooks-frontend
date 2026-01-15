@@ -21,10 +21,17 @@ interface UIPlan {
 }
 
 // Translation function type from next-intl
-type TranslationFunction = (key: string, params?: Record<string, string | number>) => string;
+type TranslationFunction = (
+  key: string,
+  params?: Record<string, string | number>
+) => string;
 
 // Map API plan data to UI format
-const mapPlanToUI = (plan: Plan, t: TranslationFunction, isPopular: boolean): UIPlan => ({
+const mapPlanToUI = (
+  plan: Plan,
+  t: TranslationFunction,
+  isPopular: boolean
+): UIPlan => ({
   id: plan.id,
   name: plan.name,
   price: plan.price,
@@ -95,8 +102,8 @@ export default function SubscriptionPage() {
                       {paymentMethod.brand} •••• {paymentMethod.last4}
                     </p>
                     <p className="text-xs text-slate-500">
-                      {t("subscription.expires")} {paymentMethod.expiryMonth}/
-                      {paymentMethod.expiryYear}
+                      {t("subscription.expires")} {paymentMethod.expMonth}/
+                      {paymentMethod.expYear}
                     </p>
                   </div>
                 </div>

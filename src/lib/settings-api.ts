@@ -24,15 +24,10 @@ export interface NotificationPreferences {
   invoice_overdue: boolean;
   monthly_summary: boolean;
 }
-
-export interface ConsentPreferences {
+export interface PrivacyPreferences {
   analytics: boolean;
   marketing: boolean;
   third_party: boolean;
-}
-
-export interface PrivacyPreferences {
-  consent: ConsentPreferences;
   data_retention_years: number;
   data_processing_location: string;
   client_consent_tracking_enabled: boolean;

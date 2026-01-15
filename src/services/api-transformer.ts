@@ -6,16 +6,18 @@ import { TransactionData, SyncedTransactionData } from "@/lib/transactions-api";
 import type { SubscriptionData } from "@/lib/subscription-api";
 import type { PaymentMethodData } from "@/lib/payment-method-api";
 import type { BankConnectionData } from "@/lib/bank-connections-api";
+import { SettingsData as ApiSettingsData } from "@/lib/settings-api";
 import {
   Client,
   InvoiceSettings,
   Currency,
   VatStatus,
-  User,
+  Profile,
   Transaction,
   Subscription,
   PaymentMethod,
   BankConnection,
+  Settings,
 } from "@/types";
 import humps from "humps";
 
@@ -26,15 +28,6 @@ function camelize<T>(input: unknown): T {
 export function transformClientData(data: ClientData): Client {
   const base = camelize<Client>(data);
   return {
-    address: data.address
-      ? {
-          streetAddress: data.address.street_address,
-          city: data.address.city,
-          state: data.address.state,
-          postalCode: data.address.postal_code,
-          country: data.address.country,
-        }
-      : undefined,
     ...base,
     totalInvoiced: 0, // TODO: Add when backend provides this
     outstanding: 0, // TODO: Add when backend provides this
@@ -65,7 +58,9 @@ export function transformTransactionData(data: TransactionData): Transaction {
   return camelize<Transaction>(data);
 }
 
-export function transformSyncedTransactionData(data: SyncedTransactionData): Transaction {
+export function transformSyncedTransactionData(
+  data: SyncedTransactionData
+): Transaction {
   return {
     id: data.id,
     description: data.description,
@@ -83,31 +78,15 @@ export function transformSyncedTransactionData(data: SyncedTransactionData): Tra
       id: 0,
       name: "Uncategorized",
       categoryType: data.amount >= 0 ? "income" : "expense",
-      translatedName: "Uncategorized"
+      translatedName: "Uncategorized",
     }, // Default category for uncategorized transactions
     createdAt: data.created_at,
     updatedAt: data.updated_at,
   };
 }
 
-export function transformProfileData(data: ProfileData): User {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const base = camelize<any>(data);
-  return {
-    id: String(data.id),
-    email: "", // TODO: Add when backend provides this
-    name: base.fullName,
-    businessName: base.businessName || "",
-    fullAddress: data.address?.full_address,
-    phoneNumber: base.phoneNumber || "",
-    address: data.address?.full_address || "",
-    taxId: base.taxNumber || "",
-    vatNumber: "", // TODO: Add when backend provides this
-    website: "", // TODO: Add when backend provides this
-    language: "en" as const, // TODO: Add when backend provides this
-    currency: "EUR", // TODO: Add when backend provides this
-    createdAt: base.createdAt,
-  };
+export function transformProfileData(data: ProfileData): Profile {
+  return camelize<Profile>(data);
 }
 
 export function transformSubscriptionData(
@@ -116,30 +95,22 @@ export function transformSubscriptionData(
   return camelize<Subscription>(data);
 }
 
-export function transformPaymentMethodData(data: PaymentMethodData): PaymentMethod {
-  return {
-    id: data.id,
-    type: data.type,
-    brand: data.brand,
-    last4: data.last4,
-    expiryMonth: data.exp_month,
-    expiryYear: data.exp_year,
-    created: data.created,
-  };
+export function transformPaymentMethodData(
+  data: PaymentMethodData
+): PaymentMethod {
+  return camelize<PaymentMethod>(data);
 }
 
-export function transformBankConnectionData(data: BankConnectionData): BankConnection {
+export function transformBankConnectionData(
+  data: BankConnectionData
+): BankConnection {
+  return camelize<BankConnection>(data);
+}
+
+export function transformSettingsData(data: ApiSettingsData): Settings {
+  const base = camelize<Settings>(data);
   return {
-    id: data.id,
-    status: data.status,
-    syncEnabled: data.sync_enabled,
-    bankName: data.bank_name,
-    accountNumber: data.account_number,
-    institutionId: data.institution_id,
-    lastSynced: data.last_sync_at,
-    expiresAt: data.expires_at,
-    createdAt: data.created_at,
-    updatedAt: data.updated_at,
-    pendingTransactionsCount: data.pending_transactions_count,
+    ...base,
+    currency: transformCurrencyData(data.currency),
   };
 }
