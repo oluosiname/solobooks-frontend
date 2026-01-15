@@ -12,7 +12,6 @@ import {
 } from "@/services/api";
 import { showToast } from "@/lib/toast";
 import type { VatStatus, DeclarationPeriod } from "@/types";
-import type { AppError } from "@/lib/base-api";
 
 export function VatSettings() {
   const t = useTranslations();
@@ -93,7 +92,7 @@ export function VatSettings() {
         setVatStatus(created);
         showToast.created("VAT settings");
       }
-    } catch (error: AppError) {
+    } catch (error: any) {
       console.error("Failed to save VAT status:", error);
 
       // Handle API errors
