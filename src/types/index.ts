@@ -68,18 +68,50 @@ export interface Invoice {
 
 export type TransactionType = "income" | "expense";
 
+export interface TransactionCategory {
+  id: number;
+  name: string;
+  categoryType: TransactionType;
+  translatedName: string;
+}
+
 export interface Transaction {
-  id: string;
+  id: number;
   description: string;
-  category: string;
   date: string;
+  vatRate: number;
+  vatAmount: number;
   amount: number;
-  type: TransactionType;
+  customerLocation: string;
+  customerVatNumber: string | null;
+  vatTechnique: string;
+  source: string;
   receiptUrl: string | null;
-  notes: string;
-  bankAccountId?: string;
-  checked?: boolean;
+  transactionType: "Expense" | "Income";
+  category: TransactionCategory;
   createdAt: string;
+  updatedAt: string;
+}
+
+export interface TransactionFilters {
+  page?: number;
+  perPage?: number;
+  transactionType?: TransactionType;
+  startDate?: string;
+  endDate?: string;
+  description?: string;
+}
+
+export interface PaginationMeta {
+  currentPage: number;
+  totalPages: number;
+  totalCount: number;
+  perPage: number;
+}
+
+export interface PaginatedTransactions {
+  data: Transaction[];
+  meta: PaginationMeta;
 }
 
 export type BankConnectionStatus = "connected" | "disconnected" | "error";

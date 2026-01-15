@@ -9,8 +9,6 @@
 
 import {
   invoices,
-  transactions,
-  uncheckedTransactions,
   dashboardStats,
   revenueExpenseData,
   categoryData,
@@ -31,12 +29,16 @@ import type {
 } from "@/lib/vat-status-api";
 import { profileApi } from "@/lib/profile-api";
 import type { UpdateProfileRequest } from "@/lib/profile-api";
+import { transactionsApi } from "@/lib/transactions-api";
+import type { TransactionFilters as ApiTransactionFilters } from "@/lib/transactions-api";
 
 import type {
   User,
   Client,
   Invoice,
   Transaction,
+  TransactionFilters,
+  PaginatedTransactions,
   BankConnection,
   VatReport,
   Subscription,
@@ -58,6 +60,7 @@ import {
   transformCurrencyData,
   transformVatStatusData,
   transformProfileData,
+  transformTransactionData,
 } from "./api-transformer";
 import humps from "humps";
 
@@ -199,48 +202,115 @@ export async function deleteInvoice(id: string): Promise<boolean> {
 // Transactions API
 // ============================================
 
-export async function fetchTransactions(): Promise<Transaction[]> {
-  await delay();
-  return transactions;
-}
+/**
+ * Fetch paginated transactions with optional filters
+ * GET /api/v1/transactions
+ */
+export async function fetchTransactions(
+  filters?: TransactionFilters
+): Promise<PaginatedTransactions> {
+  const apiFilters: ApiTransactionFilters | undefined = filters
+    ? {
+        page: filters.page,
+        per_page: filters.perPage,
+        transaction_type: filters.transactionType,
+        start_date: filters.startDate,
+        end_date: filters.endDate,
+        description: filters.description,
+      }
+    : undefined;
 
-export async function fetchUncheckedTransactions(): Promise<Transaction[]> {
-  await delay();
-  return uncheckedTransactions;
-}
-
-export async function fetchTransaction(
-  id: string
-): Promise<Transaction | null> {
-  await delay();
-  return transactions.find((t) => t.id === id) || null;
-}
-
-export async function createTransaction(
-  data: Omit<Transaction, "id" | "createdAt">
-): Promise<Transaction> {
-  await delay();
-  const newTransaction: Transaction = {
-    ...data,
-    id: `txn-${Date.now()}`,
-    createdAt: new Date().toISOString(),
+  const response = await transactionsApi.listTransactions(apiFilters);
+  return {
+    data: response.data.map(transformTransactionData),
+    meta: {
+      currentPage: response.meta.current_page,
+      totalPages: response.meta.total_pages,
+      totalCount: response.meta.total_count,
+      perPage: response.meta.per_page,
+    },
   };
-  return newTransaction;
 }
 
+/**
+ * Fetch a single transaction by ID
+ * GET /api/v1/transactions/{id}
+ */
+export async function fetchTransaction(
+  id: string | number
+): Promise<Transaction | null> {
+  try {
+    const response = await transactionsApi.getTransaction(id);
+    return transformTransactionData(response.data);
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Create a new transaction
+ * POST /api/v1/transactions
+ */
+export async function createTransaction(
+  data: Omit<Transaction, "id" | "createdAt" | "updatedAt">
+): Promise<Transaction> {
+  const response = await transactionsApi.createTransaction({
+    transaction: {
+      description: data.description,
+      amount: data.amount,
+      vat_rate: data.vatRate,
+      vat_amount: data.vatAmount,
+      customer_location: data.customerLocation,
+      customer_vat_number: data.customerVatNumber || undefined,
+      vat_technique: data.vatTechnique,
+      source: data.source,
+      receipt_url: data.receiptUrl || undefined,
+      category_id: data.category?.id,
+    },
+  });
+  return transformTransactionData(response.data);
+}
+
+/**
+ * Update a transaction
+ * PUT /api/v1/transactions/{id}
+ */
 export async function updateTransaction(
-  id: string,
+  id: string | number,
   data: Partial<Transaction>
 ): Promise<Transaction | null> {
-  await delay();
-  const transaction = transactions.find((t) => t.id === id);
-  if (!transaction) return null;
-  return { ...transaction, ...data };
+  const response = await transactionsApi.updateTransaction(id, {
+    transaction: {
+      ...(data.description !== undefined && { description: data.description }),
+      ...(data.amount !== undefined && { amount: data.amount }),
+      ...(data.vatRate !== undefined && { vat_rate: data.vatRate }),
+      ...(data.vatAmount !== undefined && { vat_amount: data.vatAmount }),
+      ...(data.customerLocation !== undefined && {
+        customer_location: data.customerLocation,
+      }),
+      ...(data.customerVatNumber !== undefined && {
+        customer_vat_number: data.customerVatNumber || undefined,
+      }),
+      ...(data.vatTechnique !== undefined && {
+        vat_technique: data.vatTechnique,
+      }),
+      ...(data.source !== undefined && { source: data.source }),
+      ...(data.receiptUrl !== undefined && {
+        receipt_url: data.receiptUrl || undefined,
+      }),
+      ...(data.category?.id !== undefined && { category_id: data.category.id }),
+    },
+  });
+  return transformTransactionData(response.data);
 }
 
-export async function deleteTransaction(id: string): Promise<boolean> {
-  await delay();
-  return transactions.some((t) => t.id === id);
+/**
+ * Delete a transaction
+ * DELETE /api/v1/transactions/{id}
+ */
+export async function deleteTransaction(id: string | number): Promise<boolean> {
+  await transactionsApi.deleteTransaction(id);
+  return true;
 }
 
 // ============================================
@@ -500,7 +570,6 @@ export const api = {
 
   // Transactions
   fetchTransactions,
-  fetchUncheckedTransactions,
   fetchTransaction,
   createTransaction,
   updateTransaction,
