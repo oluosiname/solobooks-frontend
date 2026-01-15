@@ -38,12 +38,12 @@ const mapPlanToUI = (plan: Plan, t: TranslationFunction, isPopular: boolean): UI
 export default function SubscriptionPage() {
   const t = useTranslations();
 
-  const { data: subscription } = useQuery<Subscription>({
+  const { data: subscription } = useQuery<Subscription | null>({
     queryKey: ["subscription"],
     queryFn: api.fetchSubscription,
   });
 
-  const { data: paymentMethod } = useQuery<PaymentMethod>({
+  const { data: paymentMethod } = useQuery<PaymentMethod | null>({
     queryKey: ["paymentMethod"],
     queryFn: api.fetchPaymentMethod,
   });
