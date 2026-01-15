@@ -4,7 +4,7 @@
  * Handles all authentication-related API calls to the backend
  */
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
 export interface RegisterRequest {
   email: string;
@@ -45,7 +45,7 @@ class AuthApiClient {
     const config: RequestInit = {
       ...options,
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         ...options.headers,
       },
     };
@@ -68,8 +68,9 @@ class AuthApiClient {
       // Handle network errors
       throw {
         error: {
-          code: 'NETWORK_ERROR',
-          message: 'Failed to connect to the server. Please check your connection.',
+          code: "NETWORK_ERROR",
+          message:
+            "Failed to connect to the server. Please check your connection.",
         },
       } as ApiError;
     }
@@ -80,14 +81,14 @@ class AuthApiClient {
    * POST /api/v1/auth/register
    */
   async register(data: RegisterRequest): Promise<AuthResponse> {
-    return this.request<AuthResponse>('/api/v1/auth/register', {
-      method: 'POST',
+    return this.request<AuthResponse>("/api/v1/auth/register", {
+      method: "POST",
       body: JSON.stringify({
         user: {
           email: data.email,
           password: data.password,
           password_confirmation: data.password_confirmation,
-          plan: data.plan || 'pro',
+          plan: data.plan || "pro",
         },
       }),
     });
@@ -98,8 +99,8 @@ class AuthApiClient {
    * POST /api/v1/auth/login
    */
   async login(data: LoginRequest): Promise<AuthResponse> {
-    return this.request<AuthResponse>('/api/v1/auth/login', {
-      method: 'POST',
+    return this.request<AuthResponse>("/api/v1/auth/login", {
+      method: "POST",
       body: JSON.stringify({
         email: data.email,
         password: data.password,
@@ -112,8 +113,8 @@ class AuthApiClient {
    * DELETE /api/v1/auth/logout
    */
   async logout(token: string): Promise<void> {
-    return this.request<void>('/api/v1/auth/logout', {
-      method: 'DELETE',
+    return this.request<void>("/api/v1/auth/logout", {
+      method: "DELETE",
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -141,8 +142,8 @@ class AuthApiClient {
         created_at: string;
         updated_at: string;
       };
-    }>('/api/v1/auth/me', {
-      method: 'GET',
+    }>("/api/v1/auth/me", {
+      method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -154,8 +155,8 @@ class AuthApiClient {
    * POST /api/v1/auth/refresh
    */
   async refresh(refreshToken: string): Promise<AuthResponse> {
-    return this.request<AuthResponse>('/api/v1/auth/refresh', {
-      method: 'POST',
+    return this.request<AuthResponse>("/api/v1/auth/refresh", {
+      method: "POST",
       body: JSON.stringify({
         refresh_token: refreshToken,
       }),
@@ -167,8 +168,8 @@ class AuthApiClient {
    * POST /api/v1/auth/password/reset
    */
   async requestPasswordReset(email: string): Promise<{ message: string }> {
-    return this.request<{ message: string }>('/api/v1/auth/password/reset', {
-      method: 'POST',
+    return this.request<{ message: string }>("/api/v1/auth/password/reset", {
+      method: "POST",
       body: JSON.stringify({
         user: {
           email,
@@ -185,8 +186,8 @@ class AuthApiClient {
     token: string,
     password: string
   ): Promise<{ message: string }> {
-    return this.request<{ message: string }>('/api/v1/auth/password', {
-      method: 'PUT',
+    return this.request<{ message: string }>("/api/v1/auth/password", {
+      method: "PUT",
       body: JSON.stringify({
         user: {
           reset_password_token: token,
