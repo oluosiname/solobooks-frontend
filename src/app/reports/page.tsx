@@ -125,7 +125,7 @@ export default function ReportsPage() {
     {
       title: t("reports.profitMargin"),
       value: summaryStats?.profitMargin || 0,
-      change: dashboardStats?.profitMarginChange || 0,
+      change: 0,
       isPercentage: true,
     },
   ];
