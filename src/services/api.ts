@@ -57,7 +57,6 @@ import type {
   RevenueExpenseData,
   CategoryData,
   ProfitLossData,
-  Settings,
   InvoiceSettings,
   InvoiceSettingsInput,
   Currency,
