@@ -153,28 +153,32 @@ export interface Plan {
   features: string[];
 }
 
-export type SubscriptionPlan = "free" | "pro" | "business";
+export type SubscriptionPlan = "free" | "pro" | "business" | "starter";
 export type SubscriptionStatus = "active" | "trial" | "cancelled" | "past_due";
 
 export interface Subscription {
-  id: string;
-  plan: SubscriptionPlan;
-  status: SubscriptionStatus;
+  id: number;
+  plan: string;
+  status: string;
+  stripeSubscriptionId?: string;
+  stripePriceId?: string;
   currentPeriodStart: string;
   currentPeriodEnd: string;
+  activatedAt?: string;
+  deactivatedAt?: string;
   cancelAtPeriodEnd: boolean;
-  price: number;
-  currency: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface PaymentMethod {
   id: string;
-  type: "card" | "sepa";
-  last4: string;
+  type: string;
   brand: string;
+  last4: string;
   expiryMonth: number;
   expiryYear: number;
-  isDefault: boolean;
+  created: number;
 }
 
 export interface DashboardStats {

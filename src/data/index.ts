@@ -20,6 +20,3 @@ export { bankConnections } from "./bank-connections";
 
 // VAT Reports
 export { vatReports } from "./vat-reports";
-
-// Subscription
-export { subscription, paymentMethod } from "./subscription";

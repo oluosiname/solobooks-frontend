@@ -15,8 +15,6 @@ import {
   profitLossData,
   bankConnections,
   vatReports,
-  subscription,
-  paymentMethod,
 } from "@/data";
 
 import { clientsApi } from "@/lib/clients-api";
@@ -32,6 +30,8 @@ import type { UpdateProfileRequest } from "@/lib/profile-api";
 import { transactionsApi } from "@/lib/transactions-api";
 import type { TransactionFilters as ApiTransactionFilters } from "@/lib/transactions-api";
 import { plansApi } from "@/lib/plans-api";
+import { subscriptionApi } from "@/lib/subscription-api";
+import { paymentMethodApi } from "@/lib/payment-method-api";
 
 import type {
   User,
@@ -63,6 +63,8 @@ import {
   transformVatStatusData,
   transformProfileData,
   transformTransactionData,
+  transformSubscriptionData,
+  transformPaymentMethodData,
 } from "./api-transformer";
 import humps from "humps";
 
@@ -415,26 +417,36 @@ export async function fetchPlans(): Promise<Plan[]> {
   return response.data;
 }
 
-export async function fetchSubscription(): Promise<Subscription> {
-  await delay();
-  return subscription;
+export async function fetchSubscription(): Promise<Subscription | null> {
+  try {
+    const response = await subscriptionApi.getSubscription();
+    return transformSubscriptionData(response.data);
+  } catch {
+    // If no subscription exists (404), return null
+    return null;
+  }
 }
 
-export async function fetchPaymentMethod(): Promise<PaymentMethod> {
-  await delay();
-  return paymentMethod;
+export async function fetchPaymentMethod(): Promise<PaymentMethod | null> {
+  try {
+    const response = await paymentMethodApi.getPaymentMethod();
+    return transformPaymentMethodData(response.data);
+  } catch {
+    // If no payment method exists (404), return null
+    return null;
+  }
 }
 
 export async function updateSubscription(
-  data: Partial<Subscription>
+  _data: Partial<Subscription> // eslint-disable-line @typescript-eslint/no-unused-vars
 ): Promise<Subscription> {
-  await delay();
-  return { ...subscription, ...data };
+  // TODO: Implement subscription update API call
+  throw new Error("Subscription update not implemented yet");
 }
 
 export async function cancelSubscription(): Promise<Subscription> {
-  await delay();
-  return { ...subscription, cancelAtPeriodEnd: true };
+  // TODO: Implement subscription cancellation API call
+  throw new Error("Subscription cancellation not implemented yet");
 }
 
 // ============================================

@@ -1,11 +1,10 @@
 import { ClientData } from "@/lib/clients-api";
-import {
-  InvoiceSettingData,
-  CurrencyData,
-} from "@/lib/invoice-settings-api";
+import { InvoiceSettingData, CurrencyData } from "@/lib/invoice-settings-api";
 import { VatStatusData } from "@/lib/vat-status-api";
 import { ProfileData } from "@/lib/profile-api";
 import { TransactionData } from "@/lib/transactions-api";
+import type { SubscriptionData } from "@/lib/subscription-api";
+import type { PaymentMethodData } from "@/lib/payment-method-api";
 import {
   Client,
   InvoiceSettings,
@@ -13,6 +12,8 @@ import {
   VatStatus,
   User,
   Transaction,
+  Subscription,
+  PaymentMethod,
 } from "@/types";
 import humps from "humps";
 
@@ -63,6 +64,7 @@ export function transformTransactionData(data: TransactionData): Transaction {
 }
 
 export function transformProfileData(data: ProfileData): User {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const base = camelize<any>(data);
   return {
     id: String(data.id),
@@ -78,5 +80,23 @@ export function transformProfileData(data: ProfileData): User {
     language: "en" as const, // TODO: Add when backend provides this
     currency: "EUR", // TODO: Add when backend provides this
     createdAt: base.createdAt,
+  };
+}
+
+export function transformSubscriptionData(
+  data: SubscriptionData
+): Subscription {
+  return camelize<Subscription>(data);
+}
+
+export function transformPaymentMethodData(data: PaymentMethodData): PaymentMethod {
+  return {
+    id: data.id,
+    type: data.type,
+    brand: data.brand,
+    last4: data.last4,
+    expiryMonth: data.exp_month,
+    expiryYear: data.exp_year,
+    created: data.created,
   };
 }
