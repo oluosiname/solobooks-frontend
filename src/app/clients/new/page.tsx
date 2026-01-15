@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { Check } from "lucide-react";
 import { AppShell } from "@/components/layout";
@@ -18,6 +19,7 @@ import { api } from "@/services/api";
 
 export default function NewClientPage() {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const t = useTranslations();
 
   const [formData, setFormData] = useState({
@@ -76,6 +78,9 @@ export default function NewClientPage() {
 
       // Show success toast
       showToast.created("Client");
+
+      // Invalidate clients cache to refresh the list
+      queryClient.invalidateQueries({ queryKey: ["clients"] });
 
       // Redirect to clients list
       router.push("/clients");
