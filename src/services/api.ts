@@ -13,7 +13,6 @@ import {
   revenueExpenseData,
   categoryData,
   profitLossData,
-  bankConnections,
   vatReports,
 } from "@/data";
 
@@ -32,6 +31,7 @@ import type { TransactionFilters as ApiTransactionFilters } from "@/lib/transact
 import { plansApi } from "@/lib/plans-api";
 import { subscriptionApi } from "@/lib/subscription-api";
 import { paymentMethodApi } from "@/lib/payment-method-api";
+import { bankConnectionsApi } from "@/lib/bank-connections-api";
 
 import type {
   User,
@@ -65,6 +65,7 @@ import {
   transformTransactionData,
   transformSubscriptionData,
   transformPaymentMethodData,
+  transformBankConnectionData,
 } from "./api-transformer";
 import humps from "humps";
 
@@ -346,29 +347,28 @@ export async function fetchProfitLossData(): Promise<ProfitLossData[]> {
 // ============================================
 
 export async function fetchBankConnections(): Promise<BankConnection[]> {
-  await delay();
-  return bankConnections;
+  const response = await bankConnectionsApi.listBankConnections();
+  return response.data.map(transformBankConnectionData);
 }
 
 export async function fetchBankConnection(
-  id: string
+  id: string | number
 ): Promise<BankConnection | null> {
-  await delay();
-  return bankConnections.find((b) => b.id === id) || null;
+  const connections = await fetchBankConnections();
+  return connections.find((b) => b.id === Number(id)) || null;
 }
 
 export async function syncBankConnection(
-  id: string
-): Promise<BankConnection | null> {
-  await delay(1000); // Longer delay to simulate sync
-  const connection = bankConnections.find((b) => b.id === id);
-  if (!connection) return null;
-  return { ...connection, lastSynced: new Date().toISOString() };
+  id: string | number
+): Promise<void> {
+  await bankConnectionsApi.syncBankConnection(id);
 }
 
-export async function disconnectBank(id: string): Promise<boolean> {
-  await delay();
-  return bankConnections.some((b) => b.id === id);
+export async function toggleBankConnection(
+  id: string | number
+): Promise<BankConnection> {
+  const response = await bankConnectionsApi.toggleBankConnection(id);
+  return transformBankConnectionData(response.data);
 }
 
 // ============================================
@@ -604,7 +604,7 @@ export const api = {
   fetchBankConnections,
   fetchBankConnection,
   syncBankConnection,
-  disconnectBank,
+  toggleBankConnection,
 
   // VAT Reports
   fetchVatReports,

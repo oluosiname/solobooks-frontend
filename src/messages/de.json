@@ -267,6 +267,7 @@
     "noConnections": "Keine Bankverbindungen gefunden",
     "noConnectionsDescription": "Verbinden Sie Ihr Bankkonto, um Transaktionen automatisch zu synchronisieren",
     "currentBalance": "Aktueller Kontostand",
+    "pendingTransactions": "Ausstehende Transaktionen",
     "autoSyncBanner": "Automatische Transaktionssynchronisation aktiviert. Ihre Bankverbindungen rufen täglich automatisch neue Transaktionen ab. Alle Daten sind verschlüsselt und sicher gespeichert.",
     "about": {
       "title": "Über Bankverbindungen",

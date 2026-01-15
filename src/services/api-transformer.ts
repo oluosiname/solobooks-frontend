@@ -5,6 +5,7 @@ import { ProfileData } from "@/lib/profile-api";
 import { TransactionData } from "@/lib/transactions-api";
 import type { SubscriptionData } from "@/lib/subscription-api";
 import type { PaymentMethodData } from "@/lib/payment-method-api";
+import type { BankConnectionData } from "@/lib/bank-connections-api";
 import {
   Client,
   InvoiceSettings,
@@ -14,6 +15,7 @@ import {
   Transaction,
   Subscription,
   PaymentMethod,
+  BankConnection,
 } from "@/types";
 import humps from "humps";
 
@@ -98,5 +100,21 @@ export function transformPaymentMethodData(data: PaymentMethodData): PaymentMeth
     expiryMonth: data.exp_month,
     expiryYear: data.exp_year,
     created: data.created,
+  };
+}
+
+export function transformBankConnectionData(data: BankConnectionData): BankConnection {
+  return {
+    id: data.id,
+    status: data.status,
+    syncEnabled: data.sync_enabled,
+    bankName: data.bank_name,
+    accountNumber: data.account_number,
+    institutionId: data.institution_id,
+    lastSynced: data.last_sync_at,
+    expiresAt: data.expires_at,
+    createdAt: data.created_at,
+    updatedAt: data.updated_at,
+    pendingTransactionsCount: data.pending_transactions_count,
   };
 }

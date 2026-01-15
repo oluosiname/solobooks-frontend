@@ -3,22 +3,16 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
-import {
-  Plus,
-  RefreshCw,
-  Settings,
-  Trash2,
-  CheckCircle2,
-} from "lucide-react";
+import { Plus, RefreshCw, Settings, Trash2, CheckCircle2 } from "lucide-react";
 import { AppShell } from "@/components/layout";
 import { Button, Card } from "@/components/atoms";
 import { AlertBanner } from "@/components/organisms";
 import { api } from "@/services/api";
-import { formatCurrency, formatRelativeTime, cn } from "@/lib/utils";
+import { formatRelativeTime, cn } from "@/lib/utils";
 
 export default function BankConnectionsPage() {
   const t = useTranslations();
-  const [syncingId, setSyncingId] = useState<string | null>(null);
+  const [syncingId, setSyncingId] = useState<number | null>(null);
 
   const {
     data: bankConnections,
@@ -29,7 +23,7 @@ export default function BankConnectionsPage() {
     queryFn: api.fetchBankConnections,
   });
 
-  const handleSync = async (bankId: string) => {
+  const handleSync = async (bankId: number) => {
     setSyncingId(bankId);
     await api.syncBankConnection(bankId);
     await refetch();
@@ -101,17 +95,19 @@ export default function BankConnectionsPage() {
                         {bank.bankName}
                       </h3>
                       <p className="text-sm text-slate-500">
-                        {bank.accountName} • {bank.accountNumber}
+                        {bank.accountNumber}
                       </p>
                     </div>
                   </div>
 
-                  {/* Balance */}
+                  {/* Pending Transactions */}
                   <div className="text-right">
                     <p className="text-lg font-semibold text-slate-900">
-                      {formatCurrency(bank.balance, bank.currency)}
+                      {bank.pendingTransactionsCount}
                     </p>
-                    <p className="text-sm text-slate-500">{t("bankConnections.currentBalance")}</p>
+                    <p className="text-sm text-slate-500">
+                      {t("bankConnections.pendingTransactions")}
+                    </p>
                   </div>
                 </div>
 
@@ -151,7 +147,11 @@ export default function BankConnectionsPage() {
                   <Button variant="ghost" size="sm" className="h-10 w-10 p-0">
                     <Settings className="h-4 w-4" />
                   </Button>
-                  <Button variant="ghost" size="sm" className="h-10 w-10 p-0 hover:bg-red-50 hover:text-red-600">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-10 w-10 p-0 hover:bg-red-50 hover:text-red-600"
+                  >
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
@@ -166,18 +166,10 @@ export default function BankConnectionsPage() {
             {t("bankConnections.about.title")}
           </h3>
           <ul className="mt-3 space-y-2 text-sm text-slate-600">
-            <li>
-              • {t("bankConnections.about.security")}
-            </li>
-            <li>
-              • {t("bankConnections.about.syncFrequency")}
-            </li>
-            <li>
-              • {t("bankConnections.about.pauseSync")}
-            </li>
-            <li>
-              • {t("bankConnections.about.reviewTransactions")}
-            </li>
+            <li>• {t("bankConnections.about.security")}</li>
+            <li>• {t("bankConnections.about.syncFrequency")}</li>
+            <li>• {t("bankConnections.about.pauseSync")}</li>
+            <li>• {t("bankConnections.about.reviewTransactions")}</li>
           </ul>
         </Card>
       </div>
