@@ -143,6 +143,16 @@ export interface VatReport {
   createdAt: string;
 }
 
+export interface Plan {
+  id: string;
+  name: string;
+  price: string;
+  amount_cents: number;
+  currency: string;
+  stripe_price_id: string;
+  features: string[];
+}
+
 export type SubscriptionPlan = "free" | "pro" | "business";
 export type SubscriptionStatus = "active" | "trial" | "cancelled" | "past_due";
 
