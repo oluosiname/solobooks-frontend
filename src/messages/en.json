@@ -4,6 +4,7 @@
     "save": "Save",
     "cancel": "Cancel",
     "delete": "Delete",
+    "discard": "Discard",
     "edit": "Edit",
     "create": "Create",
     "add": "Add",
@@ -155,6 +156,16 @@
   },
   "transactions": {
     "title": "Transactions",
+    "pendingTitle": "Pending Transactions",
+    "syncedTitle": "Synced Transactions",
+    "syncedDescription": "Review and categorize transactions synced from your bank accounts",
+    "noSyncedTransactions": "No synced transactions",
+    "syncedDescriptionEmpty": "Transactions synced from your bank accounts will appear here",
+    "discardTitle": "Discard Transaction",
+    "discardConfirm": "Are you sure you want to discard \"{description}\"? This action cannot be undone.",
+    "discardSuccess": "Transaction discarded successfully",
+    "discardError": "Failed to discard transaction",
+    "discarding": "Discarding...",
     "newExpense": "New Expense",
     "newIncome": "New Income",
     "addExpense": "Add Expense",
@@ -173,7 +184,8 @@
     "types": {
       "all": "All",
       "income": "Income",
-      "expense": "Expense"
+      "expense": "Expense",
+      "pending": "Pending"
     },
     "uncheckedAlert": "You have {count} unchecked transactions synced from your bank account(s)",
     "viewPending": "View Pending",

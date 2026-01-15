@@ -2,7 +2,7 @@ import { ClientData } from "@/lib/clients-api";
 import { InvoiceSettingData, CurrencyData } from "@/lib/invoice-settings-api";
 import { VatStatusData } from "@/lib/vat-status-api";
 import { ProfileData } from "@/lib/profile-api";
-import { TransactionData } from "@/lib/transactions-api";
+import { TransactionData, SyncedTransactionData } from "@/lib/transactions-api";
 import type { SubscriptionData } from "@/lib/subscription-api";
 import type { PaymentMethodData } from "@/lib/payment-method-api";
 import type { BankConnectionData } from "@/lib/bank-connections-api";
@@ -63,6 +63,31 @@ export function transformVatStatusData(data: VatStatusData): VatStatus {
 
 export function transformTransactionData(data: TransactionData): Transaction {
   return camelize<Transaction>(data);
+}
+
+export function transformSyncedTransactionData(data: SyncedTransactionData): Transaction {
+  return {
+    id: data.id,
+    description: data.description,
+    date: data.booked_at,
+    vatRate: 0, // Not provided in synced data
+    vatAmount: 0, // Not provided in synced data
+    amount: data.amount,
+    customerLocation: "", // Not provided in synced data
+    customerVatNumber: null, // Not provided in synced data
+    vatTechnique: "", // Not provided in synced data
+    source: "bank_sync", // Indicate this came from bank sync
+    receiptUrl: null, // Not provided in synced data
+    transactionType: data.amount >= 0 ? "Income" : "Expense", // Infer from amount
+    category: {
+      id: 0,
+      name: "Uncategorized",
+      categoryType: data.amount >= 0 ? "income" : "expense",
+      translatedName: "Uncategorized"
+    }, // Default category for uncategorized transactions
+    createdAt: data.created_at,
+    updatedAt: data.updated_at,
+  };
 }
 
 export function transformProfileData(data: ProfileData): User {

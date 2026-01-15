@@ -56,6 +56,35 @@ export interface TransactionFilters {
   description?: string;
 }
 
+export interface BankConnectionSummary {
+  id: number;
+  status: string;
+  sync_enabled: boolean;
+  bank_name: string;
+  account_number: string;
+  institution_id: string;
+  last_sync_at: string;
+  expires_at: string;
+  created_at: string;
+  updated_at: string;
+  pending_transactions_count: number;
+}
+
+export interface SyncedTransactionData {
+  id: number;
+  amount: number;
+  booked_at: string;
+  description: string;
+  status: "pending" | "approved" | "discarded";
+  bank_connection: BankConnectionSummary;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface SyncedTransactionsResponse {
+  data: SyncedTransactionData[];
+}
+
 export interface CreateTransactionRequest {
   transaction: {
     description: string;
@@ -107,6 +136,26 @@ class TransactionsApiClient extends BaseApiClient {
    */
   async getTransaction(id: string | number): Promise<TransactionResponse> {
     return this.get<TransactionResponse>(`/api/v1/transactions/${id}`);
+  }
+
+  /**
+   * Get synced transactions
+   * GET /api/v1/synced_transactions
+   */
+  async getSyncedTransactions(bankConnectionId?: number): Promise<SyncedTransactionsResponse> {
+    const params: Record<string, number> = {};
+    if (bankConnectionId) {
+      params.bank_connection_id = bankConnectionId;
+    }
+    return this.get<SyncedTransactionsResponse>("/api/v1/synced_transactions", params);
+  }
+
+  /**
+   * Discard synced transaction
+   * PATCH /api/v1/synced_transactions/{id}/discard
+   */
+  async discardSyncedTransaction(id: string | number): Promise<{ message: string }> {
+    return this.patch<{ message: string }>(`/api/v1/synced_transactions/${id}/discard`);
   }
 
   /**

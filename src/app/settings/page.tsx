@@ -51,7 +51,7 @@ export default function SettingsPage() {
     { id: "privacy", label: t("settings.tabs.privacy"), icon: Lock },
   ];
 
-  // Notification toggles state
+  // Initialize state from unified settings when loaded
   const [notifications, setNotifications] = useState({
     invoiceSent: true,
     invoicePaid: true,
@@ -65,7 +65,6 @@ export default function SettingsPage() {
     weeklyReport: true,
   });
 
-  // Privacy toggles state
   const [privacy, setPrivacy] = useState({
     essential: true,
     analytics: true,
@@ -87,7 +86,7 @@ export default function SettingsPage() {
 
   // Mutation for updating profile
   const updateProfileMutation = useMutation({
-    mutationFn: (data: Partial<User>) => newApi.updateProfile(data),
+    mutationFn: (data: Partial<UserType>) => newApi.updateProfile(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user"] });
       showToast.success("Profile updated successfully");
@@ -97,7 +96,13 @@ export default function SettingsPage() {
     },
   });
 
-  // Fetch invoice settings and currencies
+  // Fetch unified settings (for app settings, notifications, privacy)
+  const { data: unifiedSettings } = useQuery({
+    queryKey: ["unifiedSettings"],
+    queryFn: newApi.fetchSettings,
+  });
+
+  // Fetch invoice settings and currencies (separate from unified settings)
   const { data: invoiceSettings, isLoading: isLoadingSettings } = useQuery({
     queryKey: ["invoiceSettings"],
     queryFn: newApi.fetchInvoiceSettings,
@@ -107,6 +112,35 @@ export default function SettingsPage() {
     queryKey: ["currencies"],
     queryFn: newApi.fetchCurrencies,
   });
+
+  // Update state when unified settings are loaded
+  useEffect(() => {
+    if (unifiedSettings) {
+      setNotifications({
+        invoiceSent: unifiedSettings.notification_preferences?.invoice_created ?? true,
+        invoicePaid: unifiedSettings.notification_preferences?.payment_received ?? true,
+        invoiceOverdue: unifiedSettings.notification_preferences?.invoice_overdue ?? true,
+        newClient: false, // Not in unified settings
+        vatDue: unifiedSettings.notification_preferences?.monthly_summary ?? true,
+        vatSubmitted: false, // Not in unified settings
+        taxYearEnd: false, // Not in unified settings
+        largeExpense: false, // Not in unified settings
+        dailySummary: false, // Not in unified settings
+        weeklyReport: false, // Not in unified settings
+      });
+
+      setPrivacy({
+        essential: true, // Not in unified settings
+        analytics: unifiedSettings.privacy_preferences?.analytics ?? true,
+        marketing: unifiedSettings.privacy_preferences?.marketing ?? false,
+        thirdParty: unifiedSettings.privacy_preferences?.third_party ?? true,
+        clientConsent: unifiedSettings.privacy_preferences?.client_consent_tracking_enabled === "1" || unifiedSettings.privacy_preferences?.client_consent_tracking_enabled === true,
+        clientDeletion: unifiedSettings.privacy_preferences?.client_deletion_requests_enabled === "1" || unifiedSettings.privacy_preferences?.client_deletion_requests_enabled === true,
+        emailBreach: false, // Not in unified settings
+        smsBreach: false, // Not in unified settings
+      });
+    }
+  }, [unifiedSettings]);
 
   // Invoice settings form state
   const [invoiceFormData, setInvoiceFormData] = useState<InvoiceSettingsInput>({
@@ -206,7 +240,7 @@ export default function SettingsPage() {
               isSaving={updateProfileMutation.isPending}
             />
           )}
-          {activeTab === "app" && <AppSettings />}
+          {activeTab === "app" && <AppSettings settings={unifiedSettings} />}
           {activeTab === "invoice" && (
             <InvoiceSettings
               invoiceSettings={invoiceSettings}
@@ -223,6 +257,7 @@ export default function SettingsPage() {
             <NotificationSettings
               notifications={notifications}
               onNotificationsChange={setNotifications}
+              unifiedSettings={unifiedSettings}
             />
           )}
           {activeTab === "security" && (
@@ -236,6 +271,7 @@ export default function SettingsPage() {
             <PrivacySettings
               privacy={privacy}
               onPrivacyChange={setPrivacy}
+              unifiedSettings={unifiedSettings}
             />
           )}
         </div>

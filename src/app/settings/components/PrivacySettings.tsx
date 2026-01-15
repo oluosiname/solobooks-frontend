@@ -1,8 +1,12 @@
 import { useTranslations } from "next-intl";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Check, Download, Eye, Edit, AlertTriangle, FileText } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { styles, buttonStyles } from "@/lib/styles";
 import { Toggle } from "@/components/atoms";
+import { api } from "@/services/api";
+import { showToast } from "@/lib/toast";
+import type { SettingsData } from "@/lib/settings-api";
 
 interface PrivacySettingsProps {
   privacy: {
@@ -16,12 +20,42 @@ interface PrivacySettingsProps {
     smsBreach: boolean;
   };
   onPrivacyChange: (privacy: any) => void;
+  unifiedSettings?: SettingsData;
 }
 
 export function PrivacySettings({
   privacy,
   onPrivacyChange,
+  unifiedSettings,
 }: PrivacySettingsProps) {
+  const queryClient = useQueryClient();
+
+  const updatePrivacyMutation = useMutation({
+    mutationFn: (data: Partial<SettingsData>) => api.updateSettings(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["unifiedSettings"] });
+      showToast.success("Privacy preferences saved successfully");
+    },
+    onError: (error: any) => {
+      showToast.apiError(error, "Failed to save privacy preferences");
+    },
+  });
+
+  const handleConsentSave = () => {
+    if (unifiedSettings) {
+      updatePrivacyMutation.mutate({
+        privacy_preferences: {
+          analytics: privacy.analytics,
+          marketing: privacy.marketing,
+          third_party: privacy.thirdParty,
+          data_retention_years: unifiedSettings.privacy_preferences?.data_retention_years ?? 10,
+          data_processing_location: unifiedSettings.privacy_preferences?.data_processing_location ?? "eu_only",
+          client_consent_tracking_enabled: privacy.clientConsent,
+          client_deletion_requests_enabled: privacy.clientDeletion,
+        },
+      });
+    }
+  };
   return (
     <>
       {/* Compliance Status */}
@@ -113,9 +147,13 @@ export function PrivacySettings({
             </div>
           </div>
           <div className="mt-6 flex justify-end border-t border-slate-100 pt-6">
-            <button className={buttonStyles("primary")}>
+            <button
+              className={buttonStyles("primary")}
+              onClick={handleConsentSave}
+              disabled={updatePrivacyMutation.isPending}
+            >
               <Check className="h-4 w-4" />
-              Save Consent Preferences
+              {updatePrivacyMutation.isPending ? "Saving..." : "Save Consent Preferences"}
             </button>
           </div>
         </div>
