@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
+import { useSearchParams } from 'next/navigation';
 import { Plus, MoreVertical, ChevronLeft, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { AppShell } from '@/components/layout';
@@ -15,16 +16,20 @@ import type { InvoiceStatus } from '@/types';
 
 export default function InvoicesPage() {
   const t = useTranslations();
+  const searchParams = useSearchParams();
+  const clientId = searchParams.get('client_id');
+
   const [activeTab, setActiveTab] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
   const { data: invoicesData, isLoading } = useQuery({
-    queryKey: ['invoices', activeTab, searchQuery, currentPage],
+    queryKey: ['invoices', activeTab, searchQuery, currentPage, clientId],
     queryFn: () => fetchInvoices({
       status: activeTab === 'all' ? undefined : activeTab as any,
       query: searchQuery || undefined,
+      client_id: clientId || undefined,
       page: currentPage,
       per_page: itemsPerPage,
     }),
@@ -43,8 +48,15 @@ export default function InvoicesPage() {
   ];
 
   return (
-    <AppShell title={t('invoices.title')}>
+    <AppShell title={clientId ? `${t('invoices.title')} - ${t('invoices.filteringByClient')}` : t('invoices.title')}>
       <div className="space-y-6">
+        {clientId && (
+          <div className="rounded-lg bg-blue-50 p-4">
+            <p className="text-sm text-blue-700">
+              {t('invoices.filteringByClientDesc')}
+            </p>
+          </div>
+        )}
         {/* Header Actions */}
         <div className="flex items-center justify-between">
           <Tabs tabs={tabs} activeTab={activeTab} onChange={setActiveTab} />

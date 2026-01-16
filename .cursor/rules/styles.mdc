@@ -1,0 +1,14 @@
+---
+alwaysApply: true
+---
+
+# Data Transformation Rules
+
+## API Data Transformation
+
+- Always use `camelize` for transforming backend fields to frontend fields
+- Always use `humps.decamelizeKeys` for transforming data to be sent to the backend
+
+## Rationale
+
+This ensures consistent data transformation between the backend (which typically uses snake_case) and frontend (which uses camelCase), maintaining type safety and preventing data corruption.

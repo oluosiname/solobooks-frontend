@@ -2,8 +2,17 @@
 
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Plus, RefreshCw, Settings, Trash2, CheckCircle2 } from "lucide-react";
+import {
+  Plus,
+  RefreshCw,
+  Settings,
+  Trash2,
+  CheckCircle2,
+  ToggleLeft,
+  ToggleRight,
+} from "lucide-react";
 import { AppShell } from "@/components/layout";
 import { Button, Card } from "@/components/atoms";
 import { AlertBanner } from "@/components/organisms";
@@ -11,8 +20,10 @@ import { api } from "@/services/api";
 import { formatRelativeTime, cn } from "@/lib/utils";
 
 export default function BankConnectionsPage() {
+  const router = useRouter();
   const t = useTranslations();
   const [syncingId, setSyncingId] = useState<number | null>(null);
+  const [togglingId, setTogglingId] = useState<number | null>(null);
 
   const {
     data: bankConnections,
@@ -30,6 +41,17 @@ export default function BankConnectionsPage() {
     setSyncingId(null);
   };
 
+  const handleToggleSync = async (bankId: number) => {
+    setTogglingId(bankId);
+    await api.toggleBankConnection(bankId);
+    await refetch();
+    setTogglingId(null);
+  };
+
+  const handleAddConnection = () => {
+    router.push("/bank-connections/connect");
+  };
+
   return (
     <AppShell title={t("bankConnections.title")}>
       <div className="space-y-6">
@@ -43,7 +65,7 @@ export default function BankConnectionsPage() {
               {t("bankConnections.subtitle")}
             </p>
           </div>
-          <Button variant="primary">
+          <Button variant="primary" onClick={handleAddConnection}>
             <Plus className="h-4 w-4" />
             {t("bankConnections.addConnection")}
           </Button>
@@ -71,7 +93,11 @@ export default function BankConnectionsPage() {
             <p className="mt-2 text-slate-500">
               {t("bankConnections.noConnectionsDescription")}
             </p>
-            <Button variant="primary" className="mt-4">
+            <Button
+              variant="primary"
+              className="mt-4"
+              onClick={handleAddConnection}
+            >
               <Plus className="h-4 w-4" />
               {t("bankConnections.addConnection")}
             </Button>
@@ -127,6 +153,33 @@ export default function BankConnectionsPage() {
                       {t("bankConnections.connected")}
                     </span>
                   </div>
+                </div>
+
+                {/* Sync Toggle */}
+                <div className="mt-4 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    {bank.syncEnabled ? (
+                      <ToggleRight className="h-5 w-5 text-emerald-500" />
+                    ) : (
+                      <ToggleLeft className="h-5 w-5 text-slate-400" />
+                    )}
+                    <span className="text-sm text-slate-600">
+                      {bank.syncEnabled
+                        ? t("bankConnections.syncEnabled")
+                        : t("bankConnections.syncDisabled")}
+                    </span>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleToggleSync(bank.id)}
+                    isLoading={togglingId === bank.id}
+                    className="text-xs"
+                  >
+                    {bank.syncEnabled
+                      ? t("bankConnections.pauseSync")
+                      : t("bankConnections.resumeSync")}
+                  </Button>
                 </div>
 
                 {/* Actions */}
