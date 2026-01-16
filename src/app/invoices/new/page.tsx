@@ -15,7 +15,7 @@ import type { Client, InvoiceCategory } from "@/types";
 interface LineItem {
   id: string;
   description: string;
-  price: number;
+  unitPrice: number;
   unit: string;
   quantity: number;
 }
@@ -54,7 +54,7 @@ export default function NewInvoicePage() {
     },
   });
   const [lineItems, setLineItems] = useState<LineItem[]>([
-    { id: "1", description: "", price: 0, unit: "pc", quantity: 1 },
+    { id: "1", description: "", unitPrice: 0, unit: "pc", quantity: 1 },
   ]);
 
   const [formData, setFormData] = useState({
@@ -92,7 +92,7 @@ export default function NewInvoicePage() {
       {
         id: Date.now().toString(),
         description: "",
-        price: 0,
+        unitPrice: 0,
         unit: "pc",
         quantity: 1,
       },
@@ -118,7 +118,7 @@ export default function NewInvoicePage() {
   };
 
   const subtotal = lineItems.reduce(
-    (sum, item) => sum + item.price * item.quantity,
+    (sum, item) => sum + item.unitPrice * item.quantity,
     0
   );
   const total = subtotal;
@@ -154,7 +154,7 @@ export default function NewInvoicePage() {
     // Validate line items
     if (
       lineItems.length === 0 ||
-      lineItems.some((item) => !item.description.trim() || item.price <= 0)
+      lineItems.some((item) => !item.description.trim() || item.unitPrice <= 0)
     ) {
       showToast.error(
         "Please add at least one line item with a description and price greater than 0"
@@ -172,7 +172,7 @@ export default function NewInvoicePage() {
       lineItems: lineItems.map((item) => ({
         id: item.id,
         description: item.description,
-        price: item.price,
+        unitPrice: item.unitPrice,
         unit: item.unit,
         quantity: item.quantity,
       })),
@@ -348,11 +348,11 @@ export default function NewInvoicePage() {
                           type="number"
                           className={styles.input}
                           placeholder="0.00"
-                          value={item.price || ""}
+                          value={item.unitPrice || ""}
                           onChange={(e) =>
                             updateLineItem(
                               item.id,
-                              "price",
+                              "unitPrice",
                               parseFloat(e.target.value) || 0
                             )
                           }

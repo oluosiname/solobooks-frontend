@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Check } from "lucide-react";
 import { AppShell } from "@/components/layout";
@@ -15,7 +15,7 @@ import * as humps from "humps";
 export default function NewExpensePage() {
   const router = useRouter();
   const queryClient = useQueryClient();
-
+  const searchParams = useSearchParams();
 
   const [formData, setFormData] = useState<{
     transactionType: "Expense" | "Income";
@@ -28,13 +28,13 @@ export default function NewExpensePage() {
     customerVatNumber: string;
   }>({
     transactionType: "Expense",
-    categoryId: "",
-    date: new Date().toISOString().split("T")[0],
-    amount: "",
-    description: "",
-    vatRate: 19, // Default German VAT rate
-    customerLocation: "germany",
-    customerVatNumber: "",
+    categoryId: searchParams.get("categoryId") || "",
+    date: searchParams.get("date") || new Date().toISOString().split("T")[0],
+    amount: searchParams.get("amount") || "",
+    description: searchParams.get("description") || "",
+    vatRate: parseFloat(searchParams.get("vatRate") || "19"), // Default German VAT rate
+    customerLocation: searchParams.get("customerLocation") || "germany",
+    customerVatNumber: searchParams.get("customerVatNumber") || "",
   });
 
   const [receiptFile, setReceiptFile] = useState<File | null>(null);
@@ -52,12 +52,11 @@ export default function NewExpensePage() {
       queryClient.invalidateQueries({ queryKey: ["unchecked-transactions"] });
       router.push("/transactions");
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       console.error("Failed to create transaction:", error);
       showToast.error("Failed to create transaction. Please try again.");
     },
   });
-
 
   const handleChange = (field: string, value: string) => {
     setFormData({ ...formData, [field]: value });
@@ -84,7 +83,16 @@ export default function NewExpensePage() {
     };
 
     createTransactionMutation.mutate({
-      transaction: humps.decamelizeKeys(apiData) as any,
+      transaction: humps.decamelizeKeys(apiData) as {
+        transaction_type: "income" | "expense";
+        amount: number;
+        date: string;
+        description: string;
+        financial_category_id: string;
+        vat_rate?: number;
+        customer_location?: string;
+        customer_vat_number?: string;
+      },
       receipt: receiptFile || undefined,
     });
   };

@@ -85,10 +85,21 @@ export function GroupedTransactionsTable({
   const handleEdit = (transaction: Transaction) => {
     // Determine if it's income or expense based on transactionType field
     const isIncome = transaction.transactionType === "Income";
-    const editRoute = isIncome ? "edit-income" : "edit-expense";
+    const newRoute = isIncome ? "new-income" : "new-expense";
 
-    // Navigate to the appropriate edit page with transaction ID as URL parameter
-    router.push(`/transactions/${editRoute}?id=${transaction.id}`);
+    // Create URL search parameters with transaction data to prefill the form
+    const params = new URLSearchParams({
+      description: transaction.description,
+      date: transaction.date,
+      amount: transaction.amount.toString(),
+      vatRate: transaction.vatRate.toString(),
+      customerLocation: transaction.customerLocation,
+      customerVatNumber: transaction.customerVatNumber || "",
+      categoryId: transaction.category?.id?.toString() || "",
+    });
+
+    // Navigate to the appropriate new transaction page with prefilled data
+    router.push(`/transactions/${newRoute}?${params.toString()}`);
   };
 
   return (

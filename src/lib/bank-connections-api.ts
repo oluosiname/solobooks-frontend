@@ -36,8 +36,35 @@ export interface SyncResponse {
   message: string;
 }
 
-export interface BankLogosResponse {
-  data: Record<string, string>;
+export interface BankData {
+  id: string;
+  name: string;
+  logo?: string;
+  countries: string[];
+}
+
+export interface BanksListResponse {
+  data: BankData[];
+}
+
+export interface InitiateConnectionRequest {
+  institution_id: string;
+  locale: string;
+}
+
+export interface InitiateConnectionResponse {
+  data: {
+    redirect_url: string;
+    requisition_id: string;
+  };
+}
+
+export interface CompleteConnectionRequest {
+  // No parameters needed - backend handles internally
+}
+
+export interface CompleteConnectionResponse {
+  data: BankConnectionData;
 }
 
 // ============================================
@@ -74,11 +101,37 @@ export class BankConnectionsApiClient extends BaseApiClient {
   }
 
   /**
-   * Get bank logos
-   * GET /api/v1/bank_connections/logos
+   * Get available banks for connection
+   * GET /api/v1/bank_connections/banks
    */
-  async getBankLogos(): Promise<BankLogosResponse> {
-    return this.get<BankLogosResponse>("/api/v1/bank_connections/logos");
+  async getAvailableBanks(): Promise<BanksListResponse> {
+    return this.get<BanksListResponse>("/api/v1/bank_connections/banks");
+  }
+
+  /**
+   * Initiate bank connection
+   * POST /api/v1/bank_connections
+   */
+  async initiateConnection(
+    data: InitiateConnectionRequest
+  ): Promise<InitiateConnectionResponse> {
+    return this.post<InitiateConnectionResponse>(
+      "/api/v1/bank_connections",
+      data
+    );
+  }
+
+  /**
+   * Complete bank connection after callback
+   * POST /api/v1/bank_connections/callback
+   */
+  async completeConnection(
+    data: CompleteConnectionRequest
+  ): Promise<CompleteConnectionResponse> {
+    return this.post<CompleteConnectionResponse>(
+      "/api/v1/bank_connections/callback",
+      data
+    );
   }
 }
 

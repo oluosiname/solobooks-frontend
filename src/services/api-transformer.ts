@@ -5,7 +5,7 @@ import { ProfileData } from "@/lib/profile-api";
 import { TransactionData, SyncedTransactionData } from "@/lib/transactions-api";
 import type { SubscriptionData } from "@/lib/subscription-api";
 import type { PaymentMethodData } from "@/lib/payment-method-api";
-import type { BankConnectionData } from "@/lib/bank-connections-api";
+import type { BankConnectionData, BankData } from "@/lib/bank-connections-api";
 import { SettingsData as ApiSettingsData } from "@/lib/settings-api";
 import { DashboardStatsData } from "@/lib/dashboard-api";
 import { FinancialCategoryData } from "@/lib/financial-categories-api";
@@ -25,8 +25,10 @@ import {
   DashboardStats,
   TransactionCategory,
   InvoiceCategory,
+  Bank,
 } from "@/types";
 import humps from "humps";
+import { InvoiceData } from "@/lib/invoices-api";
 
 function camelize<T>(input: unknown): T {
   return humps.camelizeKeys(input) as T;
@@ -140,6 +142,18 @@ export function transformInvoiceCategoryData(
   return camelize<InvoiceCategory>(data);
 }
 
-export function transformInvoiceData(data: any): Invoice {
-  return camelize<Invoice>(data);
+export function transformBankData(data: BankData): Bank {
+  return camelize<Bank>(data);
+}
+
+export function transformInvoiceData(data: InvoiceData): Invoice {
+  const base =
+    camelize<Omit<Invoice, "clientId" | "clientName" | "currency">>(data);
+
+  return {
+    ...base,
+    clientId: data.client.id.toString(),
+    clientName: data.client.name,
+    currency: data.currency.code,
+  };
 }

@@ -55,6 +55,7 @@ import type {
   TransactionFilters,
   PaginatedTransactions,
   BankConnection,
+  Bank,
   VatReport,
   Subscription,
   PaymentMethod,
@@ -82,6 +83,7 @@ import {
   transformSubscriptionData,
   transformPaymentMethodData,
   transformBankConnectionData,
+  transformBankData,
   transformSyncedTransactionData,
   transformSettingsData,
   transformDashboardStatsData,
@@ -219,7 +221,7 @@ export async function createInvoice(data: {
   lineItems: Array<{
     id: string;
     description: string;
-    price: number;
+    unitPrice: number;
     unit: string;
     quantity: number;
   }>;
@@ -235,11 +237,11 @@ export async function createInvoice(data: {
       vat_rate: 19, // Default VAT rate
       vat_included: true,
       vat_technique: "standard",
-      line_items: data.lineItems.map(item => ({
+      line_items: data.lineItems.map((item) => ({
         description: item.description,
         quantity: item.quantity,
         unit: item.unit,
-        unit_price: item.price,
+        unit_price: item.unitPrice,
       })),
     },
   };
@@ -432,6 +434,27 @@ export async function toggleBankConnection(
   id: string | number
 ): Promise<BankConnection> {
   const response = await bankConnectionsApi.toggleBankConnection(id);
+  return transformBankConnectionData(response.data);
+}
+
+export async function fetchBanks(): Promise<Bank[]> {
+  const response = await bankConnectionsApi.getAvailableBanks();
+  return response.data.map(transformBankData);
+}
+
+export async function initiateBankConnection(institutionId: string): Promise<{
+  redirect_url: string;
+  requisition_id: string;
+}> {
+  const response = await bankConnectionsApi.initiateConnection({
+    institution_id: institutionId,
+    locale: "en",
+  });
+  return response.data;
+}
+
+export async function completeBankConnection(): Promise<BankConnection> {
+  const response = await bankConnectionsApi.completeConnection({});
   return transformBankConnectionData(response.data);
 }
 
@@ -664,6 +687,9 @@ export const api = {
   fetchProfitLossData,
 
   // Bank Connections
+  fetchBanks,
+  initiateBankConnection,
+  completeBankConnection,
   fetchBankConnections,
   fetchBankConnection,
   syncBankConnection,

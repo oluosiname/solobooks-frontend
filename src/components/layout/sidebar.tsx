@@ -29,7 +29,7 @@ const mainNavItems: NavItem[] = [
   { href: "/invoices", labelKey: "invoices", icon: FileText },
   { href: "/clients", labelKey: "clients", icon: Users },
   { href: "/transactions", labelKey: "transactions", icon: ArrowLeftRight },
-  { href: "/bank-connections", labelKey: "bankConnections", icon: Building2 },
+  { href: "/bank-connections", labelKey: "navBankConnections", icon: Building2 },
   { href: "/reports", labelKey: "reports", icon: BarChart3 },
   { href: "/taxes", labelKey: "taxes", icon: Calculator },
 ];

@@ -1,24 +1,79 @@
 "use client";
 
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
-import { Plus, Mail, Phone, MapPin, MoreVertical } from "lucide-react";
+import { useRouter } from "next/navigation";
+import {
+  Plus,
+  Mail,
+  Phone,
+  MapPin,
+  MoreVertical,
+  Trash2,
+  FileText,
+} from "lucide-react";
 import Link from "next/link";
 import { AppShell } from "@/components/layout";
 import { SearchInput } from "@/components/ui";
 import { api } from "@/lib/api";
 import { formatCurrency, cn } from "@/lib/utils";
 import { styles, buttonStyles } from "@/lib/styles";
+import { showToast } from "@/lib/toast";
+import type { Client } from "@/types";
 
 export default function ClientsPage() {
   const t = useTranslations();
+  const router = useRouter();
+  const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState("");
+  const [dropdownOpen, setDropdownOpen] = useState<string | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [clientToDelete, setClientToDelete] = useState<Client | null>(null);
 
   const { data: clients, isLoading } = useQuery({
     queryKey: ["clients"],
     queryFn: api.getClients,
   });
+
+  const deleteClientMutation = useMutation({
+    mutationFn: (id: string) => api.deleteClient(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["clients"] });
+      showToast.success("Client deleted successfully");
+      setDeleteDialogOpen(false);
+      setClientToDelete(null);
+    },
+    onError: (error: any) => {
+      console.error("Failed to delete client:", error);
+      showToast.error("Failed to delete client");
+    },
+  });
+
+  const handleDeleteClick = (client: Client) => {
+    setClientToDelete(client);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (clientToDelete) {
+      deleteClientMutation.mutate(clientToDelete.id);
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setDeleteDialogOpen(false);
+    setClientToDelete(null);
+  };
+
+  const handleMenuClick = (clientId: string) => {
+    setDropdownOpen(dropdownOpen === clientId ? null : clientId);
+  };
+
+  const handleViewInvoices = (clientId: string) => {
+    router.push(`/invoices?client_id=${clientId}`);
+    setDropdownOpen(null);
+  };
 
   const filteredClients = clients?.filter(
     (client) =>
@@ -83,9 +138,33 @@ export default function ClientsPage() {
                       </div>
                     </div>
                   </div>
-                  <button className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600">
-                    <MoreVertical className="h-4 w-4" />
-                  </button>
+                  <div className="flex gap-1">
+                    <button
+                      onClick={() => handleDeleteClick(client)}
+                      className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-red-50 hover:text-red-600"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                    <div className="relative">
+                      <button
+                        onClick={() => handleMenuClick(client.id)}
+                        className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
+                      >
+                        <MoreVertical className="h-4 w-4" />
+                      </button>
+                      {dropdownOpen === client.id && (
+                        <div className="absolute right-0 top-8 z-10 w-48 bg-white rounded-lg shadow-lg border border-slate-200 py-1">
+                          <button
+                            onClick={() => handleViewInvoices(client.id)}
+                            className="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-2"
+                          >
+                            <FileText className="h-4 w-4" />
+                            View Invoices
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
 
                 <div className="mt-4 flex gap-4 border-t border-slate-100 pt-4">
@@ -118,6 +197,48 @@ export default function ClientsPage() {
                 </p>
               </div>
             ))}
+          </div>
+        )}
+
+        {/* Delete Confirmation Dialog */}
+        {deleteDialogOpen && clientToDelete && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+            <div className="mx-4 w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-100">
+                  <Trash2 className="h-5 w-5 text-red-600" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold text-slate-900">
+                    Delete Client
+                  </h3>
+                  <p className="text-sm text-slate-600">
+                    Are you sure you want to delete "{clientToDelete.name}"?
+                    This will also delete all associated invoices and cannot be
+                    undone.
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-6 flex gap-3">
+                <button
+                  onClick={handleCancelDelete}
+                  className="flex-1 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
+                  disabled={deleteClientMutation.isPending}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleConfirmDelete}
+                  disabled={deleteClientMutation.isPending}
+                  className="flex-1 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {deleteClientMutation.isPending
+                    ? "Deleting..."
+                    : "Delete Client"}
+                </button>
+              </div>
+            </div>
           </div>
         )}
       </div>

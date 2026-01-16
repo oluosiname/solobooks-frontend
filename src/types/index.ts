@@ -117,6 +117,13 @@ export interface PaginatedTransactions {
 
 export type BankConnectionStatus = "active" | "inactive" | "error";
 
+export interface Bank {
+  id: string;
+  name: string;
+  logo?: string;
+  countries: string[];
+}
+
 export interface BankConnection {
   id: number;
   status: string;

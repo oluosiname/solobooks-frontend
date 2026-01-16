@@ -31,6 +31,9 @@ export const api = {
   // Clients
   getClients: newApi.fetchClients,
   getClient: newApi.fetchClient,
+  createClient: newApi.createClient,
+  updateClient: newApi.updateClient,
+  deleteClient: newApi.deleteClient,
 
   // Invoices
   async getInvoices(status?: string, params?: any) {
@@ -38,7 +41,7 @@ export const api = {
     let invoices = result.invoices;
 
     // Apply status filter if provided (for backward compatibility)
-    if (status && status !== 'all') {
+    if (status && status !== "all") {
       invoices = invoices.filter((inv) => inv.status === status);
     }
 
@@ -49,10 +52,12 @@ export const api = {
   // Transactions
   async getTransactions(type?: TransactionType, search?: string) {
     return await newApi.fetchTransactions(
-      type || search ? {
-        transactionType: type,
-        description: search
-      } : undefined
+      type || search
+        ? {
+            transactionType: type,
+            description: search,
+          }
+        : undefined
     );
   },
   getUncheckedTransactions: newApi.fetchUncheckedTransactions,

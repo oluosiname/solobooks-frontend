@@ -5,6 +5,9 @@
  */
 
 import { BaseApiClient } from "./base-api";
+import type { ClientData } from "./clients-api";
+import type { CurrencyData } from "./invoice-settings-api";
+import type { InvoiceCategoryData } from "./invoice-categories-api";
 
 // ============================================
 // Types
@@ -15,6 +18,17 @@ export interface InvoiceLineItemData {
   quantity: number;
   unit: string;
   unit_price: number;
+}
+
+export interface InvoiceLineItemResponse {
+  id: number;
+  description: string;
+  quantity: number;
+  unit: string;
+  unit_price: number;
+  total: number;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface CreateInvoiceRequest {
@@ -50,10 +64,10 @@ export interface InvoiceData {
   currency_code: string;
   currency_symbol: string;
   client_name: string;
-  client: any; // Will be properly typed later
-  currency: any; // Will be properly typed later
-  invoice_category: any; // Will be properly typed later
-  line_items: any[]; // Will be properly typed later
+  client: ClientData;
+  currency: CurrencyData;
+  invoice_category: InvoiceCategoryData;
+  line_items: InvoiceLineItemResponse[];
   created_at: string;
   updated_at: string;
 }
@@ -91,7 +105,9 @@ class InvoicesApiClient extends BaseApiClient {
    * List all invoices
    * GET /api/v1/invoices
    */
-  async listInvoices(params?: InvoicesQueryParams): Promise<InvoicesListResponse> {
+  async listInvoices(
+    params?: InvoicesQueryParams
+  ): Promise<InvoicesListResponse> {
     return this.get<InvoicesListResponse>("/api/v1/invoices", params);
   }
 

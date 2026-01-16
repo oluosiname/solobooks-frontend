@@ -8,7 +8,12 @@ import { ArrowLeft, Check } from "lucide-react";
 import { AppShell } from "@/components/layout";
 import { cn } from "@/lib/utils";
 import { styles, buttonStyles } from "@/lib/styles";
-import { createTransaction, updateTransaction, fetchCategories, fetchTransaction } from "@/services/api";
+import {
+  createTransaction,
+  updateTransaction,
+  fetchCategories,
+  fetchTransaction,
+} from "@/services/api";
 import { showToast } from "@/lib/toast";
 import { FileUpload } from "@/components/molecules/FileUpload";
 import * as humps from "humps";
@@ -19,7 +24,7 @@ export default function EditExpensePage() {
   const queryClient = useQueryClient();
   const t = useTranslations();
 
-  const transactionId = searchParams.get('id');
+  const transactionId = searchParams.get("id");
 
   const [formData, setFormData] = useState<{
     transactionType: "Expense" | "Income";
@@ -45,8 +50,8 @@ export default function EditExpensePage() {
 
   // Fetch transaction data
   const { data: transactionData, isLoading: isLoadingTransaction } = useQuery({
-    queryKey: ['transaction', transactionId],
-    queryFn: () => transactionId ? fetchTransaction(transactionId) : null,
+    queryKey: ["transaction", transactionId],
+    queryFn: () => (transactionId ? fetchTransaction(transactionId) : null),
     enabled: !!transactionId,
   });
 
@@ -77,7 +82,9 @@ export default function EditExpensePage() {
       updateTransaction(data.id, data.transactionData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
-      queryClient.invalidateQueries({ queryKey: ['transaction', transactionId] });
+      queryClient.invalidateQueries({
+        queryKey: ["transaction", transactionId],
+      });
       showToast.success("Expense transaction updated successfully");
       router.push("/transactions");
     },
@@ -103,7 +110,8 @@ export default function EditExpensePage() {
       description: formData.description,
       amount: -Math.abs(parseFloat(formData.amount)), // Negative for expenses
       vat_rate: formData.vatRate,
-      vat_amount: -(Math.abs(parseFloat(formData.amount)) * formData.vatRate) / 100,
+      vat_amount:
+        -(Math.abs(parseFloat(formData.amount)) * formData.vatRate) / 100,
       customer_location: formData.customerLocation,
       customer_vat_number: formData.customerVatNumber || undefined,
       vat_technique: "standard",
@@ -176,12 +184,15 @@ export default function EditExpensePage() {
                       <select
                         className={cn(styles.input, "mt-1.5")}
                         value={formData.categoryId}
-                        onChange={(e) => setFormData({ ...formData, categoryId: e.target.value })}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            categoryId: e.target.value,
+                          })
+                        }
                         required
                       >
-                        <option value="">
-                          Select category
-                        </option>
+                        <option value="">Select category</option>
                         {categories?.map((category) => (
                           <option
                             key={category.id}
@@ -202,7 +213,9 @@ export default function EditExpensePage() {
                         type="date"
                         className={cn(styles.input, "mt-1.5")}
                         value={formData.date}
-                        onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                        onChange={(e) =>
+                          setFormData({ ...formData, date: e.target.value })
+                        }
                         required
                       />
                     </div>
@@ -217,7 +230,9 @@ export default function EditExpensePage() {
                         className={cn(styles.input, "mt-1.5")}
                         placeholder="0.00"
                         value={formData.amount}
-                        onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                        onChange={(e) =>
+                          setFormData({ ...formData, amount: e.target.value })
+                        }
                         required
                       />
                     </div>
@@ -230,7 +245,12 @@ export default function EditExpensePage() {
                     <textarea
                       className={cn(styles.input, "mt-1.5")}
                       value={formData.description}
-                      onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          description: e.target.value,
+                        })
+                      }
                       rows={3}
                       placeholder="Transaction description"
                     />
@@ -243,7 +263,12 @@ export default function EditExpensePage() {
                     <select
                       className={cn(styles.input, "mt-1.5")}
                       value={formData.customerLocation}
-                      onChange={(e) => setFormData({ ...formData, customerLocation: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          customerLocation: e.target.value,
+                        })
+                      }
                     >
                       <option value="germany">Germany</option>
                       <option value="in_eu">In EU (other EU countries)</option>
@@ -259,7 +284,12 @@ export default function EditExpensePage() {
                       <select
                         className={cn(styles.input, "mt-1.5")}
                         value={formData.vatRate}
-                        onChange={(e) => setFormData({ ...formData, vatRate: parseInt(e.target.value) })}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            vatRate: parseInt(e.target.value),
+                          })
+                        }
                       >
                         <option value={0}>0%</option>
                         <option value={7}>7%</option>
@@ -278,7 +308,12 @@ export default function EditExpensePage() {
                         type="text"
                         className={cn(styles.input, "mt-1.5")}
                         value={formData.customerVatNumber}
-                        onChange={(e) => setFormData({ ...formData, customerVatNumber: e.target.value })}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            customerVatNumber: e.target.value,
+                          })
+                        }
                         placeholder="VAT number"
                       />
                     </div>
@@ -312,19 +347,27 @@ export default function EditExpensePage() {
           <div className="space-y-6">
             <div className={cn(styles.card)}>
               <div className={styles.cardContent}>
-                <h3 className="text-lg font-semibold text-slate-900">Summary</h3>
+                <h3 className="text-lg font-semibold text-slate-900">
+                  Summary
+                </h3>
                 <div className="mt-4 space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-slate-600">Amount</span>
-                    <span className="font-semibold text-slate-900">€{parseFloat(formData.amount || "0").toFixed(2)}</span>
+                    <span className="font-semibold text-slate-900">
+                      €{parseFloat(formData.amount || "0").toFixed(2)}
+                    </span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-slate-600">Receipt</span>
-                    <span className="text-sm text-slate-900">{receiptFile ? "Attached" : "None"}</span>
+                    <span className="text-sm text-slate-900">
+                      {receiptFile ? "Attached" : "None"}
+                    </span>
                   </div>
                   <div className="flex items-center justify-between border-t border-slate-200 pt-3">
                     <span className="font-semibold text-slate-900">Total</span>
-                    <span className="text-lg font-semibold text-slate-900">€{parseFloat(formData.amount || "0").toFixed(2)}</span>
+                    <span className="text-lg font-semibold text-slate-900">
+                      €{parseFloat(formData.amount || "0").toFixed(2)}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -335,10 +378,7 @@ export default function EditExpensePage() {
                 type="submit"
                 form="expense-form"
                 disabled={updateTransactionMutation.isPending}
-                className={cn(
-                  buttonStyles("primary"),
-                  "w-full justify-center"
-                )}
+                className={cn(buttonStyles("primary"), "w-full justify-center")}
               >
                 <Check className="h-4 w-4" />
                 {updateTransactionMutation.isPending
