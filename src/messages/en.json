@@ -510,6 +510,8 @@
       "timezone": "Timezone",
       "saveSettings": "Save Settings"
     },
+    "languageChanged": "Language updated successfully",
+    "languageChangeFailed": "Failed to update language",
     "invoiceSettings": {
       "title": "Invoice Settings",
       "bankDetails": {

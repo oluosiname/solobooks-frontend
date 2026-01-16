@@ -30,7 +30,7 @@ import {
 import humps from "humps";
 import { InvoiceData } from "@/lib/invoices-api";
 
-function camelize<T>(input: unknown): T {
+export function camelize<T>(input: unknown): T {
   return humps.camelizeKeys(input) as T;
 }
 

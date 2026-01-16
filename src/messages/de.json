@@ -509,6 +509,8 @@
       "timezone": "Zeitzone",
       "saveSettings": "Einstellungen speichern"
     },
+    "languageChanged": "Sprache erfolgreich aktualisiert",
+    "languageChangeFailed": "Sprache konnte nicht aktualisiert werden",
     "invoiceSettings": {
       "title": "Rechnungseinstellungen",
       "bankDetails": {
