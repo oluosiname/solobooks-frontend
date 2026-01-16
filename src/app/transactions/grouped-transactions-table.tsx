@@ -46,9 +46,7 @@ export function GroupedTransactionsTable({
   const discardTransactionMutation = useMutation({
     mutationFn: (id: string | number) => api.discardSyncedTransaction(id),
     onSuccess: () => {
-      showToast.success(
-        t("transactions.discardSuccess") || "Transaction discarded successfully"
-      );
+      showToast.success(t("transactions.discardSuccess"));
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
       queryClient.invalidateQueries({ queryKey: ["unchecked-transactions"] });
       setDeleteDialogOpen(false);
@@ -56,9 +54,7 @@ export function GroupedTransactionsTable({
     },
     onError: (error) => {
       console.error("Failed to discard transaction:", error);
-      showToast.error(
-        t("transactions.discardError") || "Failed to discard transaction"
-      );
+      showToast.error(t("transactions.discardError"));
     },
   });
 
@@ -96,6 +92,7 @@ export function GroupedTransactionsTable({
       customerLocation: transaction.customerLocation,
       customerVatNumber: transaction.customerVatNumber || "",
       categoryId: transaction.category?.id?.toString() || "",
+      syncedTransactionId: transaction.id.toString(),
     });
 
     // Navigate to the appropriate new transaction page with prefilled data
@@ -210,15 +207,14 @@ export function GroupedTransactionsTable({
               <div className="flex-1">
                 <h3 className="font-semibold text-slate-900">
                   {isPendingView
-                    ? t("transactions.discardTitle") || "Discard Transaction"
+                    ? t("transactions.discardTitle")
                     : t("transactions.deleteTitle")}
                 </h3>
                 <p className="text-sm text-slate-600">
                   {isPendingView
                     ? t("transactions.discardConfirm", {
                         description: transactionToDelete.description,
-                      }) ||
-                      `Are you sure you want to discard "${transactionToDelete.description}"? This action cannot be undone.`
+                      })
                     : t("transactions.deleteConfirm", {
                         description: transactionToDelete.description,
                       })}
@@ -251,10 +247,10 @@ export function GroupedTransactionsTable({
                 {deleteTransactionMutation.isPending ||
                 discardTransactionMutation.isPending
                   ? isPendingView
-                    ? t("common.discarding") || "Discarding..."
+                    ? t("transactions.discarding")
                     : t("common.deleting")
                   : isPendingView
-                  ? t("common.discard") || "Discard"
+                  ? t("common.discard")
                   : t("common.delete")}
               </button>
             </div>

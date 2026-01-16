@@ -5,6 +5,7 @@
     "cancel": "Cancel",
     "delete": "Delete",
     "discard": "Discard",
+    "discarding": "Discarding...",
     "edit": "Edit",
     "create": "Create",
     "add": "Add",
@@ -149,7 +150,20 @@
       "day": "day",
       "month": "month"
     },
-    "noInvoices": "No invoices found"
+    "noInvoices": "No invoices found",
+    "validation": {
+      "selectClient": "Please select a client",
+      "selectCategory": "Please select a category",
+      "selectClientAndCategory": "Please select a client and category",
+      "selectCurrency": "Please select a currency",
+      "selectInvoiceDate": "Please select an invoice date",
+      "selectDueDate": "Please select a due date",
+      "lineItemsRequired": "Please add at least one line item with a description and price greater than 0"
+    },
+    "success": {
+      "invoiceCreated": "Invoice created successfully",
+      "invoiceCreationFailed": "Failed to create invoice"
+    }
   },
   "clients": {
     "title": "Clients",
@@ -176,6 +190,13 @@
       "postalCode": "Zip code",
       "country": "Country",
       "createClient": "Create Client"
+    },
+    "delete": {
+      "title": "Delete Client",
+      "confirm": "Are you sure you want to delete \"{name}\"? This action cannot be undone.",
+      "success": "Client deleted successfully",
+      "error": "Failed to delete client",
+      "deleting": "Deleting..."
     }
   },
   "transactions": {
@@ -213,6 +234,9 @@
     },
     "uncheckedAlert": "You have {count} unchecked transactions synced from your bank account(s)",
     "viewPending": "View Pending",
+    "categorizationAlert": "You have {count} transactions that need categorization",
+    "categorizationDescription": "Use the edit button to categorize transactions, or the discard button to remove unwanted ones",
+    "syncedDescriptionEmpty": "Transactions synced from your bank accounts will appear here for review and categorization",
     "noTransactions": "No transactions found",
     "deleteTitle": "Delete Transaction",
     "deleteConfirm": "Are you sure you want to delete \"{description}\"? This action cannot be undone.",
@@ -309,6 +333,52 @@
     "currentBalance": "Current Balance",
     "pendingTransactions": "Pending Transactions",
     "autoSyncBanner": "Automatic transaction sync enabled. Your bank connections will automatically retrieve new transactions daily. All data is encrypted and securely stored.",
+    "connect": {
+      "title": "Connect Bank Account",
+      "backToConnections": "Back to Connections",
+      "headerTitle": "Connect Your Bank Account",
+      "headerDescription": "Securely connect your bank account to automatically sync transactions. We use bank-level encryption and never store your credentials.",
+      "step1Title": "Select Your Bank",
+      "step1Description": "Choose your bank from our list of supported institutions.",
+      "step2Title": "Authorize Connection",
+      "step2Description": "You'll be redirected to your bank's secure login page to authorize the connection.",
+      "step3Title": "Start Syncing",
+      "step3Description": "Once connected, your transactions will automatically sync daily.",
+      "selectBankTitle": "Select Your Bank",
+      "searchPlaceholder": "Search banks...",
+      "loadingBanks": "Loading banks...",
+      "noBanksFound": "No banks found matching \"{query}\"",
+      "moreBanksAvailable": "{count} more banks available",
+      "connecting": "Connecting...",
+      "continueButton": "Continue to Bank",
+      "securityTitle": "Your Security Matters",
+      "securityDescription": "We prioritize your financial security and privacy. Here's what we do and don't do with your data.",
+      "whatWeAccessTitle": "What We Access",
+      "transactionHistory": "Transaction History",
+      "transactionHistoryDesc": "Read-only access to your transaction history for the past 90 days",
+      "accountDetails": "Account Details",
+      "accountDetailsDesc": "Basic account information including account name and balance",
+      "weNeverTitle": "What We Never Do",
+      "neverStoreCredentials": "Never store your bank login credentials",
+      "neverInitiateTransactions": "Never initiate any transactions or transfers",
+      "neverShareData": "Never share your financial data with third parties",
+      "neverModifySettings": "Never modify your account settings or preferences"
+    },
+    "callback": {
+      "successToast": "Bank connection successful!",
+      "errorToast": "Bank connection failed",
+      "errorDescription": "There was an error connecting your bank account. Please try again.",
+      "failedToast": "Failed to connect to {bankName}",
+      "title": "Connecting Bank Account",
+      "completingConnection": "Completing Connection",
+      "completingDescription": "Please wait while we establish a secure connection to your bank...",
+      "successTitle": "Connection Successful!",
+      "successDescription": "Your bank account has been successfully connected. You can now view and categorize your transactions.",
+      "goToConnections": "Go to Connections",
+      "errorTitle": "Connection Failed",
+      "tryAgain": "Try Again",
+      "goBack": "Go Back"
+    },
     "about": {
       "title": "About Bank Connections",
       "security": "Your bank credentials are never stored on our servers. We use bank-level encryption.",

@@ -46,11 +46,11 @@ export default function NewInvoicePage() {
     mutationFn: api.createInvoice,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["invoices"] });
-      showToast.success("Invoice created successfully");
+      showToast.success(t("invoices.success.invoiceCreated"));
       router.push("/invoices");
     },
     onError: (error: any) => {
-      showToast.apiError(error, "Failed to create invoice");
+      showToast.apiError(error, t("invoices.success.invoiceCreationFailed"));
     },
   });
   const [lineItems, setLineItems] = useState<LineItem[]>([
@@ -67,7 +67,7 @@ export default function NewInvoicePage() {
   });
 
   // Set default currency when currencies are loaded
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+
   useEffect(() => {
     if (currencies && currencies.length > 0 && !formData.currency) {
       // Find EUR currency or use the first available
@@ -125,29 +125,29 @@ export default function NewInvoicePage() {
 
   const handleSave = () => {
     if (!formData.clientId || !formData.category) {
-      showToast.error("Please select a client and category");
+      showToast.error(t("invoices.validation.selectClientAndCategory"));
       return;
     }
 
     // Validate required fields
     if (!formData.category) {
-      showToast.error("Please select a category");
+      showToast.error(t("invoices.validation.selectCategory"));
       return;
     }
     if (!formData.clientId) {
-      showToast.error("Please select a client");
+      showToast.error(t("invoices.validation.selectClient"));
       return;
     }
     if (!formData.currency) {
-      showToast.error("Please select a currency");
+      showToast.error(t("invoices.validation.selectCurrency"));
       return;
     }
     if (!formData.invoiceDate) {
-      showToast.error("Please select an invoice date");
+      showToast.error(t("invoices.validation.selectInvoiceDate"));
       return;
     }
     if (!formData.dueDate) {
-      showToast.error("Please select a due date");
+      showToast.error(t("invoices.validation.selectDueDate"));
       return;
     }
 
@@ -156,9 +156,7 @@ export default function NewInvoicePage() {
       lineItems.length === 0 ||
       lineItems.some((item) => !item.description.trim() || item.unitPrice <= 0)
     ) {
-      showToast.error(
-        "Please add at least one line item with a description and price greater than 0"
-      );
+      showToast.error(t("invoices.validation.lineItemsRequired"));
       return;
     }
 

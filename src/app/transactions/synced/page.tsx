@@ -47,13 +47,13 @@ export default function SyncedTransactionsPage() {
               href="/transactions/new-expense"
               className={buttonStyles("secondary")}
             >
-              Add Manual Expense
+              {t("transactions.addManualExpense")}
             </Link>
             <Link
               href="/transactions/new-income"
               className={buttonStyles("secondary")}
             >
-              Add Manual Income
+              {t("transactions.addManualIncome")}
             </Link>
           </div>
         </div>
@@ -63,10 +63,10 @@ export default function SyncedTransactionsPage() {
           <div className={`${styles.alert} ${styles.alertInfo}`}>
             <div className="flex-1">
               <p className="font-medium text-blue-900">
-                {transactionsArray.length} transactions need categorization
+                {t("transactions.categorizationAlert", { count: transactionsArray.length })}
               </p>
               <p className="text-sm text-blue-700">
-                Use the discard button to remove unwanted transactions, or categorize them by editing.
+                {t("transactions.categorizationDescription")}
               </p>
             </div>
           </div>

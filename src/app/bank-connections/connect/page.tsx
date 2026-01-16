@@ -73,20 +73,19 @@ export default function AddBankConnectionPage() {
   };
 
   return (
-    <AppShell title="Connect Bank Account">
+    <AppShell title={t("bankConnections.connect.title")}>
       <div className="space-y-6">
         {/* Header */}
         <div>
           <Button variant="ghost" onClick={handleBack} className="mb-4">
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Bank Connections
+            {t("bankConnections.connect.backToConnections")}
           </Button>
           <h2 className="font-semibold text-gray-900">
-            Connect Your Bank Account
+            {t("bankConnections.connect.headerTitle")}
           </h2>
           <p className="text-sm text-gray-600 mt-1">
-            Securely connect your bank to automatically retrieve your
-            transactions and categorize your finances efficiently.
+            {t("bankConnections.connect.headerDescription")}
           </p>
         </div>
 
@@ -102,11 +101,10 @@ export default function AddBankConnectionPage() {
                   </div>
                   <div className="flex-1">
                     <h3 className="font-semibold text-gray-900 mb-1">
-                      Choose your bank from the list and grant permission to
-                      connect.
+                      {t("bankConnections.connect.step1Title")}
                     </h3>
                     <p className="text-sm text-gray-600">
-                      You'll be redirected to your bank's secure login page.
+                      {t("bankConnections.connect.step1Description")}
                     </p>
                   </div>
                 </div>
@@ -117,12 +115,10 @@ export default function AddBankConnectionPage() {
                   </div>
                   <div className="flex-1">
                     <h3 className="font-semibold text-gray-900 mb-1">
-                      We will securely retrieve your recent transactions for
-                      analysis.
+                      {t("bankConnections.connect.step2Title")}
                     </h3>
                     <p className="text-sm text-gray-600">
-                      This typically includes the last 90 days of transaction
-                      history.
+                      {t("bankConnections.connect.step2Description")}
                     </p>
                   </div>
                 </div>
@@ -133,11 +129,10 @@ export default function AddBankConnectionPage() {
                   </div>
                   <div className="flex-1">
                     <h3 className="font-semibold text-gray-900 mb-1">
-                      You can review and categorize transactions as needed.
+                      {t("bankConnections.connect.step3Title")}
                     </h3>
                     <p className="text-sm text-gray-600">
-                      All transactions will appear in your Transactions page for
-                      review.
+                      {t("bankConnections.connect.step3Description")}
                     </p>
                   </div>
                 </div>
@@ -148,7 +143,7 @@ export default function AddBankConnectionPage() {
             <Card>
               <div className="p-6">
                 <h3 className="font-semibold text-gray-900 mb-4">
-                  Select Your Bank
+                  {t("bankConnections.connect.selectBankTitle")}
                 </h3>
 
                 {/* Search */}
@@ -156,7 +151,7 @@ export default function AddBankConnectionPage() {
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                   <Input
                     type="text"
-                    placeholder="Search for your bank..."
+                    placeholder={t("bankConnections.connect.searchPlaceholder")}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="pl-10"
@@ -167,11 +162,15 @@ export default function AddBankConnectionPage() {
                 <div className="border border-gray-200 rounded-lg max-h-64 overflow-y-auto">
                   {isLoading ? (
                     <div className="p-8 text-center text-gray-500">
-                      <p>Loading banks...</p>
+                      <p>{t("bankConnections.connect.loadingBanks")}</p>
                     </div>
                   ) : filteredBanks?.length === 0 ? (
                     <div className="p-8 text-center text-gray-500">
-                      <p>No banks found matching "{searchTerm}"</p>
+                      <p>
+                        {t("bankConnections.connect.noBanksFound", {
+                          searchTerm,
+                        })}
+                      </p>
                     </div>
                   ) : (
                     <div className="divide-y divide-gray-200">
@@ -216,7 +215,9 @@ export default function AddBankConnectionPage() {
                       ))}
                       {filteredBanks && filteredBanks.length > 10 && (
                         <div className="p-4 text-center text-gray-500 text-sm">
-                          +{filteredBanks.length - 10} more banks available
+                          {t("bankConnections.connect.moreBanksAvailable", {
+                            count: filteredBanks.length - 10,
+                          })}
                         </div>
                       )}
                     </div>
@@ -233,25 +234,28 @@ export default function AddBankConnectionPage() {
                     {isConnecting ? (
                       <>
                         <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                        Connecting...
+                        {t("bankConnections.connect.connecting")}
                       </>
                     ) : (
-                      <>Continue to Bank Login</>
+                      <>{t("bankConnections.connect.continueButton")}</>
                     )}
                   </Button>
                 </div>
 
                 {/* Disclaimer */}
                 <p className="text-xs text-gray-500 mt-4 leading-relaxed">
-                  By proceeding, you agree to our{" "}
-                  <a href="#" className="text-blue-600 hover:underline">
-                    Terms of Service
-                  </a>{" "}
-                  and{" "}
-                  <a href="#" className="text-blue-600 hover:underline">
-                    Privacy Policy
-                  </a>
-                  . We do not store your banking credentials.
+                  {t.rich("bankConnections.connect.termsDisclaimer", {
+                    terms: (chunks) => (
+                      <a href="#" className="text-blue-600 hover:underline">
+                        {chunks}
+                      </a>
+                    ),
+                    privacy: (chunks) => (
+                      <a href="#" className="text-blue-600 hover:underline">
+                        {chunks}
+                      </a>
+                    ),
+                  })}
                 </p>
               </div>
             </Card>
@@ -265,28 +269,29 @@ export default function AddBankConnectionPage() {
                   <Shield className="w-6 h-6 text-blue-600" />
                 </div>
                 <h3 className="font-semibold text-gray-900 mb-2">
-                  Bank-Level Security
+                  {t("bankConnections.connect.securityTitle")}
                 </h3>
                 <p className="text-sm text-gray-700">
-                  Your connection is protected with 256-bit encryption, the same
-                  security used by banks worldwide.
+                  {t("bankConnections.connect.securityDescription")}
                 </p>
               </div>
             </Card>
 
             <Card>
               <div className="p-6 space-y-4">
-                <h3 className="font-semibold text-gray-900">What We Access</h3>
+                <h3 className="font-semibold text-gray-900">
+                  {t("bankConnections.connect.whatWeAccessTitle")}
+                </h3>
 
                 <div className="space-y-3">
                   <div className="flex gap-3">
                     <Check className="w-5 h-5 text-green-600 flex-shrink-0" />
                     <div>
                       <p className="font-medium text-gray-900 text-sm">
-                        Transaction History
+                        {t("bankConnections.connect.transactionHistory")}
                       </p>
                       <p className="text-xs text-gray-600">
-                        Recent transactions for categorization
+                        {t("bankConnections.connect.transactionHistoryDesc")}
                       </p>
                     </div>
                   </div>
@@ -295,10 +300,10 @@ export default function AddBankConnectionPage() {
                     <Check className="w-5 h-5 text-green-600 flex-shrink-0" />
                     <div>
                       <p className="font-medium text-gray-900 text-sm">
-                        Account Details
+                        {t("bankConnections.connect.accountDetails")}
                       </p>
                       <p className="text-xs text-gray-600">
-                        Account name and number
+                        {t("bankConnections.connect.accountDetailsDesc")}
                       </p>
                     </div>
                   </div>
@@ -308,23 +313,25 @@ export default function AddBankConnectionPage() {
 
             <Card className="bg-gray-50">
               <div className="p-6">
-                <h3 className="font-semibold text-gray-900 mb-2">We Never:</h3>
+                <h3 className="font-semibold text-gray-900 mb-2">
+                  {t("bankConnections.connect.weNeverTitle")}
+                </h3>
                 <ul className="space-y-2 text-sm text-gray-600">
                   <li className="flex items-start gap-2">
                     <span className="text-red-600">×</span>
-                    Store your banking credentials
+                    {t("bankConnections.connect.neverStoreCredentials")}
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-red-600">×</span>
-                    Initiate transactions on your behalf
+                    {t("bankConnections.connect.neverInitiateTransactions")}
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-red-600">×</span>
-                    Share your data with third parties
+                    {t("bankConnections.connect.neverShareData")}
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-red-600">×</span>
-                    Modify your account settings
+                    {t("bankConnections.connect.neverModifySettings")}
                   </li>
                 </ul>
               </div>
