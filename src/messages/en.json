@@ -215,6 +215,8 @@
     "newIncome": "New Income",
     "addExpense": "Add Expense",
     "addIncome": "Add Income",
+    "addManualExpense": "Add Manual Expense",
+    "addManualIncome": "Add Manual Income",
     "import": "Import",
     "importTransactions": "Import Transactions",
     "searchPlaceholder": "Search transactions...",
@@ -402,7 +404,9 @@
       "yearly": "Yearly",
       "quarterly": "Quarterly",
       "monthly": "Monthly"
-    }
+    },
+    "dataNotAvailable": "Reports data not available",
+    "dataNotAvailableDescription": "Some report data is not yet available from the backend. These features will be implemented in a future update."
   },
   "taxes": {
     "title": "Taxes",

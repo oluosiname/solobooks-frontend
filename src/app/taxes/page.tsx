@@ -19,7 +19,7 @@ export default function TaxesPage() {
     { id: "submitted", label: "Submitted" },
   ];
 
-  const { data: vatReports, isLoading } = useQuery({
+  const { data: vatReports, isLoading, error: vatReportsError } = useQuery({
     queryKey: ["vat-reports", activeTab],
     queryFn: async () => {
       const reports = await api.fetchVatReports();
@@ -32,6 +32,7 @@ export default function TaxesPage() {
         (r) => r.status === "draft" || r.status === "rejected"
       );
     },
+    retry: false,
   });
 
   const getStatusVariant = (status: string) => {
@@ -89,6 +90,13 @@ export default function TaxesPage() {
             {isLoading ? (
               <div className="flex items-center justify-center py-12">
                 <p className="text-slate-500">{t("common.loading")}</p>
+              </div>
+            ) : vatReportsError ? (
+              <div className="flex items-center justify-center py-12">
+                <div className="text-center">
+                  <p className="text-sm text-orange-600">VAT reports not available</p>
+                  <p className="text-xs text-slate-500 mt-1">This feature will be implemented in a future update</p>
+                </div>
               </div>
             ) : vatReports?.length === 0 ? (
               <div className="flex items-center justify-center py-12">
