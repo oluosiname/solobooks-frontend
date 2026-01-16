@@ -9,7 +9,6 @@
 
 import {
   invoices,
-  dashboardStats,
   revenueExpenseData,
   categoryData,
   profitLossData,
@@ -18,6 +17,8 @@ import {
 
 import { clientsApi } from "@/lib/clients-api";
 import type { CreateClientRequest } from "@/lib/clients-api";
+import { financialCategoriesApi } from "@/lib/financial-categories-api";
+import type { TransactionCategory } from "@/types";
 import * as humps from "humps";
 import { invoiceSettingsApi } from "@/lib/invoice-settings-api";
 import type {
@@ -32,7 +33,10 @@ import type {
 import { profileApi } from "@/lib/profile-api";
 import type { UpdateProfileRequest } from "@/lib/profile-api";
 import { transactionsApi } from "@/lib/transactions-api";
-import type { TransactionFilters as ApiTransactionFilters } from "@/lib/transactions-api";
+import type {
+  TransactionFilters as ApiTransactionFilters,
+  CreateTransactionRequest,
+} from "@/lib/transactions-api";
 import { plansApi } from "@/lib/plans-api";
 import { subscriptionApi } from "@/lib/subscription-api";
 import { settingsApi } from "@/lib/settings-api";
@@ -78,6 +82,7 @@ import {
   transformSyncedTransactionData,
   transformSettingsData,
   transformDashboardStatsData,
+  transformFinancialCategoryData,
 } from "./api-transformer";
 
 // Simulate network delay
@@ -279,26 +284,24 @@ export async function discardSyncedTransaction(
 }
 
 /**
+ * Fetch financial categories
+ * GET /api/v1/financial_categories
+ */
+export async function fetchCategories(
+  type?: "income" | "expense"
+): Promise<TransactionCategory[]> {
+  const response = await financialCategoriesApi.listCategories(type);
+  return response.data.map(transformFinancialCategoryData);
+}
+
+/**
  * Create a new transaction
  * POST /api/v1/transactions
  */
 export async function createTransaction(
-  data: Omit<Transaction, "id" | "createdAt" | "updatedAt">
+  transactionData: CreateTransactionRequest
 ): Promise<Transaction> {
-  const response = await transactionsApi.createTransaction({
-    transaction: {
-      description: data.description,
-      amount: data.amount,
-      vat_rate: data.vatRate,
-      vat_amount: data.vatAmount,
-      customer_location: data.customerLocation,
-      customer_vat_number: data.customerVatNumber || undefined,
-      vat_technique: data.vatTechnique,
-      source: data.source,
-      receipt_url: data.receiptUrl || undefined,
-      category_id: data.category?.id,
-    },
-  });
+  const response = await transactionsApi.createTransaction(transactionData);
   return transformTransactionData(response.data);
 }
 
@@ -613,6 +616,9 @@ export const api = {
   createTransaction,
   updateTransaction,
   deleteTransaction,
+
+  // Financial Categories
+  fetchCategories,
 
   // Dashboard
   fetchDashboardStats,

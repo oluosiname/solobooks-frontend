@@ -87,17 +87,16 @@ export interface SyncedTransactionsResponse {
 
 export interface CreateTransactionRequest {
   transaction: {
-    description: string;
+    transaction_type: "income" | "expense";
     amount: number;
+    date: string;
+    description: string;
+    financial_category_id: string;
     vat_rate?: number;
-    vat_amount?: number;
     customer_location?: string;
     customer_vat_number?: string;
-    vat_technique?: string;
-    source?: string;
-    receipt_url?: string;
-    category_id?: number;
   };
+  receipt?: File; // For multipart/form-data uploads
 }
 
 export interface UpdateTransactionRequest {
@@ -142,20 +141,29 @@ class TransactionsApiClient extends BaseApiClient {
    * Get synced transactions
    * GET /api/v1/synced_transactions
    */
-  async getSyncedTransactions(bankConnectionId?: number): Promise<SyncedTransactionsResponse> {
+  async getSyncedTransactions(
+    bankConnectionId?: number
+  ): Promise<SyncedTransactionsResponse> {
     const params: Record<string, number> = {};
     if (bankConnectionId) {
       params.bank_connection_id = bankConnectionId;
     }
-    return this.get<SyncedTransactionsResponse>("/api/v1/synced_transactions", params);
+    return this.get<SyncedTransactionsResponse>(
+      "/api/v1/synced_transactions",
+      params
+    );
   }
 
   /**
    * Discard synced transaction
    * PATCH /api/v1/synced_transactions/{id}/discard
    */
-  async discardSyncedTransaction(id: string | number): Promise<{ message: string }> {
-    return this.patch<{ message: string }>(`/api/v1/synced_transactions/${id}/discard`);
+  async discardSyncedTransaction(
+    id: string | number
+  ): Promise<{ message: string }> {
+    return this.patch<{ message: string }>(
+      `/api/v1/synced_transactions/${id}/discard`
+    );
   }
 
   /**
@@ -165,6 +173,28 @@ class TransactionsApiClient extends BaseApiClient {
   async createTransaction(
     data: CreateTransactionRequest
   ): Promise<TransactionResponse> {
+    // If receipt file is provided, use FormData for multipart upload
+    if (data.receipt) {
+      const formData = new FormData();
+
+      // Add transaction fields as individual form fields
+      Object.entries(data.transaction).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          formData.append(`transaction[${key}]`, String(value));
+        }
+      });
+
+      // Add receipt file as nested parameter
+      formData.append("transaction[receipt]", data.receipt);
+
+      // Use the base class method that handles token refresh
+      return this.postFormData<TransactionResponse>(
+        "/api/v1/transactions",
+        formData
+      );
+    }
+
+    // Otherwise, send as regular JSON
     return this.post<TransactionResponse>("/api/v1/transactions", data);
   }
 
