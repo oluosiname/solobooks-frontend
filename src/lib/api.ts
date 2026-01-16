@@ -33,11 +33,15 @@ export const api = {
   getClient: newApi.fetchClient,
 
   // Invoices
-  async getInvoices(status?: string) {
-    const invoices = await newApi.fetchInvoices();
-    if (status) {
-      return invoices.filter((inv) => inv.status === status);
+  async getInvoices(status?: string, params?: any) {
+    const result = await newApi.fetchInvoices(params);
+    let invoices = result.invoices;
+
+    // Apply status filter if provided (for backward compatibility)
+    if (status && status !== 'all') {
+      invoices = invoices.filter((inv) => inv.status === status);
     }
+
     return invoices;
   },
   getInvoice: newApi.fetchInvoice,

@@ -25,7 +25,8 @@ export function GroupedTransactionsTable({
   const router = useRouter();
   const queryClient = useQueryClient();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [transactionToDelete, setTransactionToDelete] = useState<Transaction | null>(null);
+  const [transactionToDelete, setTransactionToDelete] =
+    useState<Transaction | null>(null);
 
   const deleteTransactionMutation = useMutation({
     mutationFn: (id: string | number) => api.deleteTransaction(id),
@@ -45,7 +46,9 @@ export function GroupedTransactionsTable({
   const discardTransactionMutation = useMutation({
     mutationFn: (id: string | number) => api.discardSyncedTransaction(id),
     onSuccess: () => {
-      showToast.success(t("transactions.discardSuccess") || "Transaction discarded successfully");
+      showToast.success(
+        t("transactions.discardSuccess") || "Transaction discarded successfully"
+      );
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
       queryClient.invalidateQueries({ queryKey: ["unchecked-transactions"] });
       setDeleteDialogOpen(false);
@@ -53,7 +56,9 @@ export function GroupedTransactionsTable({
     },
     onError: (error) => {
       console.error("Failed to discard transaction:", error);
-      showToast.error(t("transactions.discardError") || "Failed to discard transaction");
+      showToast.error(
+        t("transactions.discardError") || "Failed to discard transaction"
+      );
     },
   });
 
@@ -78,27 +83,12 @@ export function GroupedTransactionsTable({
   };
 
   const handleEdit = (transaction: Transaction) => {
-    // Determine if it's income or expense based on amount
-    // Positive amount = Income, Negative amount = Expense
-    const isIncome = transaction.amount >= 0;
-    const formType = isIncome ? 'income' : 'expense';
+    // Determine if it's income or expense based on transactionType field
+    const isIncome = transaction.transactionType === "Income";
+    const editRoute = isIncome ? "edit-income" : "edit-expense";
 
-    // Store transaction data in sessionStorage to prefill the form
-    const formData = {
-      description: transaction.description,
-      amount: Math.abs(transaction.amount).toString(),
-      date: transaction.date,
-      categoryId: transaction.category?.id.toString() || '',
-      vatRate: transaction.vatRate,
-      customerLocation: transaction.customerLocation,
-      customerVatNumber: transaction.customerVatNumber || '',
-      transactionType: isIncome ? 'Income' : 'Expense',
-    };
-
-    sessionStorage.setItem('prefillTransactionData', JSON.stringify(formData));
-
-    // Navigate to the appropriate form
-    router.push(`/transactions/new-${formType}`);
+    // Navigate to the appropriate edit page with transaction ID as URL parameter
+    router.push(`/transactions/${editRoute}?id=${transaction.id}`);
   };
 
   return (
@@ -107,10 +97,7 @@ export function GroupedTransactionsTable({
         ([month, monthTransactions], groupIndex) => (
           <div
             key={month}
-            className={cn(
-              styles.card,
-              "overflow-hidden animate-slide-up"
-            )}
+            className={cn(styles.card, "overflow-hidden animate-slide-up")}
             style={{ animationDelay: `${groupIndex * 100}ms` }}
           >
             <div className={cn(styles.cardHeader, "bg-slate-50")}>
@@ -160,18 +147,13 @@ export function GroupedTransactionsTable({
                             : "text-slate-700"
                         }`}
                       >
-                        {transaction.transactionType === "Income"
-                          ? "+"
-                          : ""}
+                        {transaction.transactionType === "Income" ? "+" : ""}
                         {formatCurrency(transaction.amount)}
                       </span>
                     </td>
                     <td className={styles.td}>
                       {transaction.receiptUrl ? (
-                        <Link
-                          href={transaction.receiptUrl}
-                          target="_blank"
-                        >
+                        <Link href={transaction.receiptUrl} target="_blank">
                           <Receipt className="h-4 w-4 text-slate-400" />
                         </Link>
                       ) : (
@@ -188,7 +170,10 @@ export function GroupedTransactionsTable({
                         </button>
                         <button
                           onClick={() => handleDeleteClick(transaction)}
-                          disabled={deleteTransactionMutation.isPending || discardTransactionMutation.isPending}
+                          disabled={
+                            deleteTransactionMutation.isPending ||
+                            discardTransactionMutation.isPending
+                          }
                           className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-red-50 hover:text-red-600 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           <Trash2 className="h-4 w-4" />
@@ -214,14 +199,15 @@ export function GroupedTransactionsTable({
               <div className="flex-1">
                 <h3 className="font-semibold text-slate-900">
                   {isPendingView
-                    ? (t("transactions.discardTitle") || "Discard Transaction")
+                    ? t("transactions.discardTitle") || "Discard Transaction"
                     : t("transactions.deleteTitle")}
                 </h3>
                 <p className="text-sm text-slate-600">
                   {isPendingView
-                    ? (t("transactions.discardConfirm", {
+                    ? t("transactions.discardConfirm", {
                         description: transactionToDelete.description,
-                      }) || `Are you sure you want to discard "${transactionToDelete.description}"? This action cannot be undone.`)
+                      }) ||
+                      `Are you sure you want to discard "${transactionToDelete.description}"? This action cannot be undone.`
                     : t("transactions.deleteConfirm", {
                         description: transactionToDelete.description,
                       })}
@@ -245,12 +231,20 @@ export function GroupedTransactionsTable({
               </button>
               <button
                 onClick={handleConfirmDelete}
-                disabled={deleteTransactionMutation.isPending || discardTransactionMutation.isPending}
+                disabled={
+                  deleteTransactionMutation.isPending ||
+                  discardTransactionMutation.isPending
+                }
                 className="flex-1 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {(deleteTransactionMutation.isPending || discardTransactionMutation.isPending)
-                  ? (isPendingView ? (t("common.discarding") || "Discarding...") : t("common.deleting"))
-                  : (isPendingView ? (t("common.discard") || "Discard") : t("common.delete"))}
+                {deleteTransactionMutation.isPending ||
+                discardTransactionMutation.isPending
+                  ? isPendingView
+                    ? t("common.discarding") || "Discarding..."
+                    : t("common.deleting")
+                  : isPendingView
+                  ? t("common.discard") || "Discard"
+                  : t("common.delete")}
               </button>
             </div>
           </div>

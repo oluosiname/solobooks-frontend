@@ -238,6 +238,54 @@ export class BaseApiClient {
   }
 
   /**
+   * Make a PUT FormData request with automatic token refresh
+   */
+  protected async putFormData<T>(endpoint: string, formData: FormData): Promise<T> {
+    const url = `${this.baseUrl}${endpoint}`;
+    let token = this.getAuthToken();
+
+    // First attempt with current token
+    let response = await fetch(url, {
+      method: "PUT",
+      body: formData,
+      headers: {
+        ...(token && { Authorization: `Bearer ${token}` }),
+        // Don't set Content-Type - let browser set multipart boundary
+      },
+    });
+
+    // If 401 and we have a refresh token, try to refresh
+    if (response.status === 401 && this.getRefreshToken()) {
+      const newToken = await this.refreshAccessToken();
+      if (newToken) {
+        // Retry with new token
+        token = newToken;
+        response = await fetch(url, {
+          method: "PUT",
+          body: formData,
+          headers: {
+            ...(token && { Authorization: `Bearer ${token}` }),
+            // Don't set Content-Type - let browser set multipart boundary
+          },
+        });
+      }
+    }
+
+    // Handle 204 No Content response
+    if (response.status === 204) {
+      return undefined as T;
+    }
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw data as ApiError;
+    }
+
+    return data;
+  }
+
+  /**
    * Make a FormData request with automatic token refresh
    */
   protected async postFormData<T>(endpoint: string, formData: FormData): Promise<T> {

@@ -13,16 +13,42 @@ export function formatCurrency(amount: number, currency = "EUR"): string {
   }).format(amount);
 }
 
-export function formatDate(dateString: string): string {
-  return new Intl.DateTimeFormat("en-GB", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(new Date(dateString));
+export function formatDate(dateString: string | null | undefined): string {
+  if (!dateString) {
+    return "—"; // Return em dash for null/undefined dates
+  }
+
+  try {
+    const date = new Date(dateString);
+    // Check if the date is valid
+    if (isNaN(date.getTime())) {
+      console.warn('Invalid date string:', dateString);
+      return "—";
+    }
+
+    return new Intl.DateTimeFormat("en-GB", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(date);
+  } catch (error) {
+    console.warn('Error formatting date:', dateString, error);
+    return "—";
+  }
 }
 
-export function formatRelativeTime(dateString: string): string {
+export function formatRelativeTime(dateString: string | null | undefined): string {
+  if (!dateString) {
+    return "—";
+  }
+
   const date = new Date(dateString);
+  // Check if the date is valid
+  if (isNaN(date.getTime())) {
+    console.warn('Invalid date string for relative time:', dateString);
+    return "—";
+  }
+
   const now = new Date();
   const diffMs = now.getTime() - date.getTime();
   const diffHours = Math.floor(diffMs / (1000 * 60 * 60));

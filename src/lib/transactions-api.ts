@@ -19,6 +19,7 @@ export interface CategoryData {
 
 export interface TransactionData {
   id: number;
+  transaction_type: "Income" | "Expense";
   description: string;
   vat_rate: number;
   vat_amount: number;
@@ -204,9 +205,33 @@ class TransactionsApiClient extends BaseApiClient {
    */
   async updateTransaction(
     id: string | number,
-    data: UpdateTransactionRequest
+    data: CreateTransactionRequest
   ): Promise<TransactionResponse> {
-    return this.put<TransactionResponse>(`/api/v1/transactions/${id}`, data);
+    // If receipt file is provided, use FormData for multipart upload
+    if (data.receipt) {
+      const formData = new FormData();
+
+      // Add transaction fields as individual form fields
+      Object.entries(data.transaction).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          formData.append(`transaction[${key}]`, String(value));
+        }
+      });
+
+      // Add receipt file as nested parameter
+      formData.append("transaction[receipt]", data.receipt);
+
+      // Use the base class method that handles token refresh
+      return this.putFormData<TransactionResponse>(
+        `/api/v1/transactions/${id}`,
+        formData
+      );
+    }
+
+    // Otherwise, send as regular JSON with transaction nested properly
+    return this.put<TransactionResponse>(`/api/v1/transactions/${id}`, {
+      transaction: data.transaction
+    });
   }
 
   /**

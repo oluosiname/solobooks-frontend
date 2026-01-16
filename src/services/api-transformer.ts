@@ -9,8 +9,10 @@ import type { BankConnectionData } from "@/lib/bank-connections-api";
 import { SettingsData as ApiSettingsData } from "@/lib/settings-api";
 import { DashboardStatsData } from "@/lib/dashboard-api";
 import { FinancialCategoryData } from "@/lib/financial-categories-api";
+import { InvoiceCategoryData } from "@/lib/invoice-categories-api";
 import {
   Client,
+  Invoice,
   InvoiceSettings,
   Currency,
   VatStatus,
@@ -22,6 +24,7 @@ import {
   Settings,
   DashboardStats,
   TransactionCategory,
+  InvoiceCategory,
 } from "@/types";
 import humps from "humps";
 
@@ -119,7 +122,9 @@ export function transformSettingsData(data: ApiSettingsData): Settings {
   };
 }
 
-export function transformDashboardStatsData(data: DashboardStatsData): DashboardStats {
+export function transformDashboardStatsData(
+  data: DashboardStatsData
+): DashboardStats {
   return camelize<DashboardStats>(data);
 }
 
@@ -127,4 +132,14 @@ export function transformFinancialCategoryData(
   data: FinancialCategoryData
 ): TransactionCategory {
   return camelize<TransactionCategory>(data);
+}
+
+export function transformInvoiceCategoryData(
+  data: InvoiceCategoryData
+): InvoiceCategory {
+  return camelize<InvoiceCategory>(data);
+}
+
+export function transformInvoiceData(data: any): Invoice {
+  return camelize<Invoice>(data);
 }
