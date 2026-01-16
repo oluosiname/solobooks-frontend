@@ -67,23 +67,26 @@ export default function ReportsPage() {
     queryFn: api.fetchDashboardStats,
   });
 
-  const { data: revenueData } = useQuery({
+  const { data: revenueData, error: revenueError } = useQuery({
     queryKey: ["revenue-expense-data"],
     queryFn: api.fetchRevenueExpenseData,
+    retry: false,
   });
 
-  const { data: categoryData } = useQuery({
+  const { data: categoryData, error: categoryError } = useQuery({
     queryKey: ["category-data"],
     queryFn: api.fetchCategoryData,
+    retry: false,
   });
 
-  const { data: profitLossData } = useQuery({
+  const { data: profitLossData, error: profitLossError } = useQuery({
     queryKey: ["profit-loss-data"],
     queryFn: api.fetchProfitLossData,
+    retry: false,
   });
 
-  // Calculate summary stats from revenue data
-  const summaryStats = revenueData
+  // Calculate summary stats from revenue data (only if available)
+  const summaryStats = revenueData && !revenueError
     ? {
         totalRevenue: revenueData.reduce((sum, d) => sum + d.revenue, 0),
         totalExpenses: revenueData.reduce((sum, d) => sum + d.expenses, 0),
@@ -165,47 +168,63 @@ export default function ReportsPage() {
           </Button>
         </div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {statsArray.map((stat, index) => (
-            <Card
-              key={stat.title}
-              className="p-6"
-              style={{ animationDelay: `${index * 50}ms` }}
-            >
-              <h4 className="text-sm font-medium text-slate-500">
-                {stat.title}
+        {/* Error Messages */}
+        {(revenueError || categoryError || profitLossError) && (
+          <Card className="border-orange-200 bg-orange-50">
+            <div className="p-4">
+              <h4 className="text-sm font-medium text-orange-800">
+                {t("reports.dataNotAvailable")}
               </h4>
-              <p className="mt-2 text-3xl font-semibold text-slate-900">
-                {stat.isPercentage
-                  ? `${stat.value}%`
-                  : formatCurrency(Number(stat.value))}
+              <p className="mt-1 text-sm text-orange-700">
+                {t("reports.dataNotAvailableDescription")}
               </p>
-              <div
-                className={cn(
-                  "mt-2 flex items-center gap-1 text-sm",
-                  stat.isExpense
-                    ? stat.change > 0
-                      ? "text-red-600"
-                      : "text-emerald-600"
-                    : stat.change >= 0
-                    ? "text-emerald-600"
-                    : "text-red-600"
-                )}
+            </div>
+          </Card>
+        )}
+
+        {/* Stats Grid */}
+        {!revenueError && (
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {statsArray.map((stat, index) => (
+              <Card
+                key={stat.title}
+                className="p-6"
+                style={{ animationDelay: `${index * 50}ms` }}
               >
-                {stat.change >= 0 ? (
-                  <TrendingUp className="h-4 w-4" />
-                ) : (
-                  <TrendingDown className="h-4 w-4" />
-                )}
-                <span>
-                  {stat.change >= 0 ? "+" : ""}
-                  {stat.change}% vs last year
-                </span>
-              </div>
-            </Card>
-          ))}
-        </div>
+                <h4 className="text-sm font-medium text-slate-500">
+                  {stat.title}
+                </h4>
+                <p className="mt-2 text-3xl font-semibold text-slate-900">
+                  {stat.isPercentage
+                    ? `${stat.value}%`
+                    : formatCurrency(Number(stat.value))}
+                </p>
+                <div
+                  className={cn(
+                    "mt-2 flex items-center gap-1 text-sm",
+                    stat.isExpense
+                      ? stat.change > 0
+                        ? "text-red-600"
+                        : "text-emerald-600"
+                      : stat.change >= 0
+                      ? "text-emerald-600"
+                      : "text-red-600"
+                  )}
+                >
+                  {stat.change >= 0 ? (
+                    <TrendingUp className="h-4 w-4" />
+                  ) : (
+                    <TrendingDown className="h-4 w-4" />
+                  )}
+                  <span>
+                    {stat.change >= 0 ? "+" : ""}
+                    {stat.change}% vs last year
+                  </span>
+                </div>
+              </Card>
+            ))}
+          </div>
+        )}
 
         {/* P&L Chart */}
         <Card>
@@ -216,7 +235,7 @@ export default function ReportsPage() {
           </CardHeader>
           <CardContent>
             <div ref={plChartRef} style={{ width: "100%", height: 350 }}>
-              {isMounted && revenueData && plDimensions.width > 0 && (
+              {isMounted && revenueData && !revenueError && plDimensions.width > 0 && (
                 <BarChart
                   width={plDimensions.width}
                   height={plDimensions.height}
@@ -274,6 +293,13 @@ export default function ReportsPage() {
                   />
                 </BarChart>
               )}
+              {(!revenueData || revenueError) && (
+                <div className="flex h-full items-center justify-center text-slate-500">
+                  <div className="text-center">
+                    <p className="text-sm">{t("reports.dataNotAvailable")}</p>
+                  </div>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -289,7 +315,7 @@ export default function ReportsPage() {
             </CardHeader>
             <CardContent>
               <div ref={profitChartRef} style={{ width: "100%", height: 250 }}>
-                {isMounted && profitLossData && profitDimensions.width > 0 && (
+                {isMounted && profitLossData && !profitLossError && profitDimensions.width > 0 && (
                   <AreaChart
                     width={profitDimensions.width}
                     height={profitDimensions.height}
@@ -356,6 +382,13 @@ export default function ReportsPage() {
                     />
                   </AreaChart>
                 )}
+                {(!profitLossData || profitLossError) && (
+                  <div className="flex h-full items-center justify-center text-slate-500">
+                    <div className="text-center">
+                      <p className="text-sm">{t("reports.dataNotAvailable")}</p>
+                    </div>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -369,7 +402,7 @@ export default function ReportsPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {categoryData?.map((category) => {
+                {categoryData && !categoryError ? categoryData.map((category) => {
                   const maxAmount = Math.max(
                     ...(categoryData?.map((c) => c.amount) || [0])
                   );
@@ -395,7 +428,13 @@ export default function ReportsPage() {
                       </div>
                     </div>
                   );
-                })}
+                }) : (
+                  <div className="flex h-32 items-center justify-center text-slate-500">
+                    <div className="text-center">
+                      <p className="text-sm">{t("reports.dataNotAvailable")}</p>
+                    </div>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>

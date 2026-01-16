@@ -7,13 +7,6 @@
  * Each function returns a Promise to mimic async API behavior.
  */
 
-import {
-  invoices,
-  revenueExpenseData,
-  categoryData,
-  profitLossData,
-  vatReports,
-} from "@/data";
 
 import { clientsApi } from "@/lib/clients-api";
 import type { CreateClientRequest } from "@/lib/clients-api";
@@ -207,8 +200,7 @@ export async function fetchInvoices(params?: InvoicesQueryParams): Promise<{
 }
 
 export async function fetchInvoice(id: string): Promise<Invoice | null> {
-  await delay();
-  return invoices.find((i) => i.id === id) || null;
+  throw new Error("Fetch invoice by ID API endpoint not implemented yet");
 }
 
 export async function createInvoice(data: {
@@ -254,15 +246,11 @@ export async function updateInvoice(
   id: string,
   data: Partial<Invoice>
 ): Promise<Invoice | null> {
-  await delay();
-  const invoice = invoices.find((i) => i.id === id);
-  if (!invoice) return null;
-  return { ...invoice, ...data };
+  throw new Error("Update invoice API endpoint not implemented yet");
 }
 
 export async function deleteInvoice(id: string): Promise<boolean> {
-  await delay();
-  return invoices.some((i) => i.id === id);
+  throw new Error("Delete invoice API endpoint not implemented yet");
 }
 
 // ============================================
@@ -396,18 +384,15 @@ export async function fetchDashboardStats(): Promise<DashboardStats> {
 }
 
 export async function fetchRevenueExpenseData(): Promise<RevenueExpenseData[]> {
-  await delay();
-  return revenueExpenseData;
+  throw new Error("Revenue/Expense data API endpoint not implemented yet");
 }
 
 export async function fetchCategoryData(): Promise<CategoryData[]> {
-  await delay();
-  return categoryData;
+  throw new Error("Category data API endpoint not implemented yet");
 }
 
 export async function fetchProfitLossData(): Promise<ProfitLossData[]> {
-  await delay();
-  return profitLossData;
+  throw new Error("Profit/Loss data API endpoint not implemented yet");
 }
 
 // ============================================
@@ -463,36 +448,21 @@ export async function completeBankConnection(): Promise<BankConnection> {
 // ============================================
 
 export async function fetchVatReports(): Promise<VatReport[]> {
-  await delay();
-  return vatReports;
+  throw new Error("VAT reports API endpoint not implemented yet");
 }
 
 export async function fetchVatReport(id: string): Promise<VatReport | null> {
-  await delay();
-  return vatReports.find((v) => v.id === id) || null;
+  throw new Error("VAT report API endpoint not implemented yet");
 }
 
 export async function createVatReport(
   data: Omit<VatReport, "id" | "createdAt">
 ): Promise<VatReport> {
-  await delay();
-  const newReport: VatReport = {
-    ...data,
-    id: `vat-${Date.now()}`,
-    createdAt: new Date().toISOString(),
-  };
-  return newReport;
+  throw new Error("Create VAT report API endpoint not implemented yet");
 }
 
 export async function submitVatReport(id: string): Promise<VatReport | null> {
-  await delay(1500); // Longer delay to simulate submission
-  const report = vatReports.find((v) => v.id === id);
-  if (!report) return null;
-  return {
-    ...report,
-    status: "submitted",
-    submittedAt: new Date().toISOString(),
-  };
+  throw new Error("Submit VAT report API endpoint not implemented yet");
 }
 
 // ============================================

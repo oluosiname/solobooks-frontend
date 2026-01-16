@@ -209,6 +209,8 @@
     "newIncome": "Neue Einnahme",
     "addExpense": "Ausgabe hinzufügen",
     "addIncome": "Einnahme hinzufügen",
+    "addManualExpense": "Manuelle Ausgabe hinzufügen",
+    "addManualIncome": "Manuelle Einnahme hinzufügen",
     "import": "Importieren",
     "importTransactions": "Transaktionen importieren",
     "searchPlaceholder": "Transaktionen suchen...",
@@ -401,7 +403,9 @@
       "yearly": "Jährlich",
       "quarterly": "Vierteljährlich",
       "monthly": "Monatlich"
-    }
+    },
+    "dataNotAvailable": "Berichtsdaten nicht verfügbar",
+    "dataNotAvailableDescription": "Einige Berichtsdaten sind noch nicht vom Backend verfügbar. Diese Funktionen werden in einem zukünftigen Update implementiert."
   },
   "taxes": {
     "title": "Steuern",
