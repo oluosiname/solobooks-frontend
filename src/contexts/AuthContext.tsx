@@ -2,14 +2,18 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { authApi, type AuthResponse, type ApiError } from "@/lib/auth-api";
+import { authApi, type AuthResponse, type ApiError, type MeResponse } from "@/lib/auth-api";
+import { camelize } from "@/services/api-transformer";
 
 interface AuthUser {
   id: string;
   email: string;
   confirmed: boolean;
-  created_at: string;
-  updated_at: string;
+  createdAt: string;
+  updatedAt: string;
+  locale: string;
+  onTrial: boolean;
+  trialEndsAt?: string;
 }
 
 interface AuthContextType {
@@ -39,27 +43,54 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
-  // Load user and tokens from localStorage on mount
-  useEffect(() => {
-    const storedToken = localStorage.getItem(TOKEN_KEY);
-    const storedRefreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
-    const storedUser = localStorage.getItem(USER_KEY);
+  // Centralized function to fetch and transform user data
+  const fetchUserData = async (token: string): Promise<AuthUser> => {
+    const userResponse = await authApi.me(token);
+    return camelize<AuthUser>(userResponse.data);
+  };
 
-    if (storedToken && storedUser) {
-      try {
-        const parsedUser = JSON.parse(storedUser);
+  // Load tokens and fetch fresh user data from API on mount
+  useEffect(() => {
+    const initializeAuth = async () => {
+      const storedToken = localStorage.getItem(TOKEN_KEY);
+      const storedRefreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
+
+      if (storedToken) {
         setToken(storedToken);
         setRefreshToken(storedRefreshToken);
-        setUser(parsedUser);
-      } catch (error) {
-        // Invalid stored data, clear it
-        localStorage.removeItem(TOKEN_KEY);
-        localStorage.removeItem(REFRESH_TOKEN_KEY);
-        localStorage.removeItem(USER_KEY);
-      }
-    }
 
-    setIsLoading(false);
+        try {
+          // Always fetch fresh user data from API on page reload
+          const transformedUser = await fetchUserData(storedToken);
+          setUser(transformedUser);
+          // Update localStorage with fresh data
+          localStorage.setItem(USER_KEY, JSON.stringify(transformedUser));
+        } catch (error) {
+          console.error("Failed to fetch user details:", error);
+          // If API call fails, try to use cached data as fallback
+          const storedUser = localStorage.getItem(USER_KEY);
+          if (storedUser) {
+            try {
+              const parsedUser = JSON.parse(storedUser);
+              setUser(parsedUser);
+            } catch (parseError) {
+              // Invalid stored data, clear it
+              localStorage.removeItem(TOKEN_KEY);
+              localStorage.removeItem(REFRESH_TOKEN_KEY);
+              localStorage.removeItem(USER_KEY);
+            }
+          } else {
+            // No cached data and API failed, clear tokens
+            localStorage.removeItem(TOKEN_KEY);
+            localStorage.removeItem(REFRESH_TOKEN_KEY);
+          }
+        }
+      }
+
+      setIsLoading(false);
+    };
+
+    initializeAuth();
   }, []);
 
   const clearError = () => setError(null);
@@ -75,9 +106,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // Fetch user details with the access token
     try {
-      const userResponse = await authApi.me(accessToken);
-      setUser(userResponse.data);
-      localStorage.setItem(USER_KEY, JSON.stringify(userResponse.data));
+      const transformedUser = await fetchUserData(accessToken);
+      setUser(transformedUser);
+      localStorage.setItem(USER_KEY, JSON.stringify(transformedUser));
     } catch (error) {
       console.error("Failed to fetch user details:", error);
       // Continue without user data - token is still valid

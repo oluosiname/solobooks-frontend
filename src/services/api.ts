@@ -7,7 +7,6 @@
  * Each function returns a Promise to mimic async API behavior.
  */
 
-
 import { clientsApi } from "@/lib/clients-api";
 import type { CreateClientRequest } from "@/lib/clients-api";
 import { financialCategoriesApi } from "@/lib/financial-categories-api";

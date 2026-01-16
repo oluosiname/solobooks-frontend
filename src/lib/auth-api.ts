@@ -36,6 +36,19 @@ export interface ApiError {
   };
 }
 
+export interface MeResponse {
+  data: {
+    id: string;
+    email: string;
+    confirmed: boolean;
+    created_at: string;
+    updated_at: string;
+    locale: string;
+    on_trial: boolean;
+    trial_ends_at?: string;
+  };
+}
+
 class AuthApiClient {
   private async request<T>(
     endpoint: string,
@@ -126,24 +139,8 @@ class AuthApiClient {
    * Get current user details
    * GET /api/v1/auth/me
    */
-  async me(token: string): Promise<{
-    data: {
-      id: string;
-      email: string;
-      confirmed: boolean;
-      created_at: string;
-      updated_at: string;
-    };
-  }> {
-    return this.request<{
-      data: {
-        id: string;
-        email: string;
-        confirmed: boolean;
-        created_at: string;
-        updated_at: string;
-      };
-    }>("/api/v1/auth/me", {
+  async me(token: string): Promise<MeResponse> {
+    return this.request<MeResponse>("/api/v1/auth/me", {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
