@@ -22,7 +22,6 @@ export default function DashboardPage() {
     queryFn: api.getRevenueExpenseData,
   });
 
-
   const { data: transactions } = useQuery({
     queryKey: ["recent-transactions"],
     queryFn: () => api.getRecentTransactions(15),
@@ -61,7 +60,11 @@ export default function DashboardPage() {
             title={t("dashboard.outstandingAmount")}
             value={stats ? formatCurrency(stats.outstandingAmount) : "€0"}
             changeLabel={
-              stats ? t("dashboard.overdueInvoices", { count: stats.overdueInvoicesCount }) : ""
+              stats
+                ? t("dashboard.overdueInvoices", {
+                    count: stats.overdueInvoicesCount,
+                  })
+                : ""
             }
             icon={Clock}
             className="stagger-3"
@@ -70,7 +73,9 @@ export default function DashboardPage() {
             title={t("dashboard.activeClients")}
             value={stats?.activeClientsCount?.toString() || "0"}
             change={stats?.newClientsThisMonth}
-            changeLabel={t("dashboard.newThisMonth", { count: stats?.newClientsThisMonth || 0 })}
+            changeLabel={t("dashboard.newThisMonth", {
+              count: stats?.newClientsThisMonth || 0,
+            })}
             icon={Users}
             className="stagger-4"
           />

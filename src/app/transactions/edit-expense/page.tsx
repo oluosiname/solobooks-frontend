@@ -1,21 +1,25 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import { ArrowLeft, Check } from "lucide-react";
 import { AppShell } from "@/components/layout";
 import { cn } from "@/lib/utils";
 import { styles, buttonStyles } from "@/lib/styles";
-import { createTransaction, fetchCategories } from "@/services/api";
+import { createTransaction, updateTransaction, fetchCategories, fetchTransaction } from "@/services/api";
 import { showToast } from "@/lib/toast";
 import { FileUpload } from "@/components/molecules/FileUpload";
 import * as humps from "humps";
 
-export default function NewExpensePage() {
+export default function EditExpensePage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const queryClient = useQueryClient();
+  const t = useTranslations();
 
+  const transactionId = searchParams.get('id');
 
   const [formData, setFormData] = useState<{
     transactionType: "Expense" | "Income";
@@ -39,58 +43,94 @@ export default function NewExpensePage() {
 
   const [receiptFile, setReceiptFile] = useState<File | null>(null);
 
-  const { data: categories, isLoading: categoriesLoading } = useQuery({
+  // Fetch transaction data
+  const { data: transactionData, isLoading: isLoadingTransaction } = useQuery({
+    queryKey: ['transaction', transactionId],
+    queryFn: () => transactionId ? fetchTransaction(transactionId) : null,
+    enabled: !!transactionId,
+  });
+
+  // Fetch categories
+  const { data: categories } = useQuery({
     queryKey: ["categories", "expense"],
     queryFn: () => fetchCategories("expense"),
   });
 
-  const createTransactionMutation = useMutation({
-    mutationFn: createTransaction,
+  // Update form data when transaction data is loaded
+  useEffect(() => {
+    if (transactionData && !isLoadingTransaction) {
+      setFormData({
+        transactionType: transactionData.transactionType || "Expense",
+        categoryId: transactionData.category?.id.toString() || "",
+        date: transactionData.date || new Date().toISOString().split("T")[0],
+        amount: Math.abs(transactionData.amount).toString(),
+        description: transactionData.description || "",
+        vatRate: transactionData.vatRate || 19,
+        customerLocation: transactionData.customerLocation || "germany",
+        customerVatNumber: transactionData.customerVatNumber || "",
+      });
+    }
+  }, [transactionData, isLoadingTransaction]);
+
+  const updateTransactionMutation = useMutation({
+    mutationFn: (data: { id: string; transactionData: any }) =>
+      updateTransaction(data.id, data.transactionData),
     onSuccess: () => {
-      showToast.created("Transaction");
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
-      queryClient.invalidateQueries({ queryKey: ["unchecked-transactions"] });
+      queryClient.invalidateQueries({ queryKey: ['transaction', transactionId] });
+      showToast.success("Expense transaction updated successfully");
       router.push("/transactions");
     },
     onError: (error: any) => {
-      console.error("Failed to create transaction:", error);
-      showToast.error("Failed to create transaction. Please try again.");
+      showToast.apiError(error, "Failed to update expense transaction");
     },
   });
 
-
-  const handleChange = (field: string, value: string) => {
-    setFormData({ ...formData, [field]: value });
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.categoryId || !formData.amount || !formData.description) {
-      showToast.error("Please fill in all required fields");
+    if (!transactionId) {
+      showToast.error("Transaction ID is required");
       return;
     }
 
-    // Transform frontend data to match API spec
-    const apiData = {
-      transaction_type: formData.transactionType.toLowerCase(),
-      amount: parseFloat(formData.amount),
-      date: formData.date,
+    if (!formData.categoryId) {
+      showToast.error("Please select a category");
+      return;
+    }
+
+    const transactionData = {
       description: formData.description,
-      financial_category_id: parseInt(formData.categoryId),
+      amount: -Math.abs(parseFloat(formData.amount)), // Negative for expenses
       vat_rate: formData.vatRate,
+      vat_amount: -(Math.abs(parseFloat(formData.amount)) * formData.vatRate) / 100,
       customer_location: formData.customerLocation,
       customer_vat_number: formData.customerVatNumber || undefined,
+      vat_technique: "standard",
+      source: "manual",
+      date: formData.date,
+      category_id: parseInt(formData.categoryId),
+      receipt: receiptFile || undefined,
     };
 
-    createTransactionMutation.mutate({
-      transaction: humps.decamelizeKeys(apiData) as any,
-      receipt: receiptFile || undefined,
+    updateTransactionMutation.mutate({
+      id: transactionId,
+      transactionData,
     });
   };
 
+  if (isLoadingTransaction) {
+    return (
+      <AppShell title="Edit Expense">
+        <div className="flex items-center justify-center py-12">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+        </div>
+      </AppShell>
+    );
+  }
+
   return (
-    <AppShell title="New Expense">
+    <AppShell title="Edit Expense">
       <div className="mb-6">
         <button
           onClick={() => router.back()}
@@ -98,7 +138,7 @@ export default function NewExpensePage() {
         >
           <ArrowLeft className="h-5 w-5" />
           <span className="text-xl font-semibold text-slate-900">
-            New Expense
+            Edit Expense
           </span>
         </button>
       </div>
@@ -124,9 +164,11 @@ export default function NewExpensePage() {
                         value={formData.transactionType}
                         disabled
                       >
+                        <option value="Income">Income</option>
                         <option value="Expense">Expense</option>
                       </select>
                     </div>
+
                     <div>
                       <label className="block text-sm font-medium text-slate-700">
                         Category
@@ -134,16 +176,11 @@ export default function NewExpensePage() {
                       <select
                         className={cn(styles.input, "mt-1.5")}
                         value={formData.categoryId}
-                        onChange={(e) =>
-                          handleChange("categoryId", e.target.value)
-                        }
+                        onChange={(e) => setFormData({ ...formData, categoryId: e.target.value })}
                         required
-                        disabled={categoriesLoading}
                       >
                         <option value="">
-                          {categoriesLoading
-                            ? "Loading categories..."
-                            : "Select category"}
+                          Select category
                         </option>
                         {categories?.map((category) => (
                           <option
@@ -155,18 +192,21 @@ export default function NewExpensePage() {
                         ))}
                       </select>
                     </div>
+                  </div>
+                  <div className="grid gap-6 md:grid-cols-2">
                     <div>
                       <label className="block text-sm font-medium text-slate-700">
-                        Date
+                        Date *
                       </label>
                       <input
                         type="date"
                         className={cn(styles.input, "mt-1.5")}
                         value={formData.date}
-                        onChange={(e) => handleChange("date", e.target.value)}
+                        onChange={(e) => setFormData({ ...formData, date: e.target.value })}
                         required
                       />
                     </div>
+
                     <div>
                       <label className="block text-sm font-medium text-slate-700">
                         Amount (€)
@@ -177,10 +217,23 @@ export default function NewExpensePage() {
                         className={cn(styles.input, "mt-1.5")}
                         placeholder="0.00"
                         value={formData.amount}
-                        onChange={(e) => handleChange("amount", e.target.value)}
+                        onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
                         required
                       />
                     </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700">
+                      Description
+                    </label>
+                    <textarea
+                      className={cn(styles.input, "mt-1.5")}
+                      value={formData.description}
+                      onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                      rows={3}
+                      placeholder="Transaction description"
+                    />
                   </div>
 
                   <div>
@@ -190,9 +243,7 @@ export default function NewExpensePage() {
                     <select
                       className={cn(styles.input, "mt-1.5")}
                       value={formData.customerLocation}
-                      onChange={(e) =>
-                        handleChange("customerLocation", e.target.value)
-                      }
+                      onChange={(e) => setFormData({ ...formData, customerLocation: e.target.value })}
                     >
                       <option value="germany">Germany</option>
                       <option value="in_eu">In EU (other EU countries)</option>
@@ -208,9 +259,7 @@ export default function NewExpensePage() {
                       <select
                         className={cn(styles.input, "mt-1.5")}
                         value={formData.vatRate}
-                        onChange={(e) =>
-                          handleChange("vatRate", e.target.value)
-                        }
+                        onChange={(e) => setFormData({ ...formData, vatRate: parseInt(e.target.value) })}
                       >
                         <option value={0}>0%</option>
                         <option value={7}>7%</option>
@@ -228,29 +277,12 @@ export default function NewExpensePage() {
                       <input
                         type="text"
                         className={cn(styles.input, "mt-1.5")}
-                        placeholder="DE123456789"
                         value={formData.customerVatNumber}
-                        onChange={(e) =>
-                          handleChange("customerVatNumber", e.target.value)
-                        }
+                        onChange={(e) => setFormData({ ...formData, customerVatNumber: e.target.value })}
+                        placeholder="VAT number"
                       />
                     </div>
                   )}
-
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700">
-                      Description
-                    </label>
-                    <textarea
-                      className={cn(styles.input, "mt-1.5 h-24 resize-none")}
-                      placeholder="Enter transaction description..."
-                      value={formData.description}
-                      onChange={(e) =>
-                        handleChange("description", e.target.value)
-                      }
-                      required
-                    />
-                  </div>
 
                   <div>
                     <label className="block text-sm font-medium text-slate-700">
@@ -258,16 +290,15 @@ export default function NewExpensePage() {
                     </label>
                     <div className="mt-1.5">
                       <FileUpload
-                        accept=".pdf,.png,.jpg,.jpeg"
-                        maxSize="10MB"
                         onFileSelect={(file) => setReceiptFile(file)}
-                        label={
-                          receiptFile
-                            ? `Selected: ${receiptFile.name}`
-                            : "Click to upload or drag and drop"
-                        }
-                        description="PDF, PNG, JPG up to 10MB"
+                        accept="image/*,.pdf"
+                        maxSize="5MB"
                       />
+                      {receiptFile && (
+                        <p className="mt-2 text-sm text-slate-600">
+                          Selected: {receiptFile.name}
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -276,56 +307,55 @@ export default function NewExpensePage() {
           </div>
         </div>
 
-        {/* Summary Sidebar */}
+        {/* Sidebar */}
         <div className="lg:col-span-1">
-          <div className={cn(styles.card, "sticky top-6")}>
-            <div className={styles.cardContent}>
-              <h3 className="text-lg font-semibold text-slate-900">Summary</h3>
-              <div className="mt-6 space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-slate-600">Transaction Type</span>
-                  <span className="font-medium text-red-600">Expense</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-slate-600">Date</span>
-                  <span className="font-medium text-slate-900">
-                    {formData.date}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-slate-600">Status</span>
-                  <span className="font-medium text-slate-900">
-                    {receiptFile ? "Receipt Attached" : "No Receipt"}
-                  </span>
+          <div className="space-y-6">
+            <div className={cn(styles.card)}>
+              <div className={styles.cardContent}>
+                <h3 className="text-lg font-semibold text-slate-900">Summary</h3>
+                <div className="mt-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-slate-600">Amount</span>
+                    <span className="font-semibold text-slate-900">€{parseFloat(formData.amount || "0").toFixed(2)}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-slate-600">Receipt</span>
+                    <span className="text-sm text-slate-900">{receiptFile ? "Attached" : "None"}</span>
+                  </div>
+                  <div className="flex items-center justify-between border-t border-slate-200 pt-3">
+                    <span className="font-semibold text-slate-900">Total</span>
+                    <span className="text-lg font-semibold text-slate-900">€{parseFloat(formData.amount || "0").toFixed(2)}</span>
+                  </div>
                 </div>
               </div>
-              <div className="mt-6 space-y-3">
-                <button
-                  type="submit"
-                  form="expense-form"
-                  disabled={createTransactionMutation.isPending}
-                  className={cn(
-                    buttonStyles("primary"),
-                    "w-full justify-center"
-                  )}
-                >
-                  <Check className="h-4 w-4" />
-                  {createTransactionMutation.isPending
-                    ? "Creating..."
-                    : "Create Expense"}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => router.back()}
-                  disabled={createTransactionMutation.isPending}
-                  className={cn(
-                    buttonStyles("secondary"),
-                    "w-full justify-center"
-                  )}
-                >
-                  Cancel
-                </button>
-              </div>
+            </div>
+
+            <div className="flex flex-col gap-3">
+              <button
+                type="submit"
+                form="expense-form"
+                disabled={updateTransactionMutation.isPending}
+                className={cn(
+                  buttonStyles("primary"),
+                  "w-full justify-center"
+                )}
+              >
+                <Check className="h-4 w-4" />
+                {updateTransactionMutation.isPending
+                  ? "Updating..."
+                  : "Update Expense"}
+              </button>
+              <button
+                type="button"
+                onClick={() => router.back()}
+                disabled={updateTransactionMutation.isPending}
+                className={cn(
+                  buttonStyles("secondary"),
+                  "w-full justify-center"
+                )}
+              >
+                Cancel
+              </button>
             </div>
           </div>
         </div>

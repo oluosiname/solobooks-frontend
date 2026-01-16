@@ -42,6 +42,8 @@ import { subscriptionApi } from "@/lib/subscription-api";
 import { settingsApi } from "@/lib/settings-api";
 import type { SettingsData as ApiSettingsData } from "@/lib/settings-api";
 import { dashboardApi } from "@/lib/dashboard-api";
+import { invoiceCategoriesApi } from "@/lib/invoice-categories-api";
+import { invoicesApi, InvoicesQueryParams } from "@/lib/invoices-api";
 import { paymentMethodApi } from "@/lib/payment-method-api";
 import { bankConnectionsApi } from "@/lib/bank-connections-api";
 
@@ -63,6 +65,7 @@ import type {
   ProfitLossData,
   InvoiceSettings,
   InvoiceSettingsInput,
+  InvoiceCategory,
   Currency,
   VatStatus,
   VatStatusInput,
@@ -83,6 +86,8 @@ import {
   transformSettingsData,
   transformDashboardStatsData,
   transformFinancialCategoryData,
+  transformInvoiceCategoryData,
+  transformInvoiceData,
 } from "./api-transformer";
 
 // Simulate network delay
@@ -178,9 +183,25 @@ export async function deleteClient(id: string): Promise<boolean> {
 // Invoices API
 // ============================================
 
-export async function fetchInvoices(): Promise<Invoice[]> {
-  await delay();
-  return invoices;
+export async function fetchInvoices(params?: InvoicesQueryParams): Promise<{
+  invoices: Invoice[];
+  meta: {
+    currentPage: number;
+    totalPages: number;
+    totalCount: number;
+    perPage: number;
+  };
+}> {
+  const response = await invoicesApi.listInvoices(params);
+  return {
+    invoices: response.data.map(transformInvoiceData),
+    meta: humps.camelizeKeys(response.meta) as {
+      currentPage: number;
+      totalPages: number;
+      totalCount: number;
+      perPage: number;
+    },
+  };
 }
 
 export async function fetchInvoice(id: string): Promise<Invoice | null> {
@@ -188,16 +209,43 @@ export async function fetchInvoice(id: string): Promise<Invoice | null> {
   return invoices.find((i) => i.id === id) || null;
 }
 
-export async function createInvoice(
-  data: Omit<Invoice, "id" | "createdAt">
-): Promise<Invoice> {
-  await delay();
-  const newInvoice: Invoice = {
-    ...data,
-    id: `inv-${Date.now()}`,
-    createdAt: new Date().toISOString(),
+export async function createInvoice(data: {
+  clientId: string;
+  category: string;
+  currency: string;
+  language: string;
+  invoiceDate: string;
+  dueDate: string;
+  lineItems: Array<{
+    id: string;
+    description: string;
+    price: number;
+    unit: string;
+    quantity: number;
+  }>;
+}): Promise<any> {
+  const invoiceData = {
+    invoice: {
+      client_id: data.clientId,
+      invoice_category_id: data.category,
+      currency_id: data.currency,
+      date: data.invoiceDate,
+      due_date: data.dueDate,
+      language: data.language,
+      vat_rate: 19, // Default VAT rate
+      vat_included: true,
+      vat_technique: "standard",
+      line_items: data.lineItems.map(item => ({
+        description: item.description,
+        quantity: item.quantity,
+        unit: item.unit,
+        unit_price: item.price,
+      })),
+    },
   };
-  return newInvoice;
+
+  const response = await invoicesApi.createInvoice(invoiceData);
+  return transformInvoiceData(response.data);
 }
 
 export async function updateInvoice(
@@ -250,21 +298,6 @@ export async function fetchTransactions(
 }
 
 /**
- * Fetch a single transaction by ID
- * GET /api/v1/transactions/{id}
- */
-export async function fetchTransaction(
-  id: string | number
-): Promise<Transaction | null> {
-  try {
-    const response = await transactionsApi.getTransaction(id);
-    return transformTransactionData(response.data);
-  } catch {
-    return null;
-  }
-}
-
-/**
  * Fetch unchecked transactions (synced from banks)
  * GET /api/v1/synced_transactions
  */
@@ -284,6 +317,17 @@ export async function discardSyncedTransaction(
 }
 
 /**
+ * Fetch a single transaction
+ * GET /api/v1/transactions/{id}
+ */
+export async function fetchTransaction(
+  id: string | number
+): Promise<Transaction> {
+  const response = await transactionsApi.getTransaction(id);
+  return transformTransactionData(response.data);
+}
+
+/**
  * Fetch financial categories
  * GET /api/v1/financial_categories
  */
@@ -292,6 +336,15 @@ export async function fetchCategories(
 ): Promise<TransactionCategory[]> {
   const response = await financialCategoriesApi.listCategories(type);
   return response.data.map(transformFinancialCategoryData);
+}
+
+/**
+ * Fetch invoice categories
+ * GET /api/v1/invoice_categories
+ */
+export async function fetchInvoiceCategories(): Promise<InvoiceCategory[]> {
+  const response = await invoiceCategoriesApi.getCategories();
+  return response.data.map(transformInvoiceCategoryData);
 }
 
 /**
@@ -311,29 +364,13 @@ export async function createTransaction(
  */
 export async function updateTransaction(
   id: string | number,
-  data: Partial<Transaction>
-): Promise<Transaction | null> {
+  transactionData: CreateTransactionRequest["transaction"] & {
+    receipt?: File;
+  }
+): Promise<Transaction> {
   const response = await transactionsApi.updateTransaction(id, {
-    transaction: {
-      ...(data.description !== undefined && { description: data.description }),
-      ...(data.amount !== undefined && { amount: data.amount }),
-      ...(data.vatRate !== undefined && { vat_rate: data.vatRate }),
-      ...(data.vatAmount !== undefined && { vat_amount: data.vatAmount }),
-      ...(data.customerLocation !== undefined && {
-        customer_location: data.customerLocation,
-      }),
-      ...(data.customerVatNumber !== undefined && {
-        customer_vat_number: data.customerVatNumber || undefined,
-      }),
-      ...(data.vatTechnique !== undefined && {
-        vat_technique: data.vatTechnique,
-      }),
-      ...(data.source !== undefined && { source: data.source }),
-      ...(data.receiptUrl !== undefined && {
-        receipt_url: data.receiptUrl || undefined,
-      }),
-      ...(data.category?.id !== undefined && { category_id: data.category.id }),
-    },
+    transaction: transactionData,
+    receipt: transactionData.receipt,
   });
   return transformTransactionData(response.data);
 }
@@ -659,4 +696,7 @@ export const api = {
   // Settings
   fetchSettings,
   updateSettings,
+
+  // Invoice Categories
+  fetchInvoiceCategories,
 };

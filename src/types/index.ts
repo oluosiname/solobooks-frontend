@@ -263,6 +263,14 @@ export interface InvoiceSettingsInput {
   defaultNote?: string;
 }
 
+// Invoice Category types
+export interface InvoiceCategory {
+  id: number;
+  name: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 // Settings types
 export interface Settings {
   id: number;

@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { AppShell } from '@/components/layout';
 import { SearchInput, Tabs, Badge } from '@/components/ui';
 import { api } from '@/lib/api';
+import { fetchInvoices } from '@/services/api';
 import { formatCurrency, formatDate, cn } from '@/lib/utils';
 import { styles, buttonStyles } from '@/lib/styles';
 import type { InvoiceStatus } from '@/types';
@@ -19,22 +20,18 @@ export default function InvoicesPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  const { data: invoices, isLoading } = useQuery({
-    queryKey: ['invoices', activeTab],
-    queryFn: () => api.getInvoices(activeTab === 'all' ? undefined : activeTab as InvoiceStatus),
+  const { data: invoicesData, isLoading } = useQuery({
+    queryKey: ['invoices', activeTab, searchQuery, currentPage],
+    queryFn: () => fetchInvoices({
+      status: activeTab === 'all' ? undefined : activeTab as any,
+      query: searchQuery || undefined,
+      page: currentPage,
+      per_page: itemsPerPage,
+    }),
   });
 
-  const filteredInvoices = invoices?.filter(
-    (inv) =>
-      inv.invoiceNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      inv.clientName.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  const totalPages = Math.ceil((filteredInvoices?.length || 0) / itemsPerPage);
-  const paginatedInvoices = filteredInvoices?.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  const invoices = invoicesData?.invoices || [];
+  const totalPages = invoicesData?.meta?.totalPages || 1;
 
   const tabs = [
     { id: 'all', label: t('invoices.tabs.all') },
@@ -86,14 +83,14 @@ export default function InvoicesPage() {
                     {t('common.loading')}
                   </td>
                 </tr>
-              ) : paginatedInvoices?.length === 0 ? (
+              ) : invoices.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="py-8 text-center text-slate-500">
                     {t('invoices.noInvoices')}
                   </td>
                 </tr>
               ) : (
-                paginatedInvoices?.map((invoice) => (
+                invoices.map((invoice) => (
                   <tr key={invoice.id} className="hover:bg-slate-50">
                     <td className={cn(styles.td, 'font-medium text-slate-900')}>{invoice.invoiceNumber}</td>
                     <td className={styles.td}>{invoice.clientName}</td>
@@ -115,13 +112,13 @@ export default function InvoicesPage() {
           </table>
 
           {/* Pagination */}
-          {filteredInvoices && filteredInvoices.length > 0 && (
+          {invoicesData?.meta && invoicesData.meta.totalCount > 0 && (
             <div className="flex items-center justify-between border-t border-slate-200 px-6 py-4">
               <p className="text-sm text-slate-600">
                 {t('invoices.showingInvoices', {
                   start: (currentPage - 1) * itemsPerPage + 1,
-                  end: Math.min(currentPage * itemsPerPage, filteredInvoices.length),
-                  total: filteredInvoices.length
+                  end: Math.min(currentPage * itemsPerPage, invoicesData.meta.totalCount),
+                  total: invoicesData.meta.totalCount
                 })}
               </p>
               <div className="flex gap-2">
