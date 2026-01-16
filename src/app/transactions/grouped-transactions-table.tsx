@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Edit2, Trash2, Receipt, AlertTriangle, X } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { formatCurrency, formatDate, cn } from "@/lib/utils";
 import { styles } from "@/lib/styles";
@@ -21,6 +22,7 @@ export function GroupedTransactionsTable({
   isPendingView = false,
 }: GroupedTransactionsTableProps) {
   const t = useTranslations();
+  const router = useRouter();
   const queryClient = useQueryClient();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [transactionToDelete, setTransactionToDelete] = useState<Transaction | null>(null);
@@ -73,6 +75,30 @@ export function GroupedTransactionsTable({
   const handleCancelDelete = () => {
     setDeleteDialogOpen(false);
     setTransactionToDelete(null);
+  };
+
+  const handleEdit = (transaction: Transaction) => {
+    // Determine if it's income or expense based on amount
+    // Positive amount = Income, Negative amount = Expense
+    const isIncome = transaction.amount >= 0;
+    const formType = isIncome ? 'income' : 'expense';
+
+    // Store transaction data in sessionStorage to prefill the form
+    const formData = {
+      description: transaction.description,
+      amount: Math.abs(transaction.amount).toString(),
+      date: transaction.date,
+      categoryId: transaction.category?.id.toString() || '',
+      vatRate: transaction.vatRate,
+      customerLocation: transaction.customerLocation,
+      customerVatNumber: transaction.customerVatNumber || '',
+      transactionType: isIncome ? 'Income' : 'Expense',
+    };
+
+    sessionStorage.setItem('prefillTransactionData', JSON.stringify(formData));
+
+    // Navigate to the appropriate form
+    router.push(`/transactions/new-${formType}`);
   };
 
   return (
@@ -154,7 +180,10 @@ export function GroupedTransactionsTable({
                     </td>
                     <td className={styles.td}>
                       <div className="flex gap-1">
-                        <button className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600">
+                        <button
+                          onClick={() => handleEdit(transaction)}
+                          className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
+                        >
                           <Edit2 className="h-4 w-4" />
                         </button>
                         <button

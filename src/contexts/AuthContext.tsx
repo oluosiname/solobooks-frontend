@@ -95,8 +95,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const response = await authApi.login({ email, password });
       await handleAuthResponse(response);
 
-      // Redirect to home
-      router.push("/");
+      // RouteGuard will handle redirecting authenticated users away from public routes
     } catch (err) {
       const apiError = err as ApiError;
       setError(apiError.error?.message || "Failed to login. Please try again.");
