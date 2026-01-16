@@ -26,6 +26,7 @@ export default function NewExpensePage() {
     vatRate: number;
     customerLocation: string;
     customerVatNumber: string;
+    syncedTransactionId?: string;
   }>({
     transactionType: "Expense",
     categoryId: searchParams.get("categoryId") || "",
@@ -35,6 +36,7 @@ export default function NewExpensePage() {
     vatRate: parseFloat(searchParams.get("vatRate") || "19"), // Default German VAT rate
     customerLocation: searchParams.get("customerLocation") || "germany",
     customerVatNumber: searchParams.get("customerVatNumber") || "",
+    syncedTransactionId: searchParams.get("syncedTransactionId") || undefined,
   });
 
   const [receiptFile, setReceiptFile] = useState<File | null>(null);
@@ -80,6 +82,7 @@ export default function NewExpensePage() {
       vat_rate: formData.vatRate,
       customer_location: formData.customerLocation,
       customer_vat_number: formData.customerVatNumber || undefined,
+      synced_transaction_id: formData.syncedTransactionId,
     };
 
     createTransactionMutation.mutate({
@@ -92,6 +95,7 @@ export default function NewExpensePage() {
         vat_rate?: number;
         customer_location?: string;
         customer_vat_number?: string;
+        synced_transaction_id?: string;
       },
       receipt: receiptFile || undefined,
     });

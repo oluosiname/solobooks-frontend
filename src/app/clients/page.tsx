@@ -40,13 +40,13 @@ export default function ClientsPage() {
     mutationFn: (id: string) => api.deleteClient(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["clients"] });
-      showToast.success("Client deleted successfully");
+      showToast.success(t("clients.delete.success"));
       setDeleteDialogOpen(false);
       setClientToDelete(null);
     },
     onError: (error: any) => {
       console.error("Failed to delete client:", error);
-      showToast.error("Failed to delete client");
+      showToast.error(t("clients.delete.error"));
     },
   });
 
@@ -210,12 +210,10 @@ export default function ClientsPage() {
                 </div>
                 <div className="flex-1">
                   <h3 className="font-semibold text-slate-900">
-                    Delete Client
+                    {t("clients.delete.title")}
                   </h3>
                   <p className="text-sm text-slate-600">
-                    Are you sure you want to delete "{clientToDelete.name}"?
-                    This will also delete all associated invoices and cannot be
-                    undone.
+                    {t("clients.delete.confirm", { name: clientToDelete.name })}
                   </p>
                 </div>
               </div>
@@ -226,7 +224,7 @@ export default function ClientsPage() {
                   className="flex-1 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
                   disabled={deleteClientMutation.isPending}
                 >
-                  Cancel
+                  {t("common.cancel")}
                 </button>
                 <button
                   onClick={handleConfirmDelete}
@@ -234,8 +232,8 @@ export default function ClientsPage() {
                   className="flex-1 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {deleteClientMutation.isPending
-                    ? "Deleting..."
-                    : "Delete Client"}
+                    ? t("clients.delete.deleting")
+                    : t("clients.delete.title")}
                 </button>
               </div>
             </div>

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import { AppShell } from "@/components/layout";
 import { Button, Card } from "@/components/atoms";
 import { api } from "@/services/api";
@@ -12,6 +13,7 @@ import { CheckCircle, XCircle, Loader2, RefreshCw } from "lucide-react";
 export default function BankConnectionCallbackPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const t = useTranslations();
   const [status, setStatus] = useState<"loading" | "success" | "error">(
     "loading"
   );
@@ -22,7 +24,7 @@ export default function BankConnectionCallbackPage() {
     onSuccess: (data) => {
       console.log("Bank connection completed successfully:", data);
       setStatus("success");
-      showToast.success("Bank connection established successfully!");
+      showToast.success(t("bankConnections.callback.successToast"));
 
       // Redirect to bank connections page after a short delay
       setTimeout(() => {
@@ -33,9 +35,9 @@ export default function BankConnectionCallbackPage() {
       console.error("Failed to complete bank connection:", error);
       setStatus("error");
       setErrorMessage(
-        error?.error?.message || "Failed to complete bank connection"
+        error?.error?.message || t("bankConnections.callback.errorDescription")
       );
-      showToast.error("Failed to complete bank connection. Please try again.");
+      showToast.error(t("bankConnections.callback.errorToast"));
     },
   });
 
@@ -55,7 +57,11 @@ export default function BankConnectionCallbackPage() {
       if (error) {
         setStatus("error");
         setErrorMessage(errorDescription || error);
-        showToast.error(`Bank connection failed: ${errorDescription || error}`);
+        showToast.error(
+          t("bankConnections.callback.failedToast", {
+            error: errorDescription || error,
+          })
+        );
         return;
       }
 
@@ -63,7 +69,7 @@ export default function BankConnectionCallbackPage() {
     };
 
     handleCallback();
-  }, [searchParams]);
+  }, [searchParams, completeConnectionMutation, t]);
 
   const handleRetry = () => {
     router.push("/bank-connections/connect");
@@ -74,7 +80,7 @@ export default function BankConnectionCallbackPage() {
   };
 
   return (
-    <AppShell title="Bank Connection Callback">
+    <AppShell title={t("bankConnections.callback.title")}>
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <Card className="w-full max-w-md p-8 text-center">
           {status === "loading" && (
@@ -83,10 +89,10 @@ export default function BankConnectionCallbackPage() {
                 <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
               </div>
               <h2 className="text-xl font-semibold text-gray-900 mb-2">
-                Completing Bank Connection
+                {t("bankConnections.callback.completingConnection")}
               </h2>
               <p className="text-gray-600 mb-6">
-                Please wait while we finalize your bank connection...
+                {t("bankConnections.callback.completingDescription")}
               </p>
               <div className="flex justify-center">
                 <RefreshCw className="w-6 h-6 text-blue-600 animate-spin" />
@@ -100,15 +106,13 @@ export default function BankConnectionCallbackPage() {
                 <CheckCircle className="w-8 h-8 text-green-600" />
               </div>
               <h2 className="text-xl font-semibold text-gray-900 mb-2">
-                Bank Connected Successfully!
+                {t("bankConnections.callback.successTitle")}
               </h2>
               <p className="text-gray-600 mb-6">
-                Your bank has been connected and we'll start syncing your
-                transactions. You'll be redirected to your bank connections page
-                shortly.
+                {t("bankConnections.callback.successDescription")}
               </p>
               <Button onClick={handleGoBack} className="w-full">
-                Go to Bank Connections
+                {t("bankConnections.callback.goToConnections")}
               </Button>
             </>
           )}
@@ -119,11 +123,10 @@ export default function BankConnectionCallbackPage() {
                 <XCircle className="w-8 h-8 text-red-600" />
               </div>
               <h2 className="text-xl font-semibold text-gray-900 mb-2">
-                Connection Failed
+                {t("bankConnections.callback.errorTitle")}
               </h2>
               <p className="text-gray-600 mb-4">
-                {errorMessage ||
-                  "There was an error completing your bank connection."}
+                {errorMessage || t("bankConnections.callback.errorDescription")}
               </p>
               <div className="space-y-3">
                 <Button
@@ -131,14 +134,14 @@ export default function BankConnectionCallbackPage() {
                   variant="primary"
                   className="w-full"
                 >
-                  Try Again
+                  {t("bankConnections.callback.tryAgain")}
                 </Button>
                 <Button
                   onClick={handleGoBack}
                   variant="ghost"
                   className="w-full"
                 >
-                  Go Back
+                  {t("bankConnections.callback.goBack")}
                 </Button>
               </div>
             </>

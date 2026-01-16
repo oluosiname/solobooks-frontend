@@ -96,6 +96,7 @@ export interface CreateTransactionRequest {
     vat_rate?: number;
     customer_location?: string;
     customer_vat_number?: string;
+    synced_transaction_id?: string;
   };
   receipt?: File; // For multipart/form-data uploads
 }
@@ -230,7 +231,7 @@ class TransactionsApiClient extends BaseApiClient {
 
     // Otherwise, send as regular JSON with transaction nested properly
     return this.put<TransactionResponse>(`/api/v1/transactions/${id}`, {
-      transaction: data.transaction
+      transaction: data.transaction,
     });
   }
 
