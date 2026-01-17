@@ -4,4 +4,6 @@ export { InvoiceSettings } from "./InvoiceSettings";
 export { VatSettings } from "./VatSettings";
 export { NotificationSettings } from "./NotificationSettings";
 export { SecuritySettings } from "./SecuritySettings";
+export { PaymentSettings } from "./PaymentSettings";
+export { PaymentMethodForm } from "./PaymentMethodForm";
 export { PrivacySettings } from "./PrivacySettings";

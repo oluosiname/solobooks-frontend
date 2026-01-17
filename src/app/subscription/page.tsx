@@ -1,6 +1,7 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { CreditCard, Check, Sparkles } from "lucide-react";
 import { AppShell } from "@/components/layout";
@@ -8,6 +9,8 @@ import { Button, Card } from "@/components/atoms";
 import { AlertBanner } from "@/components/organisms";
 import { api } from "@/services/api";
 import { cn } from "@/lib/utils";
+import { PaymentMethodForm } from "@/app/settings/components/PaymentMethodForm";
+import { showToast } from "@/lib/toast";
 import type { Plan, Subscription, PaymentMethod } from "@/types";
 
 // UI Plan type for the component
@@ -30,20 +33,24 @@ type TranslationFunction = (
 const mapPlanToUI = (
   plan: Plan,
   t: TranslationFunction,
-  isPopular: boolean
+  isPopular: boolean,
+  isFirst: boolean
 ): UIPlan => ({
   id: plan.id,
   name: plan.name,
   price: plan.price,
-  priceDetail: plan.price.includes("/ month")
-    ? ""
-    : ` ${t("subscription.billingCycle")}`,
+  priceDetail:
+    plan.price.includes("/ month") || isFirst
+      ? ""
+      : ` ${t("subscription.billingCycle")}`,
   features: plan.features,
   popular: isPopular,
 });
 
 export default function SubscriptionPage() {
   const t = useTranslations();
+  const queryClient = useQueryClient();
+  const [showPaymentForm, setShowPaymentForm] = useState(false);
 
   const { data: subscription } = useQuery<Subscription | null>({
     queryKey: ["subscription"],
@@ -62,12 +69,19 @@ export default function SubscriptionPage() {
 
   const currentPlan = subscription?.plan || "free";
 
+  const handlePaymentSuccess = () => {
+    setShowPaymentForm(false);
+    queryClient.invalidateQueries({ queryKey: ["paymentMethod"] });
+    showToast.success("Payment method saved successfully");
+  };
+
   // Map API plans to UI format, marking the most expensive as popular
   const plans: UIPlan[] = plansData
     ? plansData.map((plan, index) => {
         const isPopular =
           plansData.length > 1 && index === plansData.length - 1; // Mark last plan as popular
-        return mapPlanToUI(plan, t, isPopular);
+        const isFirst = index === 0; // Mark first plan as starter
+        return mapPlanToUI(plan, t, isPopular, isFirst);
       })
     : [];
 
@@ -118,7 +132,10 @@ export default function SubscriptionPage() {
                 </div>
               )}
             </div>
-            <Button variant="secondary">
+            <Button
+              variant="secondary"
+              onClick={() => setShowPaymentForm(true)}
+            >
               <CreditCard className="h-4 w-4" />
               {paymentMethod
                 ? t("subscription.updatePaymentMethod")
@@ -126,6 +143,15 @@ export default function SubscriptionPage() {
             </Button>
           </div>
         </Card>
+
+        {/* Payment Modal */}
+        {showPaymentForm && (
+          <PaymentMethodForm
+            onSuccess={handlePaymentSuccess}
+            onCancel={() => setShowPaymentForm(false)}
+            isUpdate={!!paymentMethod}
+          />
+        )}
 
         {/* Plans */}
         <div className="grid gap-6 lg:grid-cols-3">
@@ -137,7 +163,6 @@ export default function SubscriptionPage() {
                   key={plan.id}
                   className={cn(
                     "relative p-6 transition-all",
-                    plan.popular && "ring-2 ring-indigo-500",
                     isCurrent && "bg-indigo-50/50"
                   )}
                   style={{ animationDelay: `${index * 100}ms` }}
@@ -174,7 +199,7 @@ export default function SubscriptionPage() {
                   <ul className="mt-6 space-y-3">
                     {plan.features.map((feature) => (
                       <li key={feature} className="flex items-start gap-2">
-                        <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-emerald-500" />
+                        <Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" />
                         <span className="text-sm text-slate-600">
                           {feature}
                         </span>

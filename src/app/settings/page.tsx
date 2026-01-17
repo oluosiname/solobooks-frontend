@@ -11,6 +11,7 @@ import {
   Shield,
   Lock,
   FileText,
+  CreditCard,
 } from "lucide-react";
 import { AppShell } from "@/components/layout";
 import { api } from "@/lib/api";
@@ -26,6 +27,7 @@ import {
   NotificationSettings,
   SecuritySettings,
   PrivacySettings,
+  PaymentSettings,
 } from "./components";
 
 export default function SettingsPage() {
@@ -48,6 +50,7 @@ export default function SettingsPage() {
       icon: Bell,
     },
     { id: "security", label: t("settings.tabs.security"), icon: Shield },
+    { id: "payment", label: t("settings.tabs.payment"), icon: CreditCard },
     { id: "privacy", label: t("settings.tabs.privacy"), icon: Lock },
   ];
 
@@ -270,6 +273,7 @@ export default function SettingsPage() {
               onSetActiveTab={setActiveTab}
             />
           )}
+          {activeTab === "payment" && <PaymentSettings />}
           {activeTab === "privacy" && (
             <PrivacySettings
               privacy={privacy}
