@@ -1,14 +1,21 @@
 "use client";
 
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
-import { FileText, Eye, TestTube, Send, FileCode } from "lucide-react";
+import {
+  FileText,
+  Eye,
+  TestTube,
+  Send,
+  FileCode,
+  Download,
+} from "lucide-react";
 import { AppShell } from "@/components/layout";
 import { Button, Card, Badge } from "@/components/atoms";
 import { Tabs } from "@/components/molecules";
 import { api } from "@/services/api";
-import { formatCurrency } from "@/lib/utils";
+import { showToast } from "@/lib/toast";
 
 export default function TaxesPage() {
   const t = useTranslations();
@@ -19,20 +26,75 @@ export default function TaxesPage() {
     { id: "submitted", label: "Submitted" },
   ];
 
-  const { data: vatReports, isLoading, error: vatReportsError } = useQuery({
-    queryKey: ["vat-reports", activeTab],
-    queryFn: async () => {
-      const reports = await api.fetchVatReports();
-      if (activeTab === "submitted") {
-        return reports.filter(
-          (r) => r.status === "submitted" || r.status === "accepted"
-        );
-      }
-      return reports.filter(
-        (r) => r.status === "draft" || r.status === "rejected"
-      );
-    },
+  const {
+    data: vatReportsData,
+    isLoading,
+    error: vatReportsError,
+  } = useQuery({
+    queryKey: ["vat-reports"],
+    queryFn: api.fetchVatReports,
     retry: false,
+  });
+
+  const vatReports = vatReportsData
+    ? activeTab === "submitted"
+      ? vatReportsData.submitted
+      : vatReportsData.upcoming
+    : [];
+
+  const queryClient = useQueryClient();
+
+  const submitVatReportMutation = useMutation({
+    mutationFn: (reportId: number) => api.submitVatReport(reportId.toString()),
+    onSuccess: (data) => {
+      showToast.success(data.message);
+      // Open PDF if provided
+      if (data.pdfUrl) {
+        window.open(data.pdfUrl, "_blank");
+      }
+      // Switch to submitted tab
+      setActiveTab("submitted");
+      // Refresh the VAT reports data
+      queryClient.invalidateQueries({ queryKey: ["vat-reports"] });
+    },
+    onError: (error: unknown) => {
+      const message =
+        (
+          error as {
+            response?: { data?: { error?: { message?: string } } };
+            message?: string;
+          }
+        )?.response?.data?.error?.message ||
+        (error as Error)?.message ||
+        "Failed to submit VAT report";
+      showToast.error(message);
+    },
+  });
+
+  const testSubmitVatReportMutation = useMutation({
+    mutationFn: (reportId: number) =>
+      api.testSubmitVatReport(reportId.toString()),
+    onSuccess: (data) => {
+      showToast.success(data.message);
+      // Handle PDF data for test submission
+      if (data.pdfData) {
+        // pdfData is base64 encoded PDF content, create data URL
+        const pdfDataUrl = `data:application/pdf;base64,${data.pdfData}`;
+        window.open(pdfDataUrl, "_blank");
+      }
+    },
+    onError: (error: unknown) => {
+      const message =
+        (
+          error as {
+            response?: { data?: { error?: { message?: string } } };
+            message?: string;
+          }
+        )?.response?.data?.error?.message ||
+        (error as Error)?.message ||
+        "Failed to test submit VAT report";
+      showToast.error(message);
+    },
   });
 
   const getStatusVariant = (status: string) => {
@@ -94,8 +156,12 @@ export default function TaxesPage() {
             ) : vatReportsError ? (
               <div className="flex items-center justify-center py-12">
                 <div className="text-center">
-                  <p className="text-sm text-orange-600">VAT reports not available</p>
-                  <p className="text-xs text-slate-500 mt-1">This feature will be implemented in a future update</p>
+                  <p className="text-sm text-orange-600">
+                    VAT reports not available
+                  </p>
+                  <p className="text-xs text-slate-500 mt-1">
+                    This feature will be implemented in a future update
+                  </p>
                 </div>
               </div>
             ) : vatReports?.length === 0 ? (
@@ -112,11 +178,17 @@ export default function TaxesPage() {
                   <div className="flex-1">
                     <div className="flex items-center gap-3">
                       <h4 className="text-lg font-semibold text-slate-900">
-                        {report.period}
+                        {report.periodLabel}
                       </h4>
                       <Badge variant={getStatusVariant(report.status)}>
                         {t(`taxes.status.${report.status}`)}
                       </Badge>
+                      {report.overdue && (
+                        <Badge variant="danger">Overdue</Badge>
+                      )}
+                      {report.dueSoon && (
+                        <Badge variant="warning">Due Soon</Badge>
+                      )}
                     </div>
                     <p className="mt-1 text-sm text-slate-500">
                       {new Date(report.startDate).toLocaleDateString("en-US", {
@@ -131,11 +203,28 @@ export default function TaxesPage() {
                         year: "numeric",
                       })}
                     </p>
+                    <p className="mt-1 text-sm text-slate-500">
+                      Due:{" "}
+                      {new Date(report.dueDate).toLocaleDateString("en-US", {
+                        month: "long",
+                        day: "2-digit",
+                        year: "numeric",
+                      })}
+                    </p>
+                    {report.errorMessage && (
+                      <p className="mt-1 text-sm text-red-600">
+                        Error: {report.errorMessage}
+                      </p>
+                    )}
                     <div className="mt-2 flex gap-4 text-sm text-slate-600">
-                      <span>
-                        Net Revenue: {formatCurrency(report.netRevenue)}
-                      </span>
-                      <span>VAT Due: {formatCurrency(report.vatDue)}</span>
+                      <span>Year: {report.year}</span>
+                      <span>Elster Period: {report.elsterPeriod}</span>
+                      {report.xmlAttached && (
+                        <span className="text-green-600">XML Attached</span>
+                      )}
+                      {report.pdfAttached && (
+                        <span className="text-green-600">PDF Attached</span>
+                      )}
                     </div>
                   </div>
 
@@ -146,15 +235,46 @@ export default function TaxesPage() {
                         Preview
                       </Button>
 
-                      {report.status === "draft" && (
+                      {report.canSubmit && (
                         <>
-                          <Button variant="secondary">
-                            <TestTube className="h-4 w-4" />
-                            Test
+                          <Button
+                            variant="secondary"
+                            onClick={() =>
+                              testSubmitVatReportMutation.mutate(report.id)
+                            }
+                            disabled={testSubmitVatReportMutation.isPending}
+                          >
+                            {testSubmitVatReportMutation.isPending ? (
+                              <>
+                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-slate-600 mr-2" />
+                                Testing...
+                              </>
+                            ) : (
+                              <>
+                                <TestTube className="h-4 w-4" />
+                                Test
+                              </>
+                            )}
                           </Button>
-                          <Button variant="primary">
-                            <Send className="h-4 w-4" />
-                            {t("taxes.submitToElster")}
+
+                          <Button
+                            variant="primary"
+                            onClick={() =>
+                              submitVatReportMutation.mutate(report.id)
+                            }
+                            disabled={submitVatReportMutation.isPending}
+                          >
+                            {submitVatReportMutation.isPending ? (
+                              <>
+                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                                Submitting...
+                              </>
+                            ) : (
+                              <>
+                                <Send className="h-4 w-4" />
+                                {t("taxes.submitToElster")}
+                              </>
+                            )}
                           </Button>
                         </>
                       )}
@@ -162,10 +282,23 @@ export default function TaxesPage() {
                       {(report.status === "rejected" ||
                         report.status === "submitted" ||
                         report.status === "accepted") && (
-                        <Button variant="secondary">
-                          <FileCode className="h-4 w-4" />
-                          XML
-                        </Button>
+                        <>
+                          {report.pdfUrl && (
+                            <Button
+                              variant="secondary"
+                              onClick={() =>
+                                window.open(report.pdfUrl!, "_blank")
+                              }
+                            >
+                              <Download className="h-4 w-4" />
+                              PDF
+                            </Button>
+                          )}
+                          <Button variant="secondary">
+                            <FileCode className="h-4 w-4" />
+                            XML
+                          </Button>
+                        </>
                       )}
                     </div>
                   </div>

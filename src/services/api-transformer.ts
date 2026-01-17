@@ -1,6 +1,7 @@
 import { ClientData } from "@/lib/clients-api";
 import { InvoiceSettingData, CurrencyData } from "@/lib/invoice-settings-api";
 import { VatStatusData } from "@/lib/vat-status-api";
+import { VatReportData } from "@/lib/vat-reports-api";
 import { ProfileData } from "@/lib/profile-api";
 import { TransactionData, SyncedTransactionData } from "@/lib/transactions-api";
 import type { SubscriptionData } from "@/lib/subscription-api";
@@ -16,6 +17,7 @@ import {
   InvoiceSettings,
   Currency,
   VatStatus,
+  VatReport,
   Profile,
   Transaction,
   Subscription,
@@ -61,6 +63,10 @@ export function transformCurrencyData(data: CurrencyData): Currency {
 
 export function transformVatStatusData(data: VatStatusData): VatStatus {
   return camelize<VatStatus>(data);
+}
+
+export function transformVatReportData(data: VatReportData): VatReport {
+  return camelize<VatReport>(data);
 }
 
 export function transformTransactionData(data: TransactionData): Transaction {
