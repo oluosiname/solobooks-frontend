@@ -65,6 +65,7 @@ import type {
   VatStatusInput,
   Plan,
   VatReportsResponse,
+  VatReportPreview,
 } from "@/types";
 
 import {
@@ -74,6 +75,7 @@ import {
   transformCurrencyData,
   transformVatStatusData,
   transformVatReportData,
+  transformVatReportPreviewData,
   transformProfileData,
   transformTransactionData,
   transformSubscriptionData,
@@ -479,6 +481,11 @@ export async function testSubmitVatReport(id: string): Promise<{
   return camelize(response.data);
 }
 
+export async function previewVatReport(id: string): Promise<VatReportPreview> {
+  const response = await vatReportsApi.previewVatReport(parseInt(id));
+  return transformVatReportPreviewData(response.data);
+}
+
 // ============================================
 // Subscription API
 // ============================================
@@ -683,6 +690,7 @@ export const api = {
   fetchVatReports,
   submitVatReport,
   testSubmitVatReport,
+  previewVatReport,
 
   // Subscription
   fetchPlans,

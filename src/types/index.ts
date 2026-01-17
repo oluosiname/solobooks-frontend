@@ -162,6 +162,19 @@ export interface VatReport {
   updatedAt: string;
 }
 
+export interface VatReportPreview {
+  report: VatReport;
+  financialData: {
+    domesticNet: number;
+    domesticVat: number;
+    euB2bNet: number;
+    nonEuNet: number;
+    euExpenseNet: number;
+    euExpenseVat: number;
+    remainingVat: number;
+  };
+}
+
 export interface VatReportsResponse {
   data: {
     upcoming: VatReport[];

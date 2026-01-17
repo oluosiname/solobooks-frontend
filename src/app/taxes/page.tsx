@@ -14,12 +14,15 @@ import {
 import { AppShell } from "@/components/layout";
 import { Button, Card, Badge } from "@/components/atoms";
 import { Tabs } from "@/components/molecules";
+import { VatReportPreviewModal } from "@/components/vat-report-preview-modal";
 import { api } from "@/services/api";
 import { showToast } from "@/lib/toast";
+import type { VatReportPreview } from "@/types";
 
 export default function TaxesPage() {
   const t = useTranslations();
   const [activeTab, setActiveTab] = useState("upcoming");
+  const [previewModalOpen, setPreviewModalOpen] = useState(false);
 
   const tabs = [
     { id: "upcoming", label: "Upcoming" },
@@ -93,6 +96,25 @@ export default function TaxesPage() {
         )?.response?.data?.error?.message ||
         (error as Error)?.message ||
         "Failed to test submit VAT report";
+      showToast.error(message);
+    },
+  });
+
+  const previewVatReportMutation = useMutation({
+    mutationFn: (reportId: number) => api.previewVatReport(reportId.toString()),
+    onSuccess: (data: VatReportPreview) => {
+      setPreviewModalOpen(true);
+    },
+    onError: (error: unknown) => {
+      const message =
+        (
+          error as {
+            response?: { data?: { error?: { message?: string } } };
+            message?: string;
+          }
+        )?.response?.data?.error?.message ||
+        (error as Error)?.message ||
+        "Failed to load VAT report preview";
       showToast.error(message);
     },
   });
@@ -230,9 +252,24 @@ export default function TaxesPage() {
 
                   <div className="flex items-center gap-4">
                     <div className="flex gap-2">
-                      <Button variant="secondary">
-                        <Eye className="h-4 w-4" />
-                        Preview
+                      <Button
+                        variant="secondary"
+                        onClick={() =>
+                          previewVatReportMutation.mutate(report.id)
+                        }
+                        disabled={previewVatReportMutation.isPending}
+                      >
+                        {previewVatReportMutation.isPending ? (
+                          <>
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-slate-600 mr-2" />
+                            Loading...
+                          </>
+                        ) : (
+                          <>
+                            <Eye className="h-4 w-4" />
+                            Preview
+                          </>
+                        )}
                       </Button>
 
                       {report.canSubmit && (
@@ -308,6 +345,14 @@ export default function TaxesPage() {
           </div>
         </Card>
       </div>
+
+      {/* Preview Modal */}
+      <VatReportPreviewModal
+        open={previewModalOpen}
+        onOpenChange={setPreviewModalOpen}
+        previewData={previewVatReportMutation.data || null}
+        isLoading={previewVatReportMutation.isPending}
+      />
     </AppShell>
   );
 }

@@ -39,6 +39,23 @@ export interface VatReportsApiResponse {
   };
 }
 
+export interface VatReportPreviewData {
+  report: VatReportData;
+  financial_data: {
+    domestic_net: number;
+    domestic_vat: number;
+    eu_b2b_net: number;
+    non_eu_net: number;
+    eu_expense_net: number;
+    eu_expense_vat: number;
+    remaining_vat: number;
+  };
+}
+
+export interface VatReportPreviewResponse {
+  data: VatReportPreviewData;
+}
+
 // ============================================
 // API Client
 // ============================================
@@ -90,6 +107,16 @@ class VatReportsApiClient extends BaseApiClient {
         pdf_data?: string;
       };
     }>(`/api/v1/vat_reports/${id}/test_submit`);
+  }
+
+  /**
+   * Preview VAT report financial data
+   * GET /api/v1/vat_reports/{id}/preview
+   */
+  async previewVatReport(id: number): Promise<VatReportPreviewResponse> {
+    return this.get<VatReportPreviewResponse>(
+      `/api/v1/vat_reports/${id}/preview`
+    );
   }
 }
 
