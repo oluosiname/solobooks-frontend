@@ -25,6 +25,8 @@ export function Header({ title }: HeaderProps) {
   const handleLanguageChange = async (locale: string) => {
     try {
       await api.updateSettings({ language: locale });
+      // Set locale cookie for immediate i18n detection
+      document.cookie = `locale=${locale}; path=/; max-age=31536000; SameSite=Lax`;
       showToast.success(t("settings.languageChanged"));
       // Refresh the page to apply the new language
       window.location.reload();

@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { authApi, type AuthResponse, type ApiError, type MeResponse } from "@/lib/auth-api";
+import { authApi, type AuthResponse, type ApiError } from "@/lib/auth-api";
 import { camelize } from "@/services/api-transformer";
 
 interface AuthUser {
@@ -65,6 +65,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setUser(transformedUser);
           // Update localStorage with fresh data
           localStorage.setItem(USER_KEY, JSON.stringify(transformedUser));
+          // Set locale cookie for i18n
+          if (transformedUser.locale) {
+            document.cookie = `locale=${transformedUser.locale}; path=/; max-age=31536000; SameSite=Lax`;
+          }
         } catch (error) {
           console.error("Failed to fetch user details:", error);
           // If API call fails, try to use cached data as fallback
@@ -109,6 +113,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const transformedUser = await fetchUserData(accessToken);
       setUser(transformedUser);
       localStorage.setItem(USER_KEY, JSON.stringify(transformedUser));
+      // Set locale cookie for i18n
+      if (transformedUser.locale) {
+        document.cookie = `locale=${transformedUser.locale}; path=/; max-age=31536000; SameSite=Lax`;
+      }
     } catch (error) {
       console.error("Failed to fetch user details:", error);
       // Continue without user data - token is still valid

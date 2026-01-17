@@ -45,7 +45,7 @@ export function NotificationSettings({
                 {t("settings.notifications.email.invoiceSent")}
               </p>
               <p className="text-sm text-slate-500">
-                Get notified when an invoice is sent to a client
+                {t("settings.notifications.email.invoiceSentDesc")}
               </p>
             </div>
             <Toggle
@@ -58,7 +58,7 @@ export function NotificationSettings({
                 {t("settings.notifications.email.invoicePaid")}
               </p>
               <p className="text-sm text-slate-500">
-                Get notified when an invoice is marked as paid
+                {t("settings.notifications.email.invoicePaidDesc")}
               </p>
             </div>
             <Toggle
@@ -71,7 +71,7 @@ export function NotificationSettings({
                 {t("settings.notifications.email.invoiceOverdue")}
               </p>
               <p className="text-sm text-slate-500">
-                Get notified when an invoice becomes overdue
+                {t("settings.notifications.email.invoiceOverdueDesc")}
               </p>
             </div>
             <Toggle
@@ -84,7 +84,7 @@ export function NotificationSettings({
                 {t("settings.notifications.email.newClient")}
               </p>
               <p className="text-sm text-slate-500">
-                Get notified when a new client is added
+                {t("settings.notifications.email.newClientDesc")}
               </p>
             </div>
             <Toggle
@@ -105,7 +105,7 @@ export function NotificationSettings({
                   {t("settings.notifications.vatReminders.declarationDue")}
                 </p>
                 <p className="text-sm text-slate-500">
-                  Remind me 7 days before VAT declaration is due
+                  {t("settings.notifications.vatReminders.declarationDueDesc")}
                 </p>
               </div>
               <Toggle
@@ -120,7 +120,7 @@ export function NotificationSettings({
                   )}
                 </p>
                 <p className="text-sm text-slate-500">
-                  Confirm when VAT declaration is successfully submitted
+                  {t("settings.notifications.vatReminders.declarationSubmittedDesc")}
                 </p>
               </div>
               <Toggle
@@ -133,7 +133,7 @@ export function NotificationSettings({
                   {t("settings.notifications.vatReminders.taxYearEnd")}
                 </p>
                 <p className="text-sm text-slate-500">
-                  Remind me 30 days before tax year end
+                  {t("settings.notifications.vatReminders.taxYearEndDesc")}
                 </p>
               </div>
               <Toggle

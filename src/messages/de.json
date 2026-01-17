@@ -211,7 +211,7 @@
     "addIncome": "Einnahme hinzufügen",
     "addManualExpense": "Manuelle Ausgabe hinzufügen",
     "addManualIncome": "Manuelle Einnahme hinzufügen",
-    "import": "Importieren",
+    "importButton": "Importieren",
     "importTransactions": "Transaktionen importieren",
     "searchPlaceholder": "Transaktionen suchen...",
     "loadingTransactions": "Transaktionen werden geladen...",
@@ -363,7 +363,8 @@
       "neverStoreCredentials": "Niemals Ihre Bank-Login-Daten speichern",
       "neverInitiateTransactions": "Niemals Transaktionen oder Überweisungen initiieren",
       "neverShareData": "Niemals Ihre Finanzdaten mit Dritten teilen",
-      "neverModifySettings": "Niemals Ihre Kontoeinstellungen oder Präferenzen ändern"
+      "neverModifySettings": "Niemals Ihre Kontoeinstellungen oder Präferenzen ändern",
+      "termsDisclaimer": "Mit dem Fortfahren stimmen Sie unseren {terms} und {privacy} zu. Wir speichern Ihre Bankzugangsdaten nicht."
     },
     "callback": {
       "successToast": "Bankverbindung erfolgreich!",
@@ -559,15 +560,22 @@
       "email": {
         "title": "E-Mail-Benachrichtigungen",
         "invoiceSent": "Rechnung gesendet",
+        "invoiceSentDesc": "Benachrichtigung erhalten, wenn eine Rechnung an einen Kunden gesendet wird",
         "invoicePaid": "Rechnung bezahlt",
+        "invoicePaidDesc": "Benachrichtigung erhalten, wenn eine Rechnung als bezahlt markiert wird",
         "invoiceOverdue": "Rechnung überfällig",
-        "newClient": "Neuer Kunde hinzugefügt"
+        "invoiceOverdueDesc": "Benachrichtigung erhalten, wenn eine Rechnung überfällig wird",
+        "newClient": "Neuer Kunde hinzugefügt",
+        "newClientDesc": "Benachrichtigung erhalten, wenn ein neuer Kunde hinzugefügt wird"
       },
       "vatReminders": {
         "title": "USt- & Steuer-Erinnerungen",
         "declarationDue": "Voranmeldung fällig",
+        "declarationDueDesc": "7 Tage vor Fälligkeit der USt-Voranmeldung erinnern",
         "declarationSubmitted": "Voranmeldung eingereicht",
-        "taxYearEnd": "Steuerjahresende-Erinnerung"
+        "declarationSubmittedDesc": "Bestätigung, wenn USt-Voranmeldung erfolgreich eingereicht wurde",
+        "taxYearEnd": "Steuerjahresende-Erinnerung",
+        "taxYearEndDesc": "30 Tage vor Steuerjahresende erinnern"
       },
 
       "savePreferences": "Einstellungen speichern"
@@ -582,25 +590,162 @@
         "title": "Zwei-Faktor-Authentifizierung",
         "description": "Fügen Sie eine zusätzliche Sicherheitsebene zu Ihrem Konto hinzu",
         "enable": "2FA aktivieren",
+        "enableDesc": "Authentifizierungscode zusätzlich zum Passwort erforderlich",
         "disable": "2FA deaktivieren"
       },
       "sessions": {
         "title": "Aktive Sitzungen",
+        "description": "Verwalten Sie Ihre aktiven Sitzungen auf verschiedenen Geräten.",
         "current": "Aktuelle Sitzung",
-        "logoutAll": "Alle anderen Sitzungen abmelden"
+        "logoutAll": "Alle anderen Sitzungen abmelden",
+        "revoke": "Widerrufen"
+      },
+      "accountManagement": {
+        "title": "Kontoverwaltung",
+        "description": "Für Datenexport, Kontolöschung und Datenschutzeinstellungen besuchen Sie bitte den {privacy} Tab."
       },
       "updatePassword": "Passwort aktualisieren"
     },
     "privacy": {
       "title": "Datenschutz & DSGVO",
+      "complianceStatus": {
+        "title": "DSGVO-Konformitätsstatus",
+        "description": "Ihr Konto ist für die Einhaltung der DSGVO-Anforderungen konfiguriert"
+      },
+      "consentManagement": {
+        "title": "Einwilligungsverwaltung",
+        "description": "Verwalten Sie Ihre Einwilligung für Datenverarbeitungsaktivitäten",
+        "essential": {
+          "title": "Wesentliche Datenverarbeitung",
+          "description": "Erforderlich zur Bereitstellung grundlegender Buchhaltungsdienste"
+        },
+        "analytics": {
+          "title": "Analysen & Leistung",
+          "description": "Helfen Sie uns, die Anwendung mit Nutzungsdaten zu verbessern"
+        },
+        "marketing": {
+          "title": "Marketing-Kommunikation",
+          "description": "Erhalten Sie Produktupdates und Funktionsankündigungen"
+        },
+        "thirdParty": {
+          "title": "Drittanbieter-Integrationen",
+          "description": "Erlauben Sie die Datenfreigabe mit genehmigten Drittanbietern"
+        },
+        "saveButton": "Einwilligungseinstellungen speichern"
+      },
+      "dataRights": {
+        "title": "Ihre Datenschutzrechte (DSGVO)",
+        "description": "Nutzen Sie Ihre Rechte gemäß der Datenschutz-Grundverordnung",
+        "portability": {
+          "title": "Recht auf Datenübertragbarkeit",
+          "description": "Laden Sie alle Ihre Daten in einem maschinenlesbaren Format herunter",
+          "button": "Export anfordern"
+        },
+        "access": {
+          "title": "Recht auf Auskunft",
+          "description": "Zeigen Sie alle personenbezogenen Daten an, die wir über Sie gespeichert haben",
+          "button": "Daten anzeigen"
+        },
+        "rectification": {
+          "title": "Recht auf Berichtigung",
+          "description": "Korrigieren Sie unrichtige personenbezogene Informationen",
+          "button": "Info aktualisieren"
+        },
+        "erasure": {
+          "title": "Recht auf Löschung (\"Recht auf Vergessenwerden\")",
+          "description": "Fordern Sie die dauerhafte Löschung aller Ihrer personenbezogenen Daten an",
+          "button": "Löschung anfordern"
+        }
+      },
+      "dataRetention": {
+        "title": "Datenaufbewahrung & -verarbeitung",
+        "retentionLabel": "Datenaufbewahrungszeitraum",
+        "retentionOptions": {
+          "10years": "10 Jahre (für Steuern empfohlen)",
+          "7years": "7 Jahre",
+          "5years": "5 Jahre"
+        },
+        "retentionNote": "Hinweis: Das deutsche Steuerrecht erfordert 10 Jahre Aufbewahrung für Buchhaltungsunterlagen",
+        "processingLabel": "Datenverarbeitungsort",
+        "processingOptions": {
+          "euOnly": "Nur Europäische Union",
+          "global": "Global (DSGVO-konform)"
+        },
+        "processingNote": "Ihre Daten werden nur an diesen Standorten verarbeitet",
+        "clientProcessing": {
+          "title": "Kunden-Datenverarbeitung",
+          "description": "Da Sie Kundendaten in dieser Anwendung verarbeiten, fungieren Sie als Datenverantwortlicher gemäß DSGVO",
+          "consentTracking": {
+            "title": "Automatische Kunden-Einwilligungsverfolgung",
+            "description": "DSGVO-Einwilligung für die Verarbeitung von Kundendaten verfolgen"
+          },
+          "deletionRequests": {
+            "title": "Kunden-Datenlöschungsanfragen",
+            "description": "Kunden können die Löschung ihrer Daten anfordern"
+          }
+        },
+        "saveButton": "Aufbewahrungseinstellungen speichern"
+      },
+      "legalDocuments": {
+        "title": "Rechtsdokumente & Konformität",
+        "documents": {
+          "privacyPolicy": {
+            "name": "Datenschutzrichtlinie",
+            "date": "1. Januar 2026"
+          },
+          "termsOfService": {
+            "name": "Nutzungsbedingungen",
+            "date": "1. Januar 2026"
+          },
+          "dpa": {
+            "name": "Datenverarbeitungsvereinbarung (DPA)",
+            "desc": "DSGVO Artikel 28 konform"
+          },
+          "impressum": {
+            "name": "Impressum (Deutsche Rechtliche Hinweise)",
+            "desc": "Für deutsche Unternehmen erforderlich"
+          },
+          "cookiePolicy": {
+            "name": "Cookie-Richtlinie",
+            "desc": "DSGVO-konforme Cookie-Nutzung"
+          }
+        }
+      },
+      "dpo": {
+        "title": "Datenschutzbeauftragter (DSB)",
+        "description": "Kontaktinformationen für Datenschutzanfragen",
+        "nameLabel": "DSB Name",
+        "emailLabel": "DSB E-Mail",
+        "addressLabel": "DSB Adresse",
+        "saveButton": "DSB-Informationen speichern"
+      },
+      "breachNotification": {
+        "title": "Datenverletzungsbenachrichtigung",
+        "description": "Konfigurieren Sie, wie Sie bei einer Datenverletzung benachrichtigt werden möchten (DSGVO Artikel 33)",
+        "email": {
+          "title": "E-Mail-Benachrichtigung",
+          "description": "Sofortige E-Mail-Alerts erhalten"
+        },
+        "sms": {
+          "title": "SMS-Benachrichtigung",
+          "description": "SMS-Alerts bei kritischen Verstößen erhalten"
+        },
+        "emergencyContact": "Notfallkontakt",
+        "emergencyNote": "Sekundärer Kontakt für Datenverletzungsbenachrichtigungen",
+        "saveButton": "Benachrichtigungseinstellungen speichern"
+      },
+      "auditLog": {
+        "title": "Datenschutz-Audit-Protokoll",
+        "description": "Alle datenschutzrelevanten Aktivitäten für DSGVO-Konformität verfolgen",
+        "lastExport": "Letzter Datenexport:",
+        "lastConsent": "Letzte Einwilligungsaktualisierung:",
+        "policyAcceptance": "Datenschutzrichtlinien-Akzeptanz:",
+        "downloadButton": "Vollständiges Audit-Protokoll herunterladen"
+      },
       "dataExport": {
         "title": "Daten exportieren",
         "description": "Laden Sie eine Kopie aller Ihrer in Solobooks gespeicherten Daten herunter",
         "export": "Daten exportieren"
-      },
-      "dataRetention": {
-        "title": "Datenaufbewahrung",
-        "description": "Wählen Sie, wie lange wir Ihre Daten nach der Kontolöschung aufbewahren"
       },
       "deleteAccount": {
         "title": "Konto löschen",

@@ -76,7 +76,7 @@ export function SecuritySettings({
                 {t("settings.security.twoFactor.enable")}
               </p>
               <p className="text-sm text-slate-500">
-                Require authentication code in addition to password
+                {t("settings.security.twoFactor.enableDesc")}
               </p>
             </div>
             <Toggle enabled={twoFactorEnabled} onChange={onTwoFactorToggle} />
@@ -90,7 +90,7 @@ export function SecuritySettings({
             {t("settings.security.sessions.title")}
           </h3>
           <p className="mt-1 text-sm text-slate-500">
-            Manage your active sessions across different devices.
+            {t("settings.security.sessions.description")}
           </p>
           <div className="mt-6 space-y-4">
             <div className="flex items-center justify-between rounded-lg bg-slate-50 p-4">
@@ -112,7 +112,7 @@ export function SecuritySettings({
                 </p>
               </div>
               <button className="text-sm font-medium text-red-600 hover:text-red-700">
-                Revoke
+                {t("settings.security.sessions.revoke")}
               </button>
             </div>
           </div>
@@ -127,18 +127,19 @@ export function SecuritySettings({
       <div className={cn(styles.card)}>
         <div className={styles.cardContent}>
           <h3 className="text-lg font-semibold text-slate-900">
-            Account Management
+            {t("settings.security.accountManagement.title")}
           </h3>
           <p className="mt-1 text-sm text-slate-500">
-            For data export, account deletion, and privacy settings, please
-            visit the{" "}
-            <button
-              onClick={() => onSetActiveTab("privacy")}
-              className="text-indigo-600 hover:text-indigo-700"
-            >
-              {t("settings.tabs.privacy")}
-            </button>{" "}
-            tab.
+            {t.rich("settings.security.accountManagement.description", {
+              privacy: (chunks) => (
+                <button
+                  onClick={() => onSetActiveTab("privacy")}
+                  className="text-indigo-600 hover:text-indigo-700"
+                >
+                  {chunks}
+                </button>
+              ),
+            })}
           </p>
         </div>
       </div>

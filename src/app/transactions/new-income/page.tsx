@@ -60,7 +60,6 @@ export default function NewIncomePage() {
     },
   });
 
-
   const handleChange = (field: string, value: string) => {
     setFormData({ ...formData, [field]: value });
   };
