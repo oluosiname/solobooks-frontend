@@ -38,6 +38,7 @@ import { invoiceCategoriesApi } from "@/lib/invoice-categories-api";
 import { invoicesApi, InvoicesQueryParams } from "@/lib/invoices-api";
 import { paymentMethodApi } from "@/lib/payment-method-api";
 import { bankConnectionsApi } from "@/lib/bank-connections-api";
+import { vatReportsApi } from "@/lib/vat-reports-api";
 
 import type {
   Profile,
@@ -63,13 +64,16 @@ import type {
   VatStatus,
   VatStatusInput,
   Plan,
+  VatReportsResponse,
 } from "@/types";
 
 import {
+  camelize,
   transformClientData,
   transformInvoiceSettingData,
   transformCurrencyData,
   transformVatStatusData,
+  transformVatReportData,
   transformProfileData,
   transformTransactionData,
   transformSubscriptionData,
@@ -446,22 +450,33 @@ export async function completeBankConnection(): Promise<BankConnection> {
 // VAT Reports API
 // ============================================
 
-export async function fetchVatReports(): Promise<VatReport[]> {
-  throw new Error("VAT reports API endpoint not implemented yet");
+export async function fetchVatReports(): Promise<{
+  upcoming: VatReport[];
+  submitted: VatReport[];
+}> {
+  const response = await vatReportsApi.listVatReports();
+  return {
+    upcoming: response.data.upcoming.map(transformVatReportData),
+    submitted: response.data.submitted.map(transformVatReportData),
+  };
 }
 
-export async function fetchVatReport(id: string): Promise<VatReport | null> {
-  throw new Error("VAT report API endpoint not implemented yet");
+export async function submitVatReport(id: string): Promise<{
+  success: boolean;
+  message: string;
+  pdfUrl?: string;
+}> {
+  const response = await vatReportsApi.submitVatReport(parseInt(id));
+  return camelize(response.data);
 }
 
-export async function createVatReport(
-  data: Omit<VatReport, "id" | "createdAt">
-): Promise<VatReport> {
-  throw new Error("Create VAT report API endpoint not implemented yet");
-}
-
-export async function submitVatReport(id: string): Promise<VatReport | null> {
-  throw new Error("Submit VAT report API endpoint not implemented yet");
+export async function testSubmitVatReport(id: string): Promise<{
+  success: boolean;
+  message: string;
+  pdfData?: string;
+}> {
+  const response = await vatReportsApi.testSubmitVatReport(parseInt(id));
+  return camelize(response.data);
 }
 
 // ============================================
@@ -666,9 +681,8 @@ export const api = {
 
   // VAT Reports
   fetchVatReports,
-  fetchVatReport,
-  createVatReport,
   submitVatReport,
+  testSubmitVatReport,
 
   // Subscription
   fetchPlans,

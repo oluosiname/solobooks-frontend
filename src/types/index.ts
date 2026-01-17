@@ -141,17 +141,32 @@ export interface BankConnection {
 export type VatReportStatus = "draft" | "submitted" | "accepted" | "rejected";
 
 export interface VatReport {
-  id: string;
-  period: string;
+  id: number;
+  status: VatReportStatus;
   startDate: string;
   endDate: string;
-  netRevenue: number;
-  vatCollected: number;
-  vatPaid: number;
-  vatDue: number;
-  status: VatReportStatus;
+  year: number;
+  periodLabel: string;
+  elsterPeriod: number;
+  dueDate: string;
   submittedAt: string | null;
+  errorMessage: string | null;
+  canSubmit: boolean;
+  submittable: boolean;
+  overdue: boolean;
+  dueSoon: boolean;
+  xmlAttached: boolean;
+  pdfAttached: boolean;
+  pdfUrl: string | null;
   createdAt: string;
+  updatedAt: string;
+}
+
+export interface VatReportsResponse {
+  data: {
+    upcoming: VatReport[];
+    submitted: VatReport[];
+  };
 }
 
 export interface Plan {

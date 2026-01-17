@@ -45,6 +45,19 @@ export interface MeResponse {
     locale: string;
     on_trial: boolean;
     trial_ends_at?: string;
+    plan: string;
+    permissions: {
+      limits: {
+        invoice: { current: number; max: number; available: boolean };
+        transaction: { current: number; max: number; available: boolean };
+        client: { current: number; max: number; available: boolean };
+      };
+      features: Record<string, {
+        available: boolean;
+        required_plan: string;
+        upgrade_message: string;
+      }>;
+    };
   };
 }
 

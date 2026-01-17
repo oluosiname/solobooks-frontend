@@ -70,14 +70,7 @@ export const api = {
   // VAT Reports
   async getVatReports(submitted = false) {
     const reports = await newApi.fetchVatReports();
-    if (submitted) {
-      return reports.filter(
-        (r) => r.status === "submitted" || r.status === "accepted"
-      );
-    }
-    return reports.filter(
-      (r) => r.status === "draft" || r.status === "rejected"
-    );
+    return submitted ? reports.submitted : reports.upcoming;
   },
 
   // Subscription
