@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { authApi, type AuthResponse, type ApiError } from "@/lib/auth-api";
 import { camelize } from "@/services/api-transformer";
 
-interface AuthUser {
+export interface AuthUser {
   id: string;
   email: string;
   confirmed: boolean;
@@ -14,6 +14,27 @@ interface AuthUser {
   locale: string;
   onTrial: boolean;
   trialEndsAt?: string;
+  plan: string;
+  permissions: {
+    limits: {
+      invoice: LimitInfo;
+      transaction: LimitInfo;
+      client: LimitInfo;
+    };
+    features: Record<string, FeatureInfo>;
+  };
+}
+
+export interface LimitInfo {
+  current: number;
+  max: number;
+  available: boolean;
+}
+
+export interface FeatureInfo {
+  available: boolean;
+  requiredPlan: string;
+  upgradeMessage: string;
 }
 
 interface AuthContextType {

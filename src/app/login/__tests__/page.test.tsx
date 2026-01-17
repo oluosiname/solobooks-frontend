@@ -31,6 +31,7 @@ describe('LoginPage', () => {
       isAuthenticated: false,
       user: null,
       token: null,
+      refreshToken: null,
     });
   });
 
@@ -91,6 +92,7 @@ describe('LoginPage', () => {
       isAuthenticated: false,
       user: null,
       token: null,
+      refreshToken: null,
     });
 
     render(<LoginPage />);
@@ -109,6 +111,7 @@ describe('LoginPage', () => {
       isAuthenticated: false,
       user: null,
       token: null,
+      refreshToken: null,
     });
 
     render(<LoginPage />);
@@ -128,6 +131,7 @@ describe('LoginPage', () => {
       isAuthenticated: false,
       user: null,
       token: null,
+      refreshToken: null,
     });
 
     render(<LoginPage />);
@@ -181,6 +185,7 @@ describe('LoginPage', () => {
       isAuthenticated: false,
       user: null,
       token: null,
+      refreshToken: null,
     });
 
     render(<LoginPage />);
