@@ -1,10 +1,16 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { FileSpreadsheet, AlertCircle, Plus, Receipt, Calendar } from 'lucide-react';
-import { styles, buttonStyles } from '@/lib/styles';
-import { cn } from '@/lib/utils';
-import { useTranslations } from 'next-intl';
+import Link from "next/link";
+import {
+  FileSpreadsheet,
+  AlertCircle,
+  Plus,
+  Receipt,
+  Calendar,
+} from "lucide-react";
+import { styles, buttonStyles } from "@/lib/styles";
+import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 interface AlertBannersProps {
   uncheckedCount: number;
@@ -24,7 +30,8 @@ export function AlertBanners({ uncheckedCount }: AlertBannersProps) {
           <div>
             <h3 className="text-lg font-semibold">Your Year in Taxes - 2025</h3>
             <p className="text-sm text-indigo-100">
-              Review your annual P&L statement and VAT summary for tax preparation.
+              Review your annual P&L statement and VAT summary for tax
+              preparation.
             </p>
           </div>
         </div>
@@ -44,7 +51,9 @@ export function AlertBanners({ uncheckedCount }: AlertBannersProps) {
             <p
               className="font-medium text-amber-900"
               dangerouslySetInnerHTML={{
-                __html: t("dashboard.uncheckedTransactions.title", { count: uncheckedCount }).replace(
+                __html: t("dashboard.uncheckedTransactions.title", {
+                  count: uncheckedCount,
+                }).replace(
                   String(uncheckedCount),
                   `<span class="font-semibold">${uncheckedCount}</span>`
                 ),
@@ -65,15 +74,18 @@ export function AlertBanners({ uncheckedCount }: AlertBannersProps) {
 
       {/* Quick Actions */}
       <div className="flex gap-3">
-        <Link href="/invoices/new" className={buttonStyles('primary')}>
+        <Link href="/invoices/new" className={buttonStyles("primary")}>
           <Plus className="h-4 w-4" />
           New Invoice
         </Link>
-        <Link href="/transactions/new" className={buttonStyles('secondary')}>
+        <Link
+          href="/transactions/new-expense"
+          className={buttonStyles("secondary")}
+        >
           <Receipt className="h-4 w-4" />
           Add Expense
         </Link>
-        <Link href="/taxes" className={buttonStyles('secondary')}>
+        <Link href="/taxes" className={buttonStyles("secondary")}>
           <Calendar className="h-4 w-4" />
           VAT Q4 Due Jan 31
         </Link>

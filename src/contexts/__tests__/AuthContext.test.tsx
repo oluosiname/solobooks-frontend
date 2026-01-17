@@ -11,6 +11,7 @@ vi.mock("@/lib/auth-api", () => ({
     register: vi.fn(),
     logout: vi.fn(),
     me: vi.fn(),
+    refresh: vi.fn(),
   },
 }));
 
@@ -69,13 +70,18 @@ describe("AuthContext", () => {
         id: "user-123",
         email: "test@example.com",
         confirmed: true,
-        created_at: "2024-01-01",
-        updated_at: "2024-01-01",
+        createdAt: "2024-01-01",
+        updatedAt: "2024-01-01",
       };
 
       localStorage.setItem("solobooks_auth_token", mockToken);
       localStorage.setItem("solobooks_refresh_token", mockRefreshToken);
       localStorage.setItem("solobooks_user", JSON.stringify(mockUser));
+
+      // Mock the me call that happens during initialization
+      (authApiModule.authApi.me as any).mockResolvedValueOnce({
+        data: { id: "user-123", email: "test@example.com", confirmed: true, created_at: "2024-01-01", updated_at: "2024-01-01" }
+      });
 
       const wrapper = ({ children }: { children: React.ReactNode }) => (
         <AuthProvider>{children}</AuthProvider>
@@ -98,8 +104,8 @@ describe("AuthContext", () => {
         id: "user-123",
         email: "test@example.com",
         confirmed: true,
-        created_at: "2024-01-01",
-        updated_at: "2024-01-01",
+        createdAt: "2024-01-01",
+        updatedAt: "2024-01-01",
       };
 
       (authApiModule.authApi.login as any).mockResolvedValueOnce({
@@ -174,8 +180,8 @@ describe("AuthContext", () => {
         id: "user-456",
         email: "newuser@example.com",
         confirmed: false,
-        created_at: "2024-01-01",
-        updated_at: "2024-01-01",
+        createdAt: "2024-01-01",
+        updatedAt: "2024-01-01",
       };
 
       (authApiModule.authApi.register as any).mockResolvedValueOnce({
@@ -249,10 +255,16 @@ describe("AuthContext", () => {
     it("should clear auth state and redirect to login", async () => {
       const mockToken = "test-token";
       localStorage.setItem("solobooks_auth_token", mockToken);
+      localStorage.setItem("solobooks_refresh_token", "refresh-token");
       localStorage.setItem(
         "solobooks_user",
         JSON.stringify({ id: "123", email: "test@example.com" })
       );
+
+      // Mock the me call that happens during initialization
+      (authApiModule.authApi.me as any).mockResolvedValueOnce({
+        data: { id: "123", email: "test@example.com", confirmed: true, created_at: "2024-01-01", updated_at: "2024-01-01" }
+      });
 
       (authApiModule.authApi.logout as any).mockResolvedValueOnce({});
 
@@ -261,6 +273,11 @@ describe("AuthContext", () => {
       );
 
       const { result } = renderHook(() => useAuth(), { wrapper });
+
+      // Wait for token to be loaded into state
+      await waitFor(() => {
+        expect(result.current.token).toBe(mockToken);
+      });
 
       await act(async () => {
         await result.current.logout();
