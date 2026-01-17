@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import {
   ArrowLeft,
   Upload,
@@ -8,24 +9,34 @@ import {
   FileSpreadsheet,
   Download,
   Check,
+  Lock,
 } from "lucide-react";
 import { AppShell } from "@/components/layout";
 import { TransactionImportUpgradeBanner } from "@/components/entitlements";
+import { entitledToTransactionImportFeature } from "@/lib/entitlements";
+import { useAuth } from "@/contexts/AuthContext";
+import { Button } from "@/components/atoms";
 import { cn } from "@/lib/utils";
-import { styles, buttonStyles } from "@/lib/styles";
+import { styles } from "@/lib/styles";
 
 export default function ImportTransactionsPage() {
   const router = useRouter();
+  const { user } = useAuth();
+  const t = useTranslations();
+
+  const handleUpgrade = () => {
+    router.push("/subscription");
+  };
 
   return (
-    <AppShell title="Import Transactions">
+    <AppShell title={t("transactions.import.title")}>
       <div className="mb-6 flex items-center justify-between">
         <button
           onClick={() => router.push("/transactions")}
           className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
         >
           <ArrowLeft className="h-4 w-4" />
-          Back to Transactions
+          {t("transactions.import.backToTransactions")}
         </button>
       </div>
 
@@ -36,27 +47,50 @@ export default function ImportTransactionsPage() {
         <div className={cn(styles.card)}>
           <div className={styles.cardContent}>
             <h3 className="text-lg font-semibold text-slate-900">
-              Upload Your File
+              {t("transactions.import.uploadFile")}
             </h3>
             <div className="mt-6">
-              <div className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-slate-300 px-6 py-16 hover:border-slate-400">
+              <div className="relative flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-slate-300 px-6 py-16 hover:border-slate-400">
                 <Upload className="h-12 w-12 text-slate-400" />
                 <p className="mt-4 text-sm text-slate-600">
-                  Click to upload or drag and drop
+                  {t("transactions.import.uploadDescription")}
                 </p>
                 <p className="mt-1 text-xs text-slate-500">
-                  Supported formats: csv, xls, xlsx
+                  {t("transactions.import.supportedFormats")}
                 </p>
-              </div>
-              <button
-                className={cn(
-                  buttonStyles("primary"),
-                  "mt-6 w-full justify-center"
+
+                {/* Locked overlay */}
+                {!entitledToTransactionImportFeature(user) && (
+                  <div className="absolute inset-0 rounded-lg bg-white/70 backdrop-blur-[1px] flex items-center justify-center">
+                    <div className="max-w-xs text-center">
+                      <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-gray-100">
+                        <Lock className="h-5 w-5 text-gray-700" />
+                      </div>
+                      <p className="font-medium text-gray-900">
+                        {t("transactions.import.upgradeOverlay.title")}
+                      </p>
+                      <p className="mt-1 text-sm text-gray-600">
+                        {t("transactions.import.upgradeOverlay.description")}
+                      </p>
+                      <Button
+                        className="mt-4 bg-blue-600 hover:bg-blue-700"
+                        onClick={handleUpgrade}
+                      >
+                        {t("transactions.import.upgradeOverlay.button")}
+                      </Button>
+                    </div>
+                  </div>
                 )}
-              >
-                <Check className="h-4 w-4" />
-                Import Transactions
-              </button>
+              </div>
+              {entitledToTransactionImportFeature(user) && (
+                <Button
+                  className="mt-6 w-full justify-center"
+                  variant="primary"
+                >
+                  <Check className="h-4 w-4" />
+                  {t("transactions.import.importButton")}
+                </Button>
+              )}
             </div>
           </div>
         </div>
@@ -65,11 +99,10 @@ export default function ImportTransactionsPage() {
         <div className={cn(styles.card)}>
           <div className={styles.cardContent}>
             <h3 className="text-lg font-semibold text-slate-900">
-              Download Templates
+              {t("transactions.import.downloadTemplates")}
             </h3>
             <p className="mt-2 text-sm text-slate-500">
-              Use our pre-formatted templates to ensure your data imports
-              correctly. Choose the format that works best for you.
+              {t("transactions.import.templatesDescription")}
             </p>
             <div className="mt-6 space-y-4">
               <div className="flex items-center justify-between rounded-lg border border-slate-200 p-4 hover:bg-slate-50">
@@ -78,10 +111,11 @@ export default function ImportTransactionsPage() {
                     <FileText className="h-5 w-5 text-slate-600" />
                   </div>
                   <div>
-                    <p className="font-medium text-slate-900">CSV Template</p>
+                    <p className="font-medium text-slate-900">
+                      {t("transactions.import.csvTemplate")}
+                    </p>
                     <p className="text-sm text-slate-500">
-                      Simple text format, compatible with most spreadsheet
-                      software
+                      {t("transactions.import.csvDescription")}
                     </p>
                   </div>
                 </div>
@@ -96,9 +130,11 @@ export default function ImportTransactionsPage() {
                     <FileSpreadsheet className="h-5 w-5 text-emerald-600" />
                   </div>
                   <div>
-                    <p className="font-medium text-slate-900">Excel Template</p>
+                    <p className="font-medium text-slate-900">
+                      {t("transactions.import.excelTemplate")}
+                    </p>
                     <p className="text-sm text-slate-500">
-                      Native Excel format with data validation
+                      {t("transactions.import.excelDescription")}
                     </p>
                   </div>
                 </div>
@@ -114,7 +150,9 @@ export default function ImportTransactionsPage() {
       {/* How It Works */}
       <div className={cn(styles.card, "mt-6")}>
         <div className={styles.cardContent}>
-          <h3 className="text-lg font-semibold text-slate-900">How It Works</h3>
+          <h3 className="text-lg font-semibold text-slate-900">
+            {t("transactions.import.howItWorks")}
+          </h3>
           <div className="mt-6 grid gap-6 md:grid-cols-3">
             <div className="flex gap-4">
               <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-indigo-100 text-sm font-semibold text-indigo-600">
@@ -122,11 +160,10 @@ export default function ImportTransactionsPage() {
               </div>
               <div>
                 <h4 className="font-semibold text-slate-900">
-                  Download a Template
+                  {t("transactions.import.step1Title")}
                 </h4>
                 <p className="mt-1 text-sm text-slate-500">
-                  Start by downloading either a CSV or Excel template that
-                  matches our required format.
+                  {t("transactions.import.step1Description")}
                 </p>
               </div>
             </div>
@@ -136,11 +173,10 @@ export default function ImportTransactionsPage() {
               </div>
               <div>
                 <h4 className="font-semibold text-slate-900">
-                  Fill in Your Data
+                  {t("transactions.import.step2Title")}
                 </h4>
                 <p className="mt-1 text-sm text-slate-500">
-                  Add your transactions to the template. Use negative amounts
-                  for expenses and positive for income.
+                  {t("transactions.import.step2Description")}
                 </p>
               </div>
             </div>
@@ -150,11 +186,10 @@ export default function ImportTransactionsPage() {
               </div>
               <div>
                 <h4 className="font-semibold text-slate-900">
-                  Upload and Import
+                  {t("transactions.import.step3Title")}
                 </h4>
                 <p className="mt-1 text-sm text-slate-500">
-                  Upload your completed file and we&apos;ll import your
-                  transactions automatically.
+                  {t("transactions.import.step3Description")}
                 </p>
               </div>
             </div>
@@ -165,22 +200,24 @@ export default function ImportTransactionsPage() {
       {/* File Format */}
       <div className={cn(styles.card, "mt-6")}>
         <div className={styles.cardContent}>
-          <h3 className="text-lg font-semibold text-slate-900">File Format</h3>
+          <h3 className="text-lg font-semibold text-slate-900">
+            {t("transactions.import.fileFormat")}
+          </h3>
           <p className="mt-2 text-sm text-slate-500">
-            Your import file must include the following columns:
+            {t("transactions.import.fileFormatDescription")}
           </p>
           <div className="mt-6 overflow-hidden rounded-lg border border-slate-200">
             <table className="min-w-full divide-y divide-slate-200">
               <thead className="bg-slate-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">
-                    Column
+                    {t("transactions.import.columns.column")}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">
-                    Format
+                    {t("transactions.import.columns.format")}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">
-                    Description
+                    {t("transactions.import.columns.description")}
                   </th>
                 </tr>
               </thead>
@@ -193,7 +230,7 @@ export default function ImportTransactionsPage() {
                     YYYY-MM-DD
                   </td>
                   <td className="px-6 py-4 text-sm text-slate-600">
-                    Transaction date in YYYY-MM-DD format
+                    {t("transactions.import.columnDescriptions.date")}
                   </td>
                 </tr>
                 <tr>
@@ -204,7 +241,7 @@ export default function ImportTransactionsPage() {
                     Text
                   </td>
                   <td className="px-6 py-4 text-sm text-slate-600">
-                    Brief description of the transaction
+                    {t("transactions.import.columnDescriptions.description")}
                   </td>
                 </tr>
                 <tr>
@@ -215,8 +252,7 @@ export default function ImportTransactionsPage() {
                     -0.00
                   </td>
                   <td className="px-6 py-4 text-sm text-slate-600">
-                    Transaction amount (negative for expenses, positive for
-                    income)
+                    {t("transactions.import.columnDescriptions.amount")}
                   </td>
                 </tr>
                 <tr>
@@ -227,7 +263,7 @@ export default function ImportTransactionsPage() {
                     0, 7, 19
                   </td>
                   <td className="px-6 py-4 text-sm text-slate-600">
-                    VAT rate applicable to this transaction
+                    {t("transactions.import.columnDescriptions.vatRate")}
                   </td>
                 </tr>
               </tbody>
