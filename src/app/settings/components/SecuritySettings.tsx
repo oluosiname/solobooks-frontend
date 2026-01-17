@@ -130,16 +130,14 @@ export function SecuritySettings({
             {t("settings.security.accountManagement.title")}
           </h3>
           <p className="mt-1 text-sm text-slate-500">
-            {t.rich("settings.security.accountManagement.description", {
-              privacy: (chunks) => (
-                <button
-                  onClick={() => onSetActiveTab("privacy")}
-                  className="text-indigo-600 hover:text-indigo-700"
-                >
-                  {chunks}
-                </button>
-              ),
-            })}
+            For data export, account deletion, and privacy settings, please visit the{" "}
+            <button
+              onClick={() => onSetActiveTab("privacy")}
+              className="text-indigo-600 hover:text-indigo-700"
+            >
+              {t("settings.tabs.privacy")}
+            </button>{" "}
+            tab.
           </p>
         </div>
       </div>
