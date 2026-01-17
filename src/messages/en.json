@@ -249,6 +249,11 @@
         "description": "Brief description of the transaction",
         "amount": "Transaction amount (negative for expenses, positive for income)",
         "vatRate": "VAT rate applicable to this transaction"
+      },
+      "upgradeOverlay": {
+        "title": "Upgrade to import transactions",
+        "description": "Importing transactions is available on Pro and above.",
+        "button": "Upgrade to Import"
       }
     },
     "importTransactions": "Import Transactions",

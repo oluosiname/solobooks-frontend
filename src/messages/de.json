@@ -297,6 +297,11 @@
         "description": "Kurze Beschreibung der Transaktion",
         "amount": "Transaktionsbetrag (negativ für Ausgaben, positiv für Einnahmen)",
         "vatRate": "Auf diese Transaktion anwendbarer USt-Satz"
+      },
+      "upgradeOverlay": {
+        "title": "Upgrade um Transaktionen zu importieren",
+        "description": "Das Importieren von Transaktionen ist ab Pro und höher verfügbar.",
+        "button": "Upgrade zum Import"
       }
     },
     "categories": {
