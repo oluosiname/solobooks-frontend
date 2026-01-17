@@ -31,6 +31,7 @@ describe('RegisterPage', () => {
       isAuthenticated: false,
       user: null,
       token: null,
+      refreshToken: null,
     });
   });
 
@@ -192,6 +193,7 @@ describe('RegisterPage', () => {
         isAuthenticated: false,
         user: null,
         token: null,
+      refreshToken: null,
       });
 
       render(<RegisterPage />);
@@ -224,6 +226,7 @@ describe('RegisterPage', () => {
         isAuthenticated: false,
         user: null,
         token: null,
+      refreshToken: null,
       });
 
       render(<RegisterPage />);
