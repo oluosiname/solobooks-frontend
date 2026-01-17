@@ -205,7 +205,7 @@
     "syncedTitle": "Synced Transactions",
     "syncedDescription": "Review and categorize transactions synced from your bank accounts",
     "noSyncedTransactions": "No synced transactions",
-    "syncedDescriptionEmpty": "Transactions synced from your bank accounts will appear here",
+    "syncedDescriptionEmpty": "Transactions synced from your bank accounts will appear here for review and categorization",
     "discardTitle": "Discard Transaction",
     "discardConfirm": "Are you sure you want to discard \"{description}\"? This action cannot be undone.",
     "discardSuccess": "Transaction discarded successfully",
@@ -217,55 +217,6 @@
     "addIncome": "Add Income",
     "addManualExpense": "Add Manual Expense",
     "addManualIncome": "Add Manual Income",
-    "import": "Import",
-    "importTransactions": "Import Transactions",
-    "searchPlaceholder": "Search transactions...",
-    "loadingTransactions": "Loading transactions...",
-    "columns": {
-      "description": "Description",
-      "date": "Date",
-      "amount": "Amount",
-      "receipt": "Receipt",
-      "actions": "Actions"
-    },
-    "types": {
-      "all": "All",
-      "income": "Income",
-      "expense": "Expense",
-      "pending": "Pending"
-    },
-    "uncheckedAlert": "You have {count} unchecked transactions synced from your bank account(s)",
-    "viewPending": "View Pending",
-    "categorizationAlert": "You have {count} transactions that need categorization",
-    "categorizationDescription": "Use the edit button to categorize transactions, or the discard button to remove unwanted ones",
-    "syncedDescriptionEmpty": "Transactions synced from your bank accounts will appear here for review and categorization",
-    "noTransactions": "No transactions found",
-    "deleteTitle": "Delete Transaction",
-    "deleteConfirm": "Are you sure you want to delete \"{description}\"? This action cannot be undone.",
-    "deleteSuccess": "Transaction deleted successfully",
-    "deleteError": "Failed to delete transaction",
-    "deleting": "Deleting...",
-    "form": {
-      "transactionInfo": "Transaction Information",
-      "type": "Type",
-      "category": "Category",
-      "date": "Date",
-      "amount": "Amount (€)",
-      "description": "Description",
-      "receipt": "Receipt / Attachment",
-      "notes": "Notes (Optional)",
-      "summary": "Summary",
-      "transactionType": "Transaction Type",
-      "status": "Status",
-      "noReceipt": "No Receipt",
-      "receiptAttached": "Receipt Attached",
-      "saveTransaction": "Save Transaction",
-      "placeholders": {
-        "selectCategory": "Select category",
-        "enterDescription": "Enter transaction description...",
-        "addNotes": "Add any additional notes..."
-      }
-    },
     "import": {
       "title": "Import Transactions",
       "backToTransactions": "Back to Transactions",
@@ -298,6 +249,53 @@
         "description": "Brief description of the transaction",
         "amount": "Transaction amount (negative for expenses, positive for income)",
         "vatRate": "VAT rate applicable to this transaction"
+      }
+    },
+    "importTransactions": "Import Transactions",
+    "searchPlaceholder": "Search transactions...",
+    "loadingTransactions": "Loading transactions...",
+    "columns": {
+      "description": "Description",
+      "date": "Date",
+      "amount": "Amount",
+      "receipt": "Receipt",
+      "actions": "Actions"
+    },
+    "types": {
+      "all": "All",
+      "income": "Income",
+      "expense": "Expense",
+      "pending": "Pending"
+    },
+    "uncheckedAlert": "You have {count} unchecked transactions synced from your bank account(s)",
+    "viewPending": "View Pending",
+    "categorizationAlert": "You have {count} transactions that need categorization",
+    "categorizationDescription": "Use the edit button to categorize transactions, or the discard button to remove unwanted ones",
+    "noTransactions": "No transactions found",
+    "deleteTitle": "Delete Transaction",
+    "deleteConfirm": "Are you sure you want to delete \"{description}\"? This action cannot be undone.",
+    "deleteSuccess": "Transaction deleted successfully",
+    "deleteError": "Failed to delete transaction",
+    "deleting": "Deleting...",
+    "form": {
+      "transactionInfo": "Transaction Information",
+      "type": "Type",
+      "category": "Category",
+      "date": "Date",
+      "amount": "Amount (€)",
+      "description": "Description",
+      "receipt": "Receipt / Attachment",
+      "notes": "Notes (Optional)",
+      "summary": "Summary",
+      "transactionType": "Transaction Type",
+      "status": "Status",
+      "noReceipt": "No Receipt",
+      "receiptAttached": "Receipt Attached",
+      "saveTransaction": "Save Transaction",
+      "placeholders": {
+        "selectCategory": "Select category",
+        "enterDescription": "Enter transaction description...",
+        "addNotes": "Add any additional notes..."
       }
     },
     "categories": {
@@ -364,7 +362,8 @@
       "neverStoreCredentials": "Never store your bank login credentials",
       "neverInitiateTransactions": "Never initiate any transactions or transfers",
       "neverShareData": "Never share your financial data with third parties",
-      "neverModifySettings": "Never modify your account settings or preferences"
+      "neverModifySettings": "Never modify your account settings or preferences",
+      "termsDisclaimer": "By proceeding, you agree to our {terms} and {privacy}. We do not store your banking credentials."
     },
     "callback": {
       "successToast": "Bank connection successful!",
@@ -560,17 +559,23 @@
       "email": {
         "title": "Email Notifications",
         "invoiceSent": "Invoice Sent",
+        "invoiceSentDesc": "Get notified when an invoice is sent to a client",
         "invoicePaid": "Invoice Paid",
+        "invoicePaidDesc": "Get notified when an invoice is marked as paid",
         "invoiceOverdue": "Invoice Overdue",
-        "newClient": "New Client Added"
+        "invoiceOverdueDesc": "Get notified when an invoice becomes overdue",
+        "newClient": "New Client Added",
+        "newClientDesc": "Get notified when a new client is added"
       },
       "vatReminders": {
         "title": "VAT & Tax Reminders",
         "declarationDue": "Declaration Due",
+        "declarationDueDesc": "Remind me 7 days before VAT declaration is due",
         "declarationSubmitted": "Declaration Submitted",
-        "taxYearEnd": "Tax Year End Reminder"
+        "declarationSubmittedDesc": "Confirm when VAT declaration is successfully submitted",
+        "taxYearEnd": "Tax Year End Reminder",
+        "taxYearEndDesc": "Remind me 30 days before tax year end"
       },
-
       "savePreferences": "Save Preferences"
     },
     "security": {
@@ -583,25 +588,162 @@
         "title": "Two-Factor Authentication",
         "description": "Add an extra layer of security to your account",
         "enable": "Enable 2FA",
+        "enableDesc": "Require authentication code in addition to password",
         "disable": "Disable 2FA"
       },
       "sessions": {
         "title": "Active Sessions",
+        "description": "Manage your active sessions across different devices.",
         "current": "Current Session",
-        "logoutAll": "Log Out All Other Sessions"
+        "logoutAll": "Log Out All Other Sessions",
+        "revoke": "Revoke"
+      },
+      "accountManagement": {
+        "title": "Account Management",
+        "description": "For data export, account deletion, and privacy settings, please visit the {privacy} tab."
       },
       "updatePassword": "Update Password"
     },
     "privacy": {
       "title": "Privacy & GDPR",
+      "complianceStatus": {
+        "title": "GDPR/DSGVO Compliance Status",
+        "description": "Your account is configured to meet GDPR and DSGVO requirements"
+      },
+      "consentManagement": {
+        "title": "Consent Management",
+        "description": "Manage your consent for data processing activities",
+        "essential": {
+          "title": "Essential Data Processing",
+          "description": "Required to provide core accounting services"
+        },
+        "analytics": {
+          "title": "Analytics & Performance",
+          "description": "Help us improve the application with usage data"
+        },
+        "marketing": {
+          "title": "Marketing Communications",
+          "description": "Receive product updates and feature announcements"
+        },
+        "thirdParty": {
+          "title": "Third-Party Integrations",
+          "description": "Allow data sharing with approved third-party services"
+        },
+        "saveButton": "Save Consent Preferences"
+      },
+      "dataRights": {
+        "title": "Your Data Rights (GDPR/DSGVO)",
+        "description": "Exercise your rights under the General Data Protection Regulation",
+        "portability": {
+          "title": "Right to Data Portability",
+          "description": "Download all your data in a machine-readable format",
+          "button": "Request Export"
+        },
+        "access": {
+          "title": "Right to Access",
+          "description": "View all personal data we have stored about you",
+          "button": "View Data"
+        },
+        "rectification": {
+          "title": "Right to Rectification",
+          "description": "Correct any inaccurate personal information",
+          "button": "Update Info"
+        },
+        "erasure": {
+          "title": "Right to Erasure (\"Right to be Forgotten\")",
+          "description": "Request permanent deletion of all your personal data",
+          "button": "Request Deletion"
+        }
+      },
+      "dataRetention": {
+        "title": "Data Retention & Processing",
+        "retentionLabel": "Data Retention Period",
+        "retentionOptions": {
+          "10years": "10 years (recommended for tax)",
+          "7years": "7 years",
+          "5years": "5 years"
+        },
+        "retentionNote": "Note: German tax law requires 10 years retention for accounting records",
+        "processingLabel": "Data Processing Location",
+        "processingOptions": {
+          "euOnly": "European Union Only",
+          "global": "Global (GDPR compliant)"
+        },
+        "processingNote": "Your data will only be processed in these locations",
+        "clientProcessing": {
+          "title": "Client Data Processing",
+          "description": "As you process client data in this application, you act as a data controller under GDPR",
+          "consentTracking": {
+            "title": "Automatic Client Consent Tracking",
+            "description": "Track GDPR consent for client data processing"
+          },
+          "deletionRequests": {
+            "title": "Client Data Deletion Requests",
+            "description": "Enable clients to request data deletion"
+          }
+        },
+        "saveButton": "Save Retention Settings"
+      },
+      "legalDocuments": {
+        "title": "Legal Documents & Compliance",
+        "documents": {
+          "privacyPolicy": {
+            "name": "Privacy Policy",
+            "date": "January 1, 2026"
+          },
+          "termsOfService": {
+            "name": "Terms of Service",
+            "date": "January 1, 2026"
+          },
+          "dpa": {
+            "name": "Data Processing Agreement (DPA)",
+            "desc": "GDPR Article 28 compliant"
+          },
+          "impressum": {
+            "name": "Impressum (German Legal Notice)",
+            "desc": "Required for German businesses"
+          },
+          "cookiePolicy": {
+            "name": "Cookie Policy",
+            "desc": "GDPR compliant cookie usage"
+          }
+        }
+      },
+      "dpo": {
+        "title": "Data Protection Officer (DPO)",
+        "description": "Contact information for data protection inquiries",
+        "nameLabel": "DPO Name",
+        "emailLabel": "DPO Email",
+        "addressLabel": "DPO Address",
+        "saveButton": "Save DPO Information"
+      },
+      "breachNotification": {
+        "title": "Data Breach Notification",
+        "description": "Configure how you want to be notified in case of a data breach (GDPR Article 33)",
+        "email": {
+          "title": "Email Notification",
+          "description": "Receive immediate email alerts"
+        },
+        "sms": {
+          "title": "SMS Notification",
+          "description": "Receive SMS alerts for critical breaches"
+        },
+        "emergencyContact": "Emergency Contact",
+        "emergencyNote": "Secondary contact for data breach notifications",
+        "saveButton": "Save Notification Preferences"
+      },
+      "auditLog": {
+        "title": "Privacy Audit Log",
+        "description": "Track all privacy-related activities for GDPR compliance",
+        "lastExport": "Last data export:",
+        "lastConsent": "Last consent update:",
+        "policyAcceptance": "Privacy policy acceptance:",
+        "downloadButton": "Download Full Audit Log"
+      },
       "dataExport": {
         "title": "Export Your Data",
         "description": "Download a copy of all your data stored in Solobooks",
         "export": "Export Data"
-      },
-      "dataRetention": {
-        "title": "Data Retention",
-        "description": "Choose how long we keep your data after account deletion"
       },
       "deleteAccount": {
         "title": "Delete Account",

@@ -52,6 +52,7 @@ export function PrivacySettings({
   onPrivacyChange,
   unifiedSettings,
 }: PrivacySettingsProps) {
+  const t = useTranslations();
   const queryClient = useQueryClient();
 
   const updatePrivacyMutation = useMutation({
@@ -75,7 +76,8 @@ export function PrivacySettings({
           data_retention_years: privacy.dataRetentionYears,
           data_processing_location: privacy.dataProcessingLocation,
           client_consent_tracking_enabled: privacy.clientConsentTrackingEnabled,
-          client_deletion_requests_enabled: privacy.clientDeletionRequestsEnabled,
+          client_deletion_requests_enabled:
+            privacy.clientDeletionRequestsEnabled,
         },
       });
     }
@@ -91,7 +93,8 @@ export function PrivacySettings({
           data_retention_years: privacy.dataRetentionYears,
           data_processing_location: privacy.dataProcessingLocation,
           client_consent_tracking_enabled: privacy.clientConsentTrackingEnabled,
-          client_deletion_requests_enabled: privacy.clientDeletionRequestsEnabled,
+          client_deletion_requests_enabled:
+            privacy.clientDeletionRequestsEnabled,
         },
       });
     }
@@ -105,10 +108,10 @@ export function PrivacySettings({
         </div>
         <div>
           <p className="font-semibold text-emerald-900">
-            GDPR/DSGVO Compliance Status
+            {t("settings.privacy.complianceStatus.title")}
           </p>
           <p className="text-sm text-emerald-700">
-            Your account is configured to meet GDPR and DSGVO requirements
+            {t("settings.privacy.complianceStatus.description")}
           </p>
         </div>
       </div>
@@ -117,19 +120,21 @@ export function PrivacySettings({
       <div className={cn(styles.card)}>
         <div className={styles.cardContent}>
           <h3 className="text-lg font-semibold text-slate-900">
-            Consent Management
+            {t("settings.privacy.consentManagement.title")}
           </h3>
           <p className="mt-1 text-sm text-slate-500">
-            Manage your consent for data processing activities
+            {t("settings.privacy.consentManagement.description")}
           </p>
           <div className="mt-6 space-y-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="font-medium text-slate-900">
-                  Essential Data Processing
+                  {t("settings.privacy.consentManagement.essential.title")}
                 </p>
                 <p className="text-sm text-slate-500">
-                  Required to provide core accounting services
+                  {t(
+                    "settings.privacy.consentManagement.essential.description"
+                  )}
                 </p>
               </div>
               <Toggle enabled={privacy.essential} />
@@ -137,10 +142,12 @@ export function PrivacySettings({
             <div className="flex items-center justify-between">
               <div>
                 <p className="font-medium text-slate-900">
-                  Analytics & Performance
+                  {t("settings.privacy.consentManagement.analytics.title")}
                 </p>
                 <p className="text-sm text-slate-500">
-                  Help us improve the application with usage data
+                  {t(
+                    "settings.privacy.consentManagement.analytics.description"
+                  )}
                 </p>
               </div>
               <Toggle
@@ -153,10 +160,12 @@ export function PrivacySettings({
             <div className="flex items-center justify-between">
               <div>
                 <p className="font-medium text-slate-900">
-                  Marketing Communications
+                  {t("settings.privacy.consentManagement.marketing.title")}
                 </p>
                 <p className="text-sm text-slate-500">
-                  Receive product updates and feature announcements
+                  {t(
+                    "settings.privacy.consentManagement.marketing.description"
+                  )}
                 </p>
               </div>
               <Toggle
@@ -169,10 +178,12 @@ export function PrivacySettings({
             <div className="flex items-center justify-between">
               <div>
                 <p className="font-medium text-slate-900">
-                  Third-Party Integrations
+                  {t("settings.privacy.consentManagement.thirdParty.title")}
                 </p>
                 <p className="text-sm text-slate-500">
-                  Allow data sharing with approved third-party services
+                  {t(
+                    "settings.privacy.consentManagement.thirdParty.description"
+                  )}
                 </p>
               </div>
               <Toggle
@@ -195,7 +206,7 @@ export function PrivacySettings({
               <Check className="h-4 w-4" />
               {updatePrivacyMutation.isPending
                 ? "Saving..."
-                : "Save Consent Preferences"}
+                : t("settings.privacy.consentManagement.saveButton")}
             </button>
           </div>
         </div>
@@ -205,10 +216,10 @@ export function PrivacySettings({
       <div className={cn(styles.card)}>
         <div className={styles.cardContent}>
           <h3 className="text-lg font-semibold text-slate-900">
-            Your Data Rights (GDPR/DSGVO)
+            {t("settings.privacy.dataRights.title")}
           </h3>
           <p className="mt-1 text-sm text-slate-500">
-            Exercise your rights under the General Data Protection Regulation
+            {t("settings.privacy.dataRights.description")}
           </p>
           <div className="mt-6 space-y-4">
             <div className="flex items-center justify-between rounded-lg border border-slate-200 p-4">
@@ -216,57 +227,63 @@ export function PrivacySettings({
                 <Download className="h-5 w-5 text-slate-400" />
                 <div>
                   <p className="font-medium text-slate-900">
-                    Right to Data Portability
+                    {t("settings.privacy.dataRights.portability.title")}
                   </p>
                   <p className="text-sm text-slate-500">
-                    Download all your data in a machine-readable format
+                    {t("settings.privacy.dataRights.portability.description")}
                   </p>
                 </div>
               </div>
               <button className={buttonStyles("secondary")}>
-                Request Export
+                {t("settings.privacy.dataRights.portability.button")}
               </button>
             </div>
             <div className="flex items-center justify-between rounded-lg border border-slate-200 p-4">
               <div className="flex items-center gap-3">
                 <Eye className="h-5 w-5 text-slate-400" />
                 <div>
-                  <p className="font-medium text-slate-900">Right to Access</p>
+                  <p className="font-medium text-slate-900">
+                    {t("settings.privacy.dataRights.access.title")}
+                  </p>
                   <p className="text-sm text-slate-500">
-                    View all personal data we have stored about you
+                    {t("settings.privacy.dataRights.access.description")}
                   </p>
                 </div>
               </div>
-              <button className={buttonStyles("secondary")}>View Data</button>
+              <button className={buttonStyles("secondary")}>
+                {t("settings.privacy.dataRights.access.button")}
+              </button>
             </div>
             <div className="flex items-center justify-between rounded-lg border border-slate-200 p-4">
               <div className="flex items-center gap-3">
                 <Edit className="h-5 w-5 text-slate-400" />
                 <div>
                   <p className="font-medium text-slate-900">
-                    Right to Rectification
+                    {t("settings.privacy.dataRights.rectification.title")}
                   </p>
                   <p className="text-sm text-slate-500">
-                    Correct any inaccurate personal information
+                    {t("settings.privacy.dataRights.rectification.description")}
                   </p>
                 </div>
               </div>
-              <button className={buttonStyles("secondary")}>Update Info</button>
+              <button className={buttonStyles("secondary")}>
+                {t("settings.privacy.dataRights.rectification.button")}
+              </button>
             </div>
             <div className="flex items-center justify-between rounded-lg border border-red-100 bg-red-50 p-4">
               <div className="flex items-center gap-3">
                 <AlertTriangle className="h-5 w-5 text-red-400" />
                 <div>
                   <p className="font-medium text-slate-900">
-                    Right to Erasure (&quot;Right to be Forgotten&quot;)
+                    {t("settings.privacy.dataRights.erasure.title")}
                   </p>
                   <p className="text-sm text-slate-500">
-                    Request permanent deletion of all your personal data
+                    {t("settings.privacy.dataRights.erasure.description")}
                   </p>
                 </div>
               </div>
               <button className="rounded-lg border border-red-200 bg-white px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50">
-                Request Deletion
+                {t("settings.privacy.dataRights.erasure.button")}
               </button>
             </div>
           </div>
@@ -277,12 +294,12 @@ export function PrivacySettings({
       <div className={cn(styles.card)}>
         <div className={styles.cardContent}>
           <h3 className="text-lg font-semibold text-slate-900">
-            Data Retention & Processing
+            {t("settings.privacy.dataRetention.title")}
           </h3>
           <div className="mt-6 grid gap-6 md:grid-cols-2">
             <div>
               <label className="block text-sm font-medium text-slate-700">
-                Data Retention Period
+                {t("settings.privacy.dataRetention.retentionLabel")}
               </label>
               <select
                 className={cn(styles.input, "mt-1.5")}
@@ -293,18 +310,23 @@ export function PrivacySettings({
                   })
                 }
               >
-                <option value={10}>10 years (recommended for tax)</option>
-                <option value={7}>7 years</option>
-                <option value={5}>5 years</option>
+                <option value={10}>
+                  {t("settings.privacy.dataRetention.retentionOptions.10years")}
+                </option>
+                <option value={7}>
+                  {t("settings.privacy.dataRetention.retentionOptions.7years")}
+                </option>
+                <option value={5}>
+                  {t("settings.privacy.dataRetention.retentionOptions.5years")}
+                </option>
               </select>
               <p className="mt-1.5 text-xs text-slate-500">
-                Note: German tax law requires 10 years retention for accounting
-                records
+                {t("settings.privacy.dataRetention.retentionNote")}
               </p>
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-700">
-                Data Processing Location
+                {t("settings.privacy.dataRetention.processingLabel")}
               </label>
               <select
                 className={cn(styles.input, "mt-1.5")}
@@ -317,31 +339,38 @@ export function PrivacySettings({
                   })
                 }
               >
-                <option value="eu_only">European Union Only</option>
-                <option value="global">Global (GDPR compliant)</option>
+                <option value="eu_only">
+                  {t("settings.privacy.dataRetention.processingOptions.euOnly")}
+                </option>
+                <option value="global">
+                  {t("settings.privacy.dataRetention.processingOptions.global")}
+                </option>
               </select>
               <p className="mt-1.5 text-xs text-slate-500">
-                Your data will only be processed in these locations
+                {t("settings.privacy.dataRetention.processingNote")}
               </p>
             </div>
           </div>
 
           <div className="mt-8 border-t border-slate-200 pt-8">
             <h4 className="font-semibold text-slate-900">
-              Client Data Processing
+              {t("settings.privacy.dataRetention.clientProcessing.title")}
             </h4>
             <p className="mt-1 text-sm text-slate-500">
-              As you process client data in this application, you act as a data
-              controller under GDPR
+              {t("settings.privacy.dataRetention.clientProcessing.description")}
             </p>
             <div className="mt-6 space-y-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="font-medium text-slate-900">
-                    Automatic Client Consent Tracking
+                    {t(
+                      "settings.privacy.dataRetention.clientProcessing.consentTracking.title"
+                    )}
                   </p>
                   <p className="text-sm text-slate-500">
-                    Track GDPR consent for client data processing
+                    {t(
+                      "settings.privacy.dataRetention.clientProcessing.consentTracking.description"
+                    )}
                   </p>
                 </div>
                 <Toggle
@@ -349,7 +378,8 @@ export function PrivacySettings({
                   onChange={() =>
                     onPrivacyChange({
                       ...privacy,
-                      clientConsentTrackingEnabled: !privacy.clientConsentTrackingEnabled,
+                      clientConsentTrackingEnabled:
+                        !privacy.clientConsentTrackingEnabled,
                     })
                   }
                 />
@@ -357,10 +387,14 @@ export function PrivacySettings({
               <div className="flex items-center justify-between">
                 <div>
                   <p className="font-medium text-slate-900">
-                    Client Data Deletion Requests
+                    {t(
+                      "settings.privacy.dataRetention.clientProcessing.deletionRequests.title"
+                    )}
                   </p>
                   <p className="text-sm text-slate-500">
-                    Enable clients to request data deletion
+                    {t(
+                      "settings.privacy.dataRetention.clientProcessing.deletionRequests.description"
+                    )}
                   </p>
                 </div>
                 <Toggle
@@ -368,7 +402,8 @@ export function PrivacySettings({
                   onChange={() =>
                     onPrivacyChange({
                       ...privacy,
-                      clientDeletionRequestsEnabled: !privacy.clientDeletionRequestsEnabled,
+                      clientDeletionRequestsEnabled:
+                        !privacy.clientDeletionRequestsEnabled,
                     })
                   }
                 />
@@ -385,7 +420,7 @@ export function PrivacySettings({
               <Check className="h-4 w-4" />
               {updatePrivacyMutation.isPending
                 ? "Saving..."
-                : "Save Retention Settings"}
+                : t("settings.privacy.dataRetention.saveButton")}
             </button>
           </div>
         </div>
@@ -395,33 +430,49 @@ export function PrivacySettings({
       <div className={cn(styles.card)}>
         <div className={styles.cardContent}>
           <h3 className="text-lg font-semibold text-slate-900">
-            Legal Documents & Compliance
+            {t("settings.privacy.legalDocuments.title")}
           </h3>
           <div className="mt-6 space-y-4">
             {[
               {
-                name: "Privacy Policy",
-                date: "January 1, 2026",
+                name: t(
+                  "settings.privacy.legalDocuments.documents.privacyPolicy.name"
+                ),
+                date: t(
+                  "settings.privacy.legalDocuments.documents.privacyPolicy.date"
+                ),
                 action: "view",
               },
               {
-                name: "Terms of Service",
-                date: "January 1, 2026",
+                name: t(
+                  "settings.privacy.legalDocuments.documents.termsOfService.name"
+                ),
+                date: t(
+                  "settings.privacy.legalDocuments.documents.termsOfService.date"
+                ),
                 action: "view",
               },
               {
-                name: "Data Processing Agreement (DPA)",
-                desc: "GDPR Article 28 compliant",
+                name: t("settings.privacy.legalDocuments.documents.dpa.name"),
+                desc: t("settings.privacy.legalDocuments.documents.dpa.desc"),
                 action: "download",
               },
               {
-                name: "Impressum (German Legal Notice)",
-                desc: "Required for German businesses",
+                name: t(
+                  "settings.privacy.legalDocuments.documents.impressum.name"
+                ),
+                desc: t(
+                  "settings.privacy.legalDocuments.documents.impressum.desc"
+                ),
                 action: "view",
               },
               {
-                name: "Cookie Policy",
-                desc: "GDPR compliant cookie usage",
+                name: t(
+                  "settings.privacy.legalDocuments.documents.cookiePolicy.name"
+                ),
+                desc: t(
+                  "settings.privacy.legalDocuments.documents.cookiePolicy.desc"
+                ),
                 action: "view",
               },
             ].map((doc) => (
@@ -453,15 +504,15 @@ export function PrivacySettings({
       <div className={cn(styles.card)}>
         <div className={styles.cardContent}>
           <h3 className="text-lg font-semibold text-slate-900">
-            Data Protection Officer (DPO)
+            {t("settings.privacy.dpo.title")}
           </h3>
           <p className="mt-1 text-sm text-slate-500">
-            Contact information for data protection inquiries
+            {t("settings.privacy.dpo.description")}
           </p>
           <div className="mt-6 grid gap-6 md:grid-cols-2">
             <div>
               <label className="block text-sm font-medium text-slate-700">
-                DPO Name
+                {t("settings.privacy.dpo.nameLabel")}
               </label>
               <input
                 type="text"
@@ -471,7 +522,7 @@ export function PrivacySettings({
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-700">
-                DPO Email
+                {t("settings.privacy.dpo.emailLabel")}
               </label>
               <input
                 type="email"
@@ -481,7 +532,7 @@ export function PrivacySettings({
             </div>
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-slate-700">
-                DPO Address
+                {t("settings.privacy.dpo.addressLabel")}
               </label>
               <input
                 type="text"
@@ -493,7 +544,7 @@ export function PrivacySettings({
           <div className="mt-6 flex justify-end border-t border-slate-100 pt-6">
             <button className={buttonStyles("primary")}>
               <Check className="h-4 w-4" />
-              Save DPO Information
+              {t("settings.privacy.dpo.saveButton")}
             </button>
           </div>
         </div>
@@ -503,18 +554,19 @@ export function PrivacySettings({
       <div className={cn(styles.card)}>
         <div className={styles.cardContent}>
           <h3 className="text-lg font-semibold text-slate-900">
-            Data Breach Notification
+            {t("settings.privacy.breachNotification.title")}
           </h3>
           <p className="mt-1 text-sm text-slate-500">
-            Configure how you want to be notified in case of a data breach (GDPR
-            Article 33)
+            {t("settings.privacy.breachNotification.description")}
           </p>
           <div className="mt-6 space-y-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="font-medium text-slate-900">Email Notification</p>
+                <p className="font-medium text-slate-900">
+                  {t("settings.privacy.breachNotification.email.title")}
+                </p>
                 <p className="text-sm text-slate-500">
-                  Receive immediate email alerts
+                  {t("settings.privacy.breachNotification.email.description")}
                 </p>
               </div>
               <Toggle
@@ -529,9 +581,11 @@ export function PrivacySettings({
             </div>
             <div className="flex items-center justify-between">
               <div>
-                <p className="font-medium text-slate-900">SMS Notification</p>
+                <p className="font-medium text-slate-900">
+                  {t("settings.privacy.breachNotification.sms.title")}
+                </p>
                 <p className="text-sm text-slate-500">
-                  Receive SMS alerts for critical breaches
+                  {t("settings.privacy.breachNotification.sms.description")}
                 </p>
               </div>
               <Toggle
@@ -543,7 +597,7 @@ export function PrivacySettings({
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-700">
-                Emergency Contact
+                {t("settings.privacy.breachNotification.emergencyContact")}
               </label>
               <input
                 type="email"
@@ -551,14 +605,14 @@ export function PrivacySettings({
                 defaultValue="emergency@yourcompany.com"
               />
               <p className="mt-1.5 text-xs text-slate-500">
-                Secondary contact for data breach notifications
+                {t("settings.privacy.breachNotification.emergencyNote")}
               </p>
             </div>
           </div>
           <div className="mt-6 flex justify-end border-t border-slate-100 pt-6">
             <button className={buttonStyles("primary")}>
               <Check className="h-4 w-4" />
-              Save Notification Preferences
+              {t("settings.privacy.breachNotification.saveButton")}
             </button>
           </div>
         </div>
@@ -568,21 +622,23 @@ export function PrivacySettings({
       <div className={cn(styles.card)}>
         <div className={styles.cardContent}>
           <h3 className="text-lg font-semibold text-slate-900">
-            Privacy Audit Log
+            {t("settings.privacy.auditLog.title")}
           </h3>
           <p className="mt-1 text-sm text-slate-500">
-            Track all privacy-related activities for GDPR compliance
+            {t("settings.privacy.auditLog.description")}
           </p>
           <div className="mt-6 space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-slate-600">Last data export:</span>
+              <span className="text-sm text-slate-600">
+                {t("settings.privacy.auditLog.lastExport")}
+              </span>
               <span className="text-sm font-medium text-slate-900">
                 December 15, 2025
               </span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-slate-600">
-                Last consent update:
+                {t("settings.privacy.auditLog.lastConsent")}
               </span>
               <span className="text-sm font-medium text-slate-900">
                 January 1, 2026
@@ -590,7 +646,7 @@ export function PrivacySettings({
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-slate-600">
-                Privacy policy acceptance:
+                {t("settings.privacy.auditLog.policyAcceptance")}
               </span>
               <span className="text-sm font-medium text-slate-900">
                 November 10, 2025
@@ -600,7 +656,7 @@ export function PrivacySettings({
           <div className="mt-6">
             <button className={buttonStyles("secondary")}>
               <Download className="h-4 w-4" />
-              Download Full Audit Log
+              {t("settings.privacy.auditLog.downloadButton")}
             </button>
           </div>
         </div>

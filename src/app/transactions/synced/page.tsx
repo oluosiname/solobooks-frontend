@@ -24,9 +24,10 @@ export default function SyncedTransactionsPage() {
 
   // For now, we'll allow search but it might not be as relevant for synced transactions
   // since they're typically processed in batches
-  const groupedTransactions = transactionsArray.length > 0
-    ? groupTransactionsByMonth(transactionsArray, (t: Transaction) => t.date)
-    : {};
+  const groupedTransactions =
+    transactionsArray.length > 0
+      ? groupTransactionsByMonth(transactionsArray, (t: Transaction) => t.date)
+      : {};
 
   return (
     <AppShell title={t("transactions.syncedTitle") || "Synced Transactions"}>
@@ -63,7 +64,9 @@ export default function SyncedTransactionsPage() {
           <div className={`${styles.alert} ${styles.alertInfo}`}>
             <div className="flex-1">
               <p className="font-medium text-blue-900">
-                {t("transactions.categorizationAlert", { count: transactionsArray.length })}
+                {t("transactions.categorizationAlert", {
+                  count: transactionsArray.length,
+                })}
               </p>
               <p className="text-sm text-blue-700">
                 {t("transactions.categorizationDescription")}
@@ -91,7 +94,8 @@ export default function SyncedTransactionsPage() {
           <div className="flex items-center justify-center py-12">
             <div className="text-center">
               <p className="text-slate-500 mb-2">
-                {t("transactions.noSyncedTransactions") || "No synced transactions"}
+                {t("transactions.noSyncedTransactions") ||
+                  "No synced transactions"}
               </p>
               <p className="text-sm text-slate-400">
                 {t("transactions.syncedDescriptionEmpty")}

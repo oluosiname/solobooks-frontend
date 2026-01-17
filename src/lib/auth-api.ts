@@ -4,7 +4,6 @@
  * Handles all authentication-related API calls to the backend
  */
 
-
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
 export interface RegisterRequest {
