@@ -107,7 +107,6 @@ export default function NewClientPage() {
     }
   };
 
-  console.log({ errors, errorMessage });
   const countryOptions: SelectOption[] = [
     { value: "Germany", label: t("countries.germany") },
     { value: "Austria", label: t("countries.austria") },

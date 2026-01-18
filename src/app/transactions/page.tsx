@@ -32,13 +32,10 @@ export default function TransactionsPage() {
     queryFn: api.getUncheckedTransactions,
   });
 
-  console.log({ transactions });
 
   const groupedTransactions = transactions?.data
     ? groupTransactionsByMonth(transactions.data, (t: Transaction) => t.date)
     : {};
-
-  console.log({ groupedTransactions });
 
   const tabs = [
     { id: "all", label: t("transactions.types.all") },

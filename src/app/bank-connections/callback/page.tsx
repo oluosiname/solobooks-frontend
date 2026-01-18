@@ -21,8 +21,7 @@ export default function BankConnectionCallbackPage() {
 
   const completeConnectionMutation = useMutation({
     mutationFn: () => api.completeBankConnection(),
-    onSuccess: (data) => {
-      console.log("Bank connection completed successfully:", data);
+    onSuccess: () => {
       setStatus("success");
       showToast.success(t("bankConnections.callback.successToast"));
 
@@ -46,12 +45,6 @@ export default function BankConnectionCallbackPage() {
       // Get parameters from URL
       const error = searchParams.get("error");
       const errorDescription = searchParams.get("error_description");
-
-      console.log("Callback parameters:", {
-        error,
-        errorDescription,
-        allParams: Object.fromEntries(searchParams.entries()),
-      });
 
       // Check for errors first
       if (error) {
