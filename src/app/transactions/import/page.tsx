@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import {
@@ -10,22 +11,172 @@ import {
   Download,
   Check,
   Lock,
+  X,
 } from "lucide-react";
 import { AppShell } from "@/components/layout";
 import { TransactionImportUpgradeBanner } from "@/components/entitlements";
 import { entitledToTransactionImportFeature } from "@/lib/entitlements";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/atoms";
+import { api } from "@/services/api";
 import { cn } from "@/lib/utils";
 import { styles } from "@/lib/styles";
+import { showToast } from "@/lib/toast";
 
 export default function ImportTransactionsPage() {
   const router = useRouter();
   const { user } = useAuth();
   const t = useTranslations();
 
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<string>("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const handleUpgrade = () => {
     router.push("/subscription");
+  };
+
+  const downloadCsvTemplate = async () => {
+    try {
+      const blob = await api.downloadCsvTemplate();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "transaction-template.csv";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Failed to download CSV template:", error);
+      // You might want to show a toast here
+    }
+  };
+
+  const downloadXlsxTemplate = async () => {
+    try {
+      const blob = await api.downloadXlsxTemplate();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "transaction-template.xlsx";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Failed to download XLSX template:", error);
+      showToast.error("Failed to download XLSX template");
+    }
+  };
+
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      // Validate file type
+      const allowedTypes = [
+        "text/csv",
+        "application/vnd.ms-excel",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      ];
+      const allowedExtensions = [".csv", ".xls", ".xlsx"];
+
+      const isValidType = allowedTypes.includes(file.type);
+      const isValidExtension = allowedExtensions.some((ext) =>
+        file.name.toLowerCase().endsWith(ext)
+      );
+
+      if (!isValidType && !isValidExtension) {
+        showToast.error("Please select a valid CSV or Excel file");
+        return;
+      }
+
+      // Validate file size (10MB limit)
+      if (file.size > 10 * 1024 * 1024) {
+        showToast.error("File size must be less than 10MB");
+        return;
+      }
+
+      setSelectedFile(file);
+      setUploadProgress("");
+    }
+  };
+
+  const handleDrop = (event: React.DragEvent) => {
+    event.preventDefault();
+    const file = event.dataTransfer.files?.[0];
+    if (file) {
+      // Create a synthetic event to reuse the validation logic
+      const syntheticEvent = {
+        target: { files: [file] },
+      } as unknown as React.ChangeEvent<HTMLInputElement>;
+      handleFileSelect(syntheticEvent);
+    }
+  };
+
+  const handleDragOver = (event: React.DragEvent) => {
+    event.preventDefault();
+  };
+
+  const handleUpload = async () => {
+    if (!selectedFile) return;
+
+    setIsUploading(true);
+    setUploadProgress("Uploading file...");
+
+    try {
+      const response = await api.importTransactions(selectedFile);
+      setUploadProgress("Processing transactions in the background...");
+      showToast.success(
+        response.message || "Transactions imported successfully"
+      );
+
+      // Clear the selected file
+      setSelectedFile(null);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+
+      // Redirect to transactions page after a short delay
+      setTimeout(() => {
+        router.push("/transactions");
+      }, 2000);
+    } catch (error: unknown) {
+      console.error("Upload failed:", error);
+      setUploadProgress("");
+
+      const apiError = error as any; // Type assertion for API error handling
+      if (apiError?.response?.status === 422) {
+        // Parsing failed - show detailed error
+        const errorDetails = apiError.response?.data?.error?.details;
+        if (errorDetails) {
+          const errorMessages = Object.entries(errorDetails)
+            .map(
+              ([field, messages]) =>
+                `${field}: ${(messages as string[]).join(", ")}`
+            )
+            .join("\n");
+          showToast.error(`File parsing failed:\n${errorMessages}`);
+        } else {
+          showToast.error(
+            "File parsing failed. Please check your file format."
+          );
+        }
+      } else {
+        showToast.apiError(error, "Failed to import transactions");
+      }
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const removeFile = () => {
+    setSelectedFile(null);
+    setUploadProgress("");
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
   return (
@@ -50,14 +201,58 @@ export default function ImportTransactionsPage() {
               {t("transactions.import.uploadFile")}
             </h3>
             <div className="mt-6">
-              <div className="relative flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-slate-300 px-6 py-16 hover:border-slate-400">
-                <Upload className="h-12 w-12 text-slate-400" />
-                <p className="mt-4 text-sm text-slate-600">
-                  {t("transactions.import.uploadDescription")}
-                </p>
-                <p className="mt-1 text-xs text-slate-500">
-                  {t("transactions.import.supportedFormats")}
-                </p>
+              <div
+                className="relative flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-slate-300 px-6 py-16 hover:border-slate-400 transition-colors"
+                onDrop={handleDrop}
+                onDragOver={handleDragOver}
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  className="hidden"
+                  accept=".csv,.xls,.xlsx,text/csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                  onChange={handleFileSelect}
+                  disabled={!entitledToTransactionImportFeature(user)}
+                />
+
+                {selectedFile ? (
+                  <div className="flex flex-col items-center">
+                    <div className="flex items-center gap-2 mb-2">
+                      <FileText className="h-8 w-8 text-green-600" />
+                      <span className="text-sm font-medium text-slate-900">
+                        {selectedFile.name}
+                      </span>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          removeFile();
+                        }}
+                        className="text-slate-400 hover:text-slate-600"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </div>
+                    <p className="text-xs text-slate-500">
+                      {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
+                    </p>
+                    {uploadProgress && (
+                      <p className="mt-2 text-sm text-blue-600 font-medium">
+                        {uploadProgress}
+                      </p>
+                    )}
+                  </div>
+                ) : (
+                  <>
+                    <Upload className="h-12 w-12 text-slate-400" />
+                    <p className="mt-4 text-sm text-slate-600">
+                      {t("transactions.import.uploadDescription")}
+                    </p>
+                    <p className="mt-1 text-xs text-slate-500">
+                      {t("transactions.import.supportedFormats")}
+                    </p>
+                  </>
+                )}
 
                 {/* Locked overlay */}
                 {!entitledToTransactionImportFeature(user) && (
@@ -82,13 +277,25 @@ export default function ImportTransactionsPage() {
                   </div>
                 )}
               </div>
-              {entitledToTransactionImportFeature(user) && (
+
+              {entitledToTransactionImportFeature(user) && selectedFile && (
                 <Button
                   className="mt-6 w-full justify-center"
                   variant="primary"
+                  onClick={handleUpload}
+                  disabled={isUploading}
                 >
-                  <Check className="h-4 w-4" />
-                  {t("transactions.import.importButton")}
+                  {isUploading ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                      {uploadProgress || "Uploading..."}
+                    </>
+                  ) : (
+                    <>
+                      <Check className="h-4 w-4" />
+                      {t("transactions.import.importButton")}
+                    </>
+                  )}
                 </Button>
               )}
             </div>
@@ -119,7 +326,11 @@ export default function ImportTransactionsPage() {
                     </p>
                   </div>
                 </div>
-                <button className="rounded-lg p-2 hover:bg-slate-100">
+                <button
+                  onClick={downloadCsvTemplate}
+                  className="rounded-lg p-2 hover:bg-slate-100"
+                  disabled={!entitledToTransactionImportFeature(user)}
+                >
                   <Download className="h-5 w-5 text-slate-600" />
                 </button>
               </div>
@@ -138,7 +349,11 @@ export default function ImportTransactionsPage() {
                     </p>
                   </div>
                 </div>
-                <button className="rounded-lg p-2 hover:bg-slate-100">
+                <button
+                  onClick={downloadXlsxTemplate}
+                  className="rounded-lg p-2 hover:bg-slate-100"
+                  disabled={!entitledToTransactionImportFeature(user)}
+                >
                   <Download className="h-5 w-5 text-slate-600" />
                 </button>
               </div>
