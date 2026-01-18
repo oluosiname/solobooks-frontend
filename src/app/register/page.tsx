@@ -1,12 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Eye, EyeOff, Calculator, Check, Sparkles, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import { Button, Card, Input, Label } from "@/components/atoms";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
+import { locales } from "@/i18n/config";
 
 const plans = [
   {
@@ -46,6 +48,7 @@ const plans = [
 export default function RegisterPage() {
   const t = useTranslations();
   const { register, error, clearError, isLoading } = useAuth();
+  const searchParams = useSearchParams();
   const [step, setStep] = useState<"plan" | "details">("plan");
   const [selectedPlan, setSelectedPlan] = useState("pro");
   const [showPassword, setShowPassword] = useState(false);
@@ -57,6 +60,15 @@ export default function RegisterPage() {
     agreeToTerms: false,
   });
 
+  // Handle language from URL parameter
+  useEffect(() => {
+    const langParam = searchParams.get("lang");
+    if (langParam && locales.includes(langParam as any)) {
+      // Set locale cookie for immediate language switching
+      document.cookie = `locale=${langParam}; path=/; max-age=31536000; SameSite=Lax`;
+    }
+  }, [searchParams]);
+
   const handlePlanSelect = (planId: string) => {
     setSelectedPlan(planId);
     setStep("details");
@@ -66,8 +78,11 @@ export default function RegisterPage() {
     e.preventDefault();
     clearError();
 
+    const langParam = searchParams.get("lang");
+    const language = langParam && locales.includes(langParam as any) ? langParam : undefined;
+
     try {
-      await register(formData.email, formData.password, selectedPlan, formData.firstName, formData.lastName);
+      await register(formData.email, formData.password, selectedPlan, formData.firstName, formData.lastName, language);
       // Redirect is handled by the auth context
     } catch (error) {
       // Error is handled by the auth context
