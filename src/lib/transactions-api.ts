@@ -48,6 +48,12 @@ export interface TransactionResponse {
   data: TransactionData;
 }
 
+export interface ImportTransactionsResponse {
+  data: {
+    message: string;
+  };
+}
+
 export interface TransactionFilters {
   page?: number;
   per_page?: number;
@@ -241,6 +247,61 @@ class TransactionsApiClient extends BaseApiClient {
    */
   async deleteTransaction(id: string | number): Promise<void> {
     return this.delete<void>(`/api/v1/transactions/${id}`);
+  }
+
+  /**
+   * Import transactions from file
+   * POST /api/v1/transactions/import
+   */
+  async importTransactions(file: File): Promise<ImportTransactionsResponse> {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    return this.postFormData<ImportTransactionsResponse>("/api/v1/transactions/import", formData);
+  }
+
+  /**
+   * Download CSV template
+   * GET /api/v1/transactions/templates/csv
+   */
+  async downloadCsvTemplate(): Promise<Blob> {
+    const url = `${this.baseUrl}/api/v1/transactions/templates/csv`;
+    const token = this.getAuthToken();
+
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to download CSV template: ${response.statusText}`);
+    }
+
+    return response.blob();
+  }
+
+  /**
+   * Download XLSX template
+   * GET /api/v1/transactions/templates/xlsx
+   */
+  async downloadXlsxTemplate(): Promise<Blob> {
+    const url = `${this.baseUrl}/api/v1/transactions/templates/xlsx`;
+    const token = this.getAuthToken();
+
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to download XLSX template: ${response.statusText}`);
+    }
+
+    return response.blob();
   }
 }
 

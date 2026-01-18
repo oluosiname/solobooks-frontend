@@ -379,6 +379,21 @@ export async function deleteTransaction(id: string | number): Promise<boolean> {
   return true;
 }
 
+export async function downloadCsvTemplate(): Promise<Blob> {
+  return transactionsApi.downloadCsvTemplate();
+}
+
+export async function downloadXlsxTemplate(): Promise<Blob> {
+  return transactionsApi.downloadXlsxTemplate();
+}
+
+export async function importTransactions(
+  file: File
+): Promise<{ message: string }> {
+  const response = await transactionsApi.importTransactions(file);
+  return response.data;
+}
+
 // ============================================
 // Dashboard API
 // ============================================
@@ -667,6 +682,9 @@ export const api = {
   createTransaction,
   updateTransaction,
   deleteTransaction,
+  downloadCsvTemplate,
+  downloadXlsxTemplate,
+  importTransactions,
 
   // Financial Categories
   fetchCategories,
