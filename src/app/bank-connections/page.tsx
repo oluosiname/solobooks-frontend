@@ -18,6 +18,7 @@ import { Button, Card } from "@/components/atoms";
 import { AlertBanner } from "@/components/organisms";
 import { api } from "@/services/api";
 import { formatRelativeTime, cn } from "@/lib/utils";
+import { showToast } from "@/lib/toast";
 
 export default function BankConnectionsPage() {
   const router = useRouter();
@@ -36,16 +37,30 @@ export default function BankConnectionsPage() {
 
   const handleSync = async (bankId: number) => {
     setSyncingId(bankId);
-    await api.syncBankConnection(bankId);
-    await refetch();
-    setSyncingId(null);
+    try {
+      await api.syncBankConnection(bankId);
+      await refetch();
+      showToast.success(t("bankConnections.syncSuccess"));
+    } catch (error: unknown) {
+      console.error("Failed to sync bank connection:", error);
+      showToast.error(t("bankConnections.syncError"));
+    } finally {
+      setSyncingId(null);
+    }
   };
 
   const handleToggleSync = async (bankId: number) => {
     setTogglingId(bankId);
-    await api.toggleBankConnection(bankId);
-    await refetch();
-    setTogglingId(null);
+    try {
+      await api.toggleBankConnection(bankId);
+      await refetch();
+      showToast.success(t("bankConnections.toggleSuccess"));
+    } catch (error: unknown) {
+      console.error("Failed to toggle bank connection:", error);
+      showToast.error(t("bankConnections.toggleError"));
+    } finally {
+      setTogglingId(null);
+    }
   };
 
   const handleAddConnection = () => {
