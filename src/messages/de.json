@@ -422,7 +422,8 @@
       "draft": "Entwurf",
       "submitted": "Eingereicht",
       "accepted": "Akzeptiert",
-      "rejected": "Abgelehnt"
+      "rejected": "Abgelehnt",
+      "error": "Fehler"
     },
     "columns": {
       "period": "Zeitraum",

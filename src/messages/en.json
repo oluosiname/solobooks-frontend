@@ -421,7 +421,8 @@
       "draft": "Draft",
       "submitted": "Submitted",
       "accepted": "Accepted",
-      "rejected": "Rejected"
+      "rejected": "Rejected",
+      "error": "Error"
     },
     "columns": {
       "period": "Period",
