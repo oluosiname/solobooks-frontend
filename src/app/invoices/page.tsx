@@ -106,9 +106,9 @@ export default function InvoicesPage() {
                   <tr key={invoice.id} className="hover:bg-slate-50">
                     <td className={cn(styles.td, 'font-medium text-slate-900')}>{invoice.invoiceNumber}</td>
                     <td className={styles.td}>{invoice.clientName}</td>
-                    <td className={styles.td}>{formatDate(invoice.invoiceDate)}</td>
+                    <td className={styles.td}>{formatDate(invoice.date)}</td>
                     <td className={styles.td}>{formatDate(invoice.dueDate)}</td>
-                    <td className={cn(styles.td, 'font-medium')}>{formatCurrency(invoice.total)}</td>
+                    <td className={cn(styles.td, 'font-medium')}>{formatCurrency(invoice.totalAmount)}</td>
                     <td className={styles.td}>
                       <Badge status={invoice.status} />
                     </td>
