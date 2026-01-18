@@ -49,6 +49,7 @@ export function GroupedTransactionsTable({
       showToast.success(t("transactions.discardSuccess"));
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
       queryClient.invalidateQueries({ queryKey: ["unchecked-transactions"] });
+      queryClient.invalidateQueries({ queryKey: ["synced-transactions"] });
       setDeleteDialogOpen(false);
       setTransactionToDelete(null);
     },
