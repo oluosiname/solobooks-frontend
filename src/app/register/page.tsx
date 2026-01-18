@@ -67,7 +67,7 @@ export default function RegisterPage() {
     clearError();
 
     try {
-      await register(formData.email, formData.password, selectedPlan);
+      await register(formData.email, formData.password, selectedPlan, formData.firstName, formData.lastName);
       // Redirect is handled by the auth context
     } catch (error) {
       // Error is handled by the auth context
