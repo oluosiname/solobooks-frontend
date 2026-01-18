@@ -1,19 +1,31 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Eye, EyeOff, Calculator } from "lucide-react";
 import Link from "next/link";
 import { Button, Card, Input, Label } from "@/components/atoms";
 import { useAuth } from "@/contexts/AuthContext";
+import { Locale, locales } from "@/i18n/config";
 
 export default function LoginPage() {
   const t = useTranslations();
   const { login, error, clearError, isLoading } = useAuth();
+  const searchParams = useSearchParams();
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
+
+  // Handle language from URL parameter
+  useEffect(() => {
+    const langParam = searchParams.get("lang");
+    if (langParam && locales.includes(langParam as Locale)) {
+      // Set locale cookie for immediate language switching
+      document.cookie = `locale=${langParam}; path=/; max-age=31536000; SameSite=Lax`;
+    }
+  }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
