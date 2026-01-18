@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
@@ -30,6 +30,13 @@ export default function ClientsPage() {
   const [dropdownOpen, setDropdownOpen] = useState<string | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [clientToDelete, setClientToDelete] = useState<Client | null>(null);
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  // Reset dropdown state after hydration to prevent SSR/client mismatches
+  React.useEffect(() => {
+    setIsHydrated(true);
+    setDropdownOpen(null); // Ensure clean state after hydration
+  }, []);
 
   const { data: clients, isLoading } = useQuery({
     queryKey: ["clients"],
@@ -152,7 +159,7 @@ export default function ClientsPage() {
                       >
                         <MoreVertical className="h-4 w-4" />
                       </button>
-                      {dropdownOpen === client.id && (
+                      {isHydrated && dropdownOpen === client.id && (
                         <div className="absolute right-0 top-8 z-10 w-48 bg-white rounded-lg shadow-lg border border-slate-200 py-1">
                           <button
                             onClick={() => handleViewInvoices(client.id)}
