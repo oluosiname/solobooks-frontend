@@ -57,9 +57,9 @@ export interface Invoice {
   invoiceNumber: string;
   clientId: string;
   clientName: string;
-  invoiceDate: string;
+  date: string;
   dueDate: string;
-  total: number;
+  totalAmount: number;
   status: InvoiceStatus;
   lineItems: InvoiceLineItem[];
   currency: string;
