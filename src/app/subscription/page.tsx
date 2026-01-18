@@ -75,6 +75,35 @@ export default function SubscriptionPage() {
     showToast.success("Payment method saved successfully");
   };
 
+  const handleChangePlan = async (newPlanId: string) => {
+    try {
+      if (!paymentMethod) {
+        // Flow 2: No payment method - show payment form first
+        setShowPaymentForm(true);
+        showToast.success(t("subscription.addPaymentMethodToSubscribe"));
+        return;
+      }
+
+      // Flow 1: Has payment method - change plan directly
+      await api.updateSubscription({ plan: newPlanId });
+
+      // Refresh subscription data
+      queryClient.invalidateQueries({ queryKey: ["subscription"] });
+
+      showToast.success(t("subscription.planChangedSuccessfully"));
+    } catch (error: unknown) {
+      console.error("Failed to change plan:", error);
+
+      // Handle specific plan change restrictions
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      if (errorMessage.includes("downgrade") || errorMessage.includes("not allowed")) {
+        showToast.error(t("subscription.planChangeNotAllowed"));
+      } else {
+        showToast.error(t("subscription.planChangeFailed"));
+      }
+    }
+  };
+
   // Map API plans to UI format, marking the most expensive as popular
   const plans: UIPlan[] = plansData
     ? plansData.map((plan, index) => {
@@ -211,6 +240,7 @@ export default function SubscriptionPage() {
                     variant={isCurrent ? "secondary" : "primary"}
                     className="mt-6 w-full"
                     disabled={isCurrent}
+                    onClick={() => handleChangePlan(plan.id)}
                   >
                     {isCurrent
                       ? t("subscription.currentPlan")
