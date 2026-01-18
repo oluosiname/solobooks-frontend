@@ -530,11 +530,9 @@ export async function fetchPaymentMethod(): Promise<PaymentMethod | null> {
   }
 }
 
-export async function updateSubscription(
-  _data: Partial<Subscription> // eslint-disable-line @typescript-eslint/no-unused-vars
-): Promise<Subscription> {
-  // TODO: Implement subscription update API call
-  throw new Error("Subscription update not implemented yet");
+export async function updateSubscription(data: { plan: string }): Promise<Subscription> {
+  const response = await subscriptionApi.changeSubscription(data);
+  return transformSubscriptionData(response.data);
 }
 
 export async function cancelSubscription(): Promise<Subscription> {

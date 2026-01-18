@@ -30,6 +30,10 @@ export interface SubscriptionResponse {
   data: SubscriptionData;
 }
 
+export interface ChangeSubscriptionRequest {
+  plan: string;
+}
+
 // ============================================
 // API Client
 // ============================================
@@ -41,6 +45,14 @@ export class SubscriptionApiClient extends BaseApiClient {
    */
   async getSubscription(): Promise<SubscriptionResponse> {
     return this.get<SubscriptionResponse>("/api/v1/subscription");
+  }
+
+  /**
+   * Change subscription plan
+   * POST /api/v1/subscription
+   */
+  async changeSubscription(data: ChangeSubscriptionRequest): Promise<SubscriptionResponse> {
+    return this.post<SubscriptionResponse>("/api/v1/subscription", data);
   }
 }
 
