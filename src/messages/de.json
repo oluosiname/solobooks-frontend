@@ -449,6 +449,10 @@
     "expires": "Läuft ab",
     "flexibleBillingTitle": "Flexible Abrechnung",
     "flexibleBillingMessage": "Sie können Ihr Abonnement jederzeit upgraden, downgraden oder kündigen. Änderungen werden am Ende des aktuellen Abrechnungszeitraums wirksam.",
+    "addPaymentMethodToSubscribe": "Bitte fügen Sie zuerst eine Zahlungsmethode hinzu, um Ihren Tarif zu ändern",
+    "planChangedSuccessfully": "Tarif erfolgreich geändert",
+    "planChangeNotAllowed": "Diese Tarifänderung ist nicht erlaubt",
+    "planChangeFailed": "Tarifänderung fehlgeschlagen. Bitte versuchen Sie es erneut.",
     "plans": {
       "free": {
         "name": "Kostenlos",
