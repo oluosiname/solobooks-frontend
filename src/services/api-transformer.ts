@@ -164,12 +164,11 @@ export function transformBankData(data: BankData): Bank {
 
 export function transformInvoiceData(data: InvoiceData): Invoice {
   const base =
-    camelize<Omit<Invoice, "clientId" | "clientName" | "currency">>(data);
+    camelize<Omit<Invoice, "clientId" | "currency">>(data);
 
   return {
     ...base,
     clientId: data.client.id.toString(),
-    clientName: data.client.name,
     currency: data.currency.code,
   };
 }
