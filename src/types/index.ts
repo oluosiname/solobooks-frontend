@@ -358,3 +358,47 @@ export interface VatStatusInput {
   kleinunternehmer: boolean;
   taxExemptReason?: string | null;
 }
+
+// PNL Report types
+export interface PnlPeriod {
+  startDate: string;
+  endDate: string;
+  label: string;
+}
+
+export interface PnlSummary {
+  totalIncome: number;
+  totalExpenses: number;
+  netProfit: number;
+  grossProfit: number;
+}
+
+export interface PnlIncomeBreakdown {
+  byCategory: Record<string, number>;
+  notSubjectToVat: number;
+  vatRefunded: number;
+}
+
+export interface PnlExpenseBreakdown {
+  byCategory: Record<string, number>;
+  vatPaid: number;
+}
+
+export interface PnlData {
+  period: PnlPeriod;
+  summary: PnlSummary;
+  incomeBreakdown: PnlIncomeBreakdown;
+  expenseBreakdown: PnlExpenseBreakdown;
+}
+
+export interface PnlReportResponse {
+  data: PnlData;
+}
+
+// Elster Certificate types
+export interface ElsterCertificate {
+  id: number;
+  certificateType: "p12" | "pfx";
+  createdAt: string;
+  updatedAt: string;
+}

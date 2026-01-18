@@ -100,3 +100,53 @@ export function groupTransactionsByMonth<T>(
     return groups;
   }, {} as Record<string, T[]>);
 }
+
+export function getDateRangeForPeriod(year: string, period: string): { startDate: string; endDate: string } {
+  const yearNum = parseInt(year);
+
+  switch (period) {
+    case 'yearly':
+      return {
+        startDate: `${yearNum}-01-01`,
+        endDate: `${yearNum}-12-31`
+      };
+
+    case 'quarterly':
+      // For quarterly, we'll default to showing the full year
+      // You could extend this to accept a quarter parameter if needed
+      return {
+        startDate: `${yearNum}-01-01`,
+        endDate: `${yearNum}-12-31`
+      };
+
+    case 'monthly':
+      // For monthly, we'll default to showing the full year
+      // You could extend this to accept a month parameter if needed
+      return {
+        startDate: `${yearNum}-01-01`,
+        endDate: `${yearNum}-12-31`
+      };
+
+    default:
+      // Default to yearly
+      return {
+        startDate: `${yearNum}-01-01`,
+        endDate: `${yearNum}-12-31`
+      };
+  }
+}
+
+export function generatePeriodLabel(year: string, period: string): string {
+  const yearNum = parseInt(year);
+
+  switch (period) {
+    case 'yearly':
+      return `${yearNum} Annual`;
+    case 'quarterly':
+      return `${yearNum} Quarterly`;
+    case 'monthly':
+      return `${yearNum} Monthly`;
+    default:
+      return `${yearNum}`;
+  }
+}

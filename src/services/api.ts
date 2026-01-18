@@ -24,6 +24,8 @@ import type {
 } from "@/lib/vat-status-api";
 import { profileApi } from "@/lib/profile-api";
 import type { UpdateProfileRequest } from "@/lib/profile-api";
+import { pnlReportsApi } from "@/lib/pnl-reports-api";
+import type { PnlData, PnlReportResponse } from "@/types";
 import { transactionsApi } from "@/lib/transactions-api";
 import type {
   TransactionFilters as ApiTransactionFilters,
@@ -88,6 +90,7 @@ import {
   transformFinancialCategoryData,
   transformInvoiceCategoryData,
   transformInvoiceData,
+  transformPnlData,
 } from "./api-transformer";
 
 // Simulate network delay
@@ -403,17 +406,42 @@ export async function fetchDashboardStats(): Promise<DashboardStats> {
   return transformDashboardStatsData(response.data);
 }
 
-export async function fetchRevenueExpenseData(): Promise<RevenueExpenseData[]> {
-  throw new Error("Revenue/Expense data API endpoint not implemented yet");
+// ============================================
+// PNL Reports API
+// ============================================
+
+export async function fetchPnlData(
+  startDate: string,
+  endDate: string
+): Promise<PnlData> {
+  const response = await pnlReportsApi.getPnlData(startDate, endDate);
+  return transformPnlData(response.data);
 }
 
-export async function fetchCategoryData(): Promise<CategoryData[]> {
-  throw new Error("Category data API endpoint not implemented yet");
+export async function downloadPnlPdf(
+  startDate: string,
+  endDate: string
+): Promise<void> {
+  try {
+    const blob = await pnlReportsApi.downloadPnlPdf(startDate, endDate);
+
+    // Create download link
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `PNL_Report_${startDate}_${endDate}.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error('Failed to download PNL PDF:', error);
+    throw error;
+  }
 }
 
-export async function fetchProfitLossData(): Promise<ProfitLossData[]> {
-  throw new Error("Profit/Loss data API endpoint not implemented yet");
-}
+
+// Legacy functions - now use PNL data
 
 // ============================================
 // Bank Connections API
@@ -689,9 +717,6 @@ export const api = {
 
   // Dashboard
   fetchDashboardStats,
-  fetchRevenueExpenseData,
-  fetchCategoryData,
-  fetchProfitLossData,
 
   // Bank Connections
   fetchBanks,
@@ -732,4 +757,41 @@ export const api = {
 
   // Invoice Categories
   fetchInvoiceCategories,
+
+  // PNL Reports
+  fetchPnlData,
+  downloadPnlPdf,
 };
+
+// Helper functions to process PNL data for different chart types
+export function processPnlForRevenueChart(pnlData: PnlData): RevenueExpenseData[] {
+  // Return a single data point for the period
+  return [{
+    month: pnlData.period.label,
+    revenue: pnlData.summary.totalIncome,
+    expenses: pnlData.summary.totalExpenses,
+  }];
+}
+
+export function processPnlForCategoryChart(pnlData: PnlData): CategoryData[] {
+  const categories: CategoryData[] = [];
+  const colors = ['#f43f5e', '#ef4444', '#ec4899', '#d946ef', '#c084fc', '#a855f7', '#9333ea'];
+
+  Object.entries(pnlData.expenseBreakdown.byCategory).forEach(([category, amount], index) => {
+    categories.push({
+      category,
+      amount,
+      color: colors[index % colors.length],
+    });
+  });
+
+  return categories;
+}
+
+export function processPnlForProfitChart(pnlData: PnlData): ProfitLossData[] {
+  // Return a single data point for the period
+  return [{
+    month: pnlData.period.label,
+    profit: pnlData.summary.netProfit,
+  }];
+}
