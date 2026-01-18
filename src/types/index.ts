@@ -138,7 +138,12 @@ export interface BankConnection {
   pendingTransactionsCount: number;
 }
 
-export type VatReportStatus = "draft" | "submitted" | "accepted" | "rejected";
+export type VatReportStatus =
+  | "draft"
+  | "submitted"
+  | "accepted"
+  | "rejected"
+  | "error";
 
 export interface VatReport {
   id: number;

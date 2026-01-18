@@ -129,6 +129,8 @@ export default function TaxesPage() {
         return "success";
       case "rejected":
         return "danger";
+      case "error":
+        return "danger";
       default:
         return "default";
     }

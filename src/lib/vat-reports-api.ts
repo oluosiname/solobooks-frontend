@@ -12,7 +12,7 @@ import { BaseApiClient } from "./base-api";
 
 export interface VatReportData {
   id: number;
-  status: "draft" | "submitted" | "accepted" | "rejected";
+  status: "draft" | "submitted" | "accepted" | "rejected" | "error";
   start_date: string;
   end_date: string;
   year: number;
