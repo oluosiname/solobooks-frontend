@@ -29,6 +29,8 @@ import {
   TransactionCategory,
   InvoiceCategory,
   Bank,
+  PnlData,
+  PnlReportResponse,
 } from "@/types";
 import humps from "humps";
 import { InvoiceData } from "@/lib/invoices-api";
@@ -171,4 +173,8 @@ export function transformInvoiceData(data: InvoiceData): Invoice {
     clientId: data.client.id.toString(),
     currency: data.currency.code,
   };
+}
+
+export function transformPnlData(data: PnlReportResponse["data"]): PnlData {
+  return camelize<PnlData>(data);
 }

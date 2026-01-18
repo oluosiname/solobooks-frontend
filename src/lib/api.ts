@@ -13,8 +13,6 @@ export const api = {
 
   // Dashboard
   getDashboardStats: newApi.fetchDashboardStats,
-  getRevenueExpenseData: newApi.fetchRevenueExpenseData,
-  getCategoryData: newApi.fetchCategoryData,
   async getRecentTransactions(limit = 5) {
     try {
       const transactions = await newApi.fetchTransactions();
@@ -78,6 +76,4 @@ export const api = {
   getPaymentMethod: newApi.fetchPaymentMethod,
 
   // Reports
-  getProfitLossData: newApi.fetchProfitLossData,
-  getExpenseCategories: newApi.fetchCategoryData,
 };

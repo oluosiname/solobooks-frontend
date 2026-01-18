@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Check, Upload } from "lucide-react";
+import { Check, Upload, X, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { styles, buttonStyles } from "@/lib/styles";
 import { useState, useEffect } from "react";
@@ -10,8 +10,13 @@ import {
   createVatStatus,
   updateVatStatus,
 } from "@/services/api";
+import {
+  uploadElsterCertificate,
+  deleteElsterCertificate,
+  getElsterCertificate,
+} from "@/lib/elster-certificates-api";
 import { showToast } from "@/lib/toast";
-import type { VatStatus, DeclarationPeriod } from "@/types";
+import type { VatStatus, DeclarationPeriod, ElsterCertificate } from "@/types";
 
 export function VatSettings() {
   const t = useTranslations();
@@ -30,7 +35,15 @@ export function VatSettings() {
   const [startsOn, setStartsOn] = useState("");
   const [taxExemptReason, setTaxExemptReason] = useState("");
 
-  // Load VAT status on mount
+  // Elster Certificate state
+  const [elsterCertificate, setElsterCertificate] = useState<ElsterCertificate | null>(null);
+  const [certificateFile, setCertificateFile] = useState<File | null>(null);
+  const [certificatePassword, setCertificatePassword] = useState("");
+  const [certificateUploading, setCertificateUploading] = useState(false);
+  const [certificateDeleting, setCertificateDeleting] = useState(false);
+  const [certificateLoading, setCertificateLoading] = useState(true);
+
+  // Load VAT status and Elster certificate on mount
   useEffect(() => {
     async function loadVatStatus() {
       try {
@@ -51,7 +64,21 @@ export function VatSettings() {
         setLoading(false);
       }
     }
+
+    async function loadElsterCertificate() {
+      try {
+        const certificate = await getElsterCertificate();
+        setElsterCertificate(certificate);
+      } catch (error) {
+        console.error("Failed to load Elster certificate:", error);
+        // Don't show error toast for certificate loading as it's optional
+      } finally {
+        setCertificateLoading(false);
+      }
+    }
+
     loadVatStatus();
+    loadElsterCertificate();
   }, []);
 
   const handleFieldChange = (field: string) => {
@@ -92,18 +119,19 @@ export function VatSettings() {
         setVatStatus(created);
         showToast.created("VAT settings");
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Failed to save VAT status:", error);
 
       // Handle API errors
-      if (error?.error) {
-        const errorMsg = error.error.message || "Failed to save VAT settings";
+      const apiError = error as { error?: { message?: string; details?: Record<string, string[]> } };
+      if (apiError?.error) {
+        const errorMsg = apiError.error.message || "Failed to save VAT settings";
         setErrorMessage(errorMsg);
         showToast.error(errorMsg);
 
         // Set field-specific validation errors
-        if (error.error.details) {
-          setErrors(error.error.details);
+        if (apiError.error.details) {
+          setErrors(apiError.error.details);
         }
       } else {
         const errorMsg = "An unexpected error occurred";
@@ -112,6 +140,67 @@ export function VatSettings() {
       }
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleCertificateFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Validate file type
+      const validTypes = ['application/x-pkcs12', 'application/x-pfx'];
+      const validExtensions = ['.p12', '.pfx'];
+      const fileName = file.name.toLowerCase();
+
+      const isValidType = validTypes.includes(file.type) ||
+        validExtensions.some(ext => fileName.endsWith(ext));
+
+      if (!isValidType) {
+        showToast.error("Please select a valid .p12 or .pfx certificate file");
+        return;
+      }
+
+      setCertificateFile(file);
+    }
+  };
+
+  const handleUploadCertificate = async () => {
+    if (!certificateFile || !certificatePassword.trim()) {
+      showToast.error("Please select a certificate file and enter the password");
+      return;
+    }
+
+    setCertificateUploading(true);
+    try {
+      const certificate = await uploadElsterCertificate(certificateFile, certificatePassword);
+      setElsterCertificate(certificate);
+      setCertificateFile(null);
+      setCertificatePassword("");
+      showToast.success("Elster certificate uploaded successfully");
+    } catch (error: unknown) {
+      console.error("Failed to upload certificate:", error);
+      const apiError = error as { response?: { data?: { error?: { message?: string } } } };
+      const message = apiError?.response?.data?.error?.message || "Failed to upload certificate";
+      showToast.error(message);
+    } finally {
+      setCertificateUploading(false);
+    }
+  };
+
+  const handleDeleteCertificate = async () => {
+    if (!elsterCertificate) return;
+
+    setCertificateDeleting(true);
+    try {
+      await deleteElsterCertificate();
+      setElsterCertificate(null);
+      showToast.success("Elster certificate deleted successfully");
+    } catch (error: unknown) {
+      console.error("Failed to delete certificate:", error);
+      const apiError = error as { response?: { data?: { error?: { message?: string } } } };
+      const message = apiError?.response?.data?.error?.message || "Failed to delete certificate";
+      showToast.error(message);
+    } finally {
+      setCertificateDeleting(false);
     }
   };
 
@@ -326,41 +415,139 @@ export function VatSettings() {
           <p className="mt-1 text-sm text-slate-500">
             {t("settings.vatTax.elsterCertificate.description")}
           </p>
-          <div className="mt-6">
-            <label className="block text-sm font-medium text-slate-700">
-              Certificate File
-            </label>
-            <div className="mt-1.5 flex justify-center rounded-lg border-2 border-dashed border-slate-300 px-6 py-10">
-              <div className="text-center">
-                <Upload className="mx-auto h-8 w-8 text-slate-400" />
-                <p className="mt-2 text-sm text-slate-600">
-                  Click to upload or drag and drop
-                </p>
-                <p className="mt-1 text-xs text-slate-500">
-                  .p12 or .pfx files only
-                </p>
+
+          {/* Current Certificate Status */}
+          {certificateLoading ? (
+            <div className="mt-6 flex items-center justify-center py-8">
+              <p className="text-slate-500">Loading certificate status...</p>
+            </div>
+          ) : elsterCertificate ? (
+            <div className="mt-6 rounded-lg border border-green-200 bg-green-50 p-4">
+              <div className="flex items-start">
+                <div className="shrink-0">
+                  <Check className="h-5 w-5 text-green-400" />
+                </div>
+                <div className="ml-3 flex-1">
+                  <h4 className="text-sm font-medium text-green-800">
+                    Certificate Uploaded
+                  </h4>
+                  <div className="mt-2 text-sm text-green-700">
+                    <p>Type: {elsterCertificate.certificateType.toUpperCase()}</p>
+                    <p>Uploaded: {new Date(elsterCertificate.createdAt).toLocaleDateString()}</p>
+                  </div>
+                  <div className="mt-3">
+                    <button
+                      onClick={handleDeleteCertificate}
+                      disabled={certificateDeleting}
+                      className="inline-flex items-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 disabled:opacity-50"
+                    >
+                      {certificateDeleting ? (
+                        <>
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                          Deleting...
+                        </>
+                      ) : (
+                        <>
+                          <X className="h-4 w-4 mr-2" />
+                          Remove Certificate
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-          <div className="mt-6">
-            <label className="block text-sm font-medium text-slate-700">
-              {t("settings.vatTax.elsterCertificate.password")}
-            </label>
-            <input
-              type="password"
-              className={cn(styles.input, "mt-1.5")}
-              placeholder="Enter certificate password"
-            />
-            <p className="mt-1.5 text-xs text-slate-500">
-              The password for your Elster certificate file
-            </p>
-          </div>
-          <div className="mt-6 flex justify-end border-t border-slate-100 pt-6">
-            <button className={buttonStyles("primary")}>
-              <Check className="h-4 w-4" />
-              {t("settings.vatTax.elsterCertificate.upload")}
-            </button>
-          </div>
+          ) : (
+            <>
+              {/* Upload Form */}
+              <div className="mt-6">
+                <label className="block text-sm font-medium text-slate-700">
+                  Certificate File
+                </label>
+                <div className="mt-1.5">
+                  <input
+                    type="file"
+                    accept=".p12,.pfx"
+                    onChange={handleCertificateFileChange}
+                    className="hidden"
+                    id="certificate-file"
+                  />
+                  <label
+                    htmlFor="certificate-file"
+                    className="flex justify-center rounded-lg border-2 border-dashed border-slate-300 px-6 py-10 cursor-pointer hover:border-slate-400 transition-colors"
+                  >
+                    <div className="text-center">
+                      <Upload className="mx-auto h-8 w-8 text-slate-400" />
+                      <p className="mt-2 text-sm text-slate-600">
+                        {certificateFile ? certificateFile.name : "Click to upload or drag and drop"}
+                      </p>
+                      <p className="mt-1 text-xs text-slate-500">
+                        .p12 or .pfx files only
+                      </p>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              <div className="mt-6">
+                <label className="block text-sm font-medium text-slate-700">
+                  {t("settings.vatTax.elsterCertificate.password")}
+                </label>
+                <input
+                  type="password"
+                  className={cn(styles.input, "mt-1.5")}
+                  value={certificatePassword}
+                  onChange={(e) => setCertificatePassword(e.target.value)}
+                  placeholder="Enter certificate password"
+                />
+                <p className="mt-1.5 text-xs text-slate-500">
+                  The password for your Elster certificate file
+                </p>
+              </div>
+
+              <div className="mt-6 flex justify-end border-t border-slate-100 pt-6">
+                <button
+                  onClick={handleUploadCertificate}
+                  disabled={certificateUploading || !certificateFile || !certificatePassword.trim()}
+                  className={buttonStyles("primary")}
+                >
+                  {certificateUploading ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                      Uploading...
+                    </>
+                  ) : (
+                    <>
+                      <Check className="h-4 w-4" />
+                      {t("settings.vatTax.elsterCertificate.upload")}
+                    </>
+                  )}
+                </button>
+              </div>
+            </>
+          )}
+
+          {/* Warning when no certificate */}
+          {!certificateLoading && !elsterCertificate && (
+            <div className="mt-6 rounded-lg border border-amber-200 bg-amber-50 p-4">
+              <div className="flex">
+                <div className="shrink-0">
+                  <AlertCircle className="h-5 w-5 text-amber-400" />
+                </div>
+                <div className="ml-3">
+                  <h4 className="text-sm font-medium text-amber-800">
+                    Certificate Required for Tax Submissions
+                  </h4>
+                  <div className="mt-2 text-sm text-amber-700">
+                    <p>
+                      You need an Elster certificate to submit VAT reports to the German tax authorities.
+                      Upload your certificate above to enable tax submissions.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </>

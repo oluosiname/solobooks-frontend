@@ -6,7 +6,7 @@ import { DollarSign, Clock, Users, TrendingUp } from "lucide-react";
 import { AppShell } from "@/components/layout";
 import { StatCard } from "@/components/ui";
 import { AlertBanners, RecentTransactions } from "@/components/dashboard";
-import { api } from "@/lib/api";
+import { api } from "@/services/api";
 import { formatCurrency } from "@/lib/utils";
 
 export default function DashboardPage() {
@@ -14,22 +14,19 @@ export default function DashboardPage() {
 
   const { data: stats } = useQuery({
     queryKey: ["dashboard-stats"],
-    queryFn: api.getDashboardStats,
+    queryFn: api.fetchDashboardStats,
   });
 
-  const { data: revenueData } = useQuery({
-    queryKey: ["revenue-expense-data"],
-    queryFn: api.getRevenueExpenseData,
-  });
+
 
   const { data: transactions } = useQuery({
     queryKey: ["recent-transactions"],
-    queryFn: () => api.getRecentTransactions(15),
+    queryFn: () => api.fetchTransactions().then(result => result.data.slice(0, 15)),
   });
 
   const { data: uncheckedTransactions } = useQuery({
     queryKey: ["unchecked-transactions"],
-    queryFn: api.getUncheckedTransactions,
+    queryFn: api.fetchUncheckedTransactions,
   });
 
   return (

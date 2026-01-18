@@ -21,15 +21,17 @@ import {
   Card,
   CardHeader,
   CardContent,
-  Select,
+  Input,
 } from "@/components/atoms";
-import { api } from "@/services/api";
+import { api, processPnlForRevenueChart, processPnlForCategoryChart, processPnlForProfitChart, downloadPnlPdf } from "@/services/api";
 import { formatCurrency, cn } from "@/lib/utils";
 
 export default function ReportsPage() {
   const t = useTranslations();
-  const [selectedYear] = useState("2025");
-  const [selectedPeriod] = useState("yearly");
+  const currentYear = new Date().getFullYear();
+  const [startDate, setStartDate] = useState(`${currentYear}-01-01`);
+  const [endDate, setEndDate] = useState(`${currentYear}-12-31`);
+  const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const plChartRef = useRef<HTMLDivElement>(null);
   const profitChartRef = useRef<HTMLDivElement>(null);
@@ -67,26 +69,34 @@ export default function ReportsPage() {
     queryFn: api.fetchDashboardStats,
   });
 
-  const { data: revenueData, error: revenueError } = useQuery({
-    queryKey: ["revenue-expense-data"],
-    queryFn: api.fetchRevenueExpenseData,
+  const { data: pnlData, error: pnlError } = useQuery({
+    queryKey: ["pnl-data", startDate, endDate],
+    queryFn: () => api.fetchPnlData(startDate, endDate),
     retry: false,
   });
 
-  const { data: categoryData, error: categoryError } = useQuery({
-    queryKey: ["category-data"],
-    queryFn: api.fetchCategoryData,
-    retry: false,
-  });
+  // Process PNL data for different chart types
+  const revenueData = pnlData ? processPnlForRevenueChart(pnlData) : null;
+  const categoryData = pnlData ? processPnlForCategoryChart(pnlData) : null;
+  const profitLossData = pnlData ? processPnlForProfitChart(pnlData) : null;
 
-  const { data: profitLossData, error: profitLossError } = useQuery({
-    queryKey: ["profit-loss-data"],
-    queryFn: api.fetchProfitLossData,
-    retry: false,
-  });
+  // Handle PDF download
+  const handleDownloadPdf = async () => {
+    if (!startDate || !endDate) return;
+
+    setIsDownloadingPdf(true);
+    try {
+      await downloadPnlPdf(startDate, endDate);
+    } catch (error) {
+      console.error('Failed to download PDF:', error);
+      // You might want to show a toast notification here
+    } finally {
+      setIsDownloadingPdf(false);
+    }
+  };
 
   // Calculate summary stats from revenue data (only if available)
-  const summaryStats = revenueData && !revenueError
+  const summaryStats = revenueData && !pnlError
     ? {
         totalRevenue: revenueData.reduce((sum, d) => sum + d.revenue, 0),
         totalExpenses: revenueData.reduce((sum, d) => sum + d.expenses, 0),
@@ -133,17 +143,6 @@ export default function ReportsPage() {
     },
   ];
 
-  const yearOptions = [
-    { value: "2025", label: "2025" },
-    { value: "2024", label: "2024" },
-    { value: "2023", label: "2023" },
-  ];
-
-  const periodOptions = [
-    { value: "yearly", label: t("reports.period.yearly") },
-    { value: "quarterly", label: t("reports.period.quarterly") },
-    { value: "monthly", label: t("reports.period.monthly") },
-  ];
 
   return (
     <AppShell title={t("reports.title")}>
@@ -151,25 +150,37 @@ export default function ReportsPage() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex gap-3">
-            <Select
-              options={yearOptions}
-              defaultValue="2025"
-              className="w-32"
-            />
-            <Select
-              options={periodOptions}
-              defaultValue="yearly"
-              className="w-32"
-            />
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium text-slate-700">Start Date</label>
+              <Input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="w-40"
+              />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium text-slate-700">End Date</label>
+              <Input
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                className="w-40"
+              />
+            </div>
           </div>
-          <Button variant="secondary">
+          <Button
+            variant="secondary"
+            onClick={handleDownloadPdf}
+            disabled={isDownloadingPdf || !pnlData}
+          >
             <Download className="h-4 w-4" />
-            {t("reports.downloadPdf")}
+            {isDownloadingPdf ? t("reports.downloading") || "Downloading..." : t("reports.downloadPdf")}
           </Button>
         </div>
 
         {/* Error Messages */}
-        {(revenueError || categoryError || profitLossError) && (
+        {pnlError && (
           <Card className="border-orange-200 bg-orange-50">
             <div className="p-4">
               <h4 className="text-sm font-medium text-orange-800">
@@ -183,7 +194,7 @@ export default function ReportsPage() {
         )}
 
         {/* Stats Grid */}
-        {!revenueError && (
+        {!pnlError && (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {statsArray.map((stat, index) => (
               <Card
@@ -235,7 +246,7 @@ export default function ReportsPage() {
           </CardHeader>
           <CardContent>
             <div ref={plChartRef} style={{ width: "100%", height: 350 }}>
-              {isMounted && revenueData && !revenueError && plDimensions.width > 0 && (
+              {isMounted && revenueData && !pnlError && plDimensions.width > 0 && (
                 <BarChart
                   width={plDimensions.width}
                   height={plDimensions.height}
@@ -293,7 +304,7 @@ export default function ReportsPage() {
                   />
                 </BarChart>
               )}
-              {(!revenueData || revenueError) && (
+              {(!revenueData || pnlError) && (
                 <div className="flex h-full items-center justify-center text-slate-500">
                   <div className="text-center">
                     <p className="text-sm">{t("reports.dataNotAvailable")}</p>
@@ -315,7 +326,7 @@ export default function ReportsPage() {
             </CardHeader>
             <CardContent>
               <div ref={profitChartRef} style={{ width: "100%", height: 250 }}>
-                {isMounted && profitLossData && !profitLossError && profitDimensions.width > 0 && (
+                {isMounted && profitLossData && !pnlError && profitDimensions.width > 0 && (
                   <AreaChart
                     width={profitDimensions.width}
                     height={profitDimensions.height}
@@ -382,7 +393,7 @@ export default function ReportsPage() {
                     />
                   </AreaChart>
                 )}
-                {(!profitLossData || profitLossError) && (
+                {(!profitLossData || pnlError) && (
                   <div className="flex h-full items-center justify-center text-slate-500">
                     <div className="text-center">
                       <p className="text-sm">{t("reports.dataNotAvailable")}</p>
@@ -402,7 +413,7 @@ export default function ReportsPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {categoryData && !categoryError ? categoryData.map((category) => {
+                {categoryData && !pnlError ? categoryData.map((category) => {
                   const maxAmount = Math.max(
                     ...(categoryData?.map((c) => c.amount) || [0])
                   );
@@ -429,6 +440,13 @@ export default function ReportsPage() {
                     </div>
                   );
                 }) : (
+                  <div className="flex h-32 items-center justify-center text-slate-500">
+                    <div className="text-center">
+                      <p className="text-sm">{t("reports.dataNotAvailable")}</p>
+                    </div>
+                  </div>
+                )}
+                {pnlError && !categoryData && (
                   <div className="flex h-32 items-center justify-center text-slate-500">
                     <div className="text-center">
                       <p className="text-sm">{t("reports.dataNotAvailable")}</p>
