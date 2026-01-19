@@ -694,6 +694,26 @@
           "button": "Request Deletion"
         }
       },
+      "deleteAccount": {
+        "title": "Delete Account",
+        "description": "Permanently delete your account and all associated data",
+        "dialogTitle": "Delete Your Account?",
+        "warning": "This action cannot be undone. All your data will be permanently deleted.",
+        "whatWillBeDeleted": "This will permanently delete:",
+        "deletedItems": {
+          "profile": "Your profile and business information",
+          "invoices": "All invoices and invoice settings",
+          "clients": "All client records",
+          "transactions": "All transactions and receipts",
+          "bankConnections": "All bank connections"
+        },
+        "typeToConfirm": "Type \"{word}\" to confirm",
+        "confirmationWord": "DELETE",
+        "confirmButton": "Delete Account",
+        "delete": "Delete My Account",
+        "deleting": "Deleting...",
+        "error": "Failed to delete account. Please try again."
+      },
       "dataRetention": {
         "title": "Data Retention & Processing",
         "retentionLabel": "Data Retention Period",
@@ -783,12 +803,6 @@
         "title": "Export Your Data",
         "description": "Download a copy of all your data stored in Solobooks",
         "export": "Export Data"
-      },
-      "deleteAccount": {
-        "title": "Delete Account",
-        "description": "Permanently delete your account and all associated data",
-        "warning": "This action cannot be undone. All your data will be permanently deleted.",
-        "delete": "Delete My Account"
       }
     }
   },
@@ -895,5 +909,17 @@
       "minLength": "Must be at least {min} characters",
       "maxLength": "Must be at most {max} characters"
     }
+  },
+  "accountDeleted": {
+    "title": "Account Deleted",
+    "description": "Your Solobooks account has been successfully deleted.",
+    "whatHappensNext": "What happens next:",
+    "next": {
+      "dataDeleted": "All your data will be permanently removed within 30 days",
+      "emailConfirmation": "You will receive a confirmation email",
+      "subscriptionCancelled": "Any active subscription has been cancelled"
+    },
+    "returnHome": "Return to Homepage",
+    "questions": "Questions? Contact us at"
   }
 }

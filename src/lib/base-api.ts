@@ -123,6 +123,21 @@ export class BaseApiClient {
       const data = await response.json();
 
       if (!response.ok) {
+        // Handle 410 Gone - Account deleted
+        if (response.status === 410) {
+          if (typeof window !== "undefined") {
+            window.dispatchEvent(new CustomEvent('accountDeleted', {
+              detail: { message: data?.data?.message || 'Account has been deleted' }
+            }));
+          }
+          throw {
+            error: {
+              code: 'ACCOUNT_DELETED',
+              message: data?.data?.message || 'This account has been deleted',
+            },
+          } as ApiError;
+        }
+
         // If we get a 401 and have a refresh token, try to refresh
         if (response.status === 401 && this.getRefreshToken()) {
           const newToken = await this.refreshAccessToken();

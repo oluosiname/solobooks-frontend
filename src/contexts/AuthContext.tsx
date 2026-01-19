@@ -44,10 +44,26 @@ interface AuthContextType {
   isLoading: boolean;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string, plan: string, firstName?: string, lastName?: string, language?: string) => Promise<void>;
-  loginWithGoogle: (credential: string, plan?: string, language?: string) => Promise<void>;
-  registerWithGoogle: (credential: string, plan?: string, language?: string) => Promise<void>;
+  register: (
+    email: string,
+    password: string,
+    plan: string,
+    firstName?: string,
+    lastName?: string,
+    language?: string,
+  ) => Promise<void>;
+  loginWithGoogle: (
+    credential: string,
+    plan?: string,
+    language?: string,
+  ) => Promise<void>;
+  registerWithGoogle: (
+    credential: string,
+    plan?: string,
+    language?: string,
+  ) => Promise<void>;
   logout: () => Promise<void>;
+  deleteAccount: () => Promise<{ success: boolean; deletedAt?: string }>;
   error: string | null;
   clearError: () => void;
 }
@@ -67,6 +83,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [tokenExpiry, setTokenExpiry] = useState<Date | null>(null);
   const [refreshTimer, setRefreshTimer] = useState<NodeJS.Timeout | null>(null);
   const router = useRouter();
+
+  // Shared cleanup function for logout and account deletion
+  const clearAuthSession = (redirectTo?: string) => {
+    // Clear refresh timer
+    if (refreshTimer) {
+      clearTimeout(refreshTimer);
+      setRefreshTimer(null);
+    }
+
+    // Clear local state
+    setUser(null);
+    setToken(null);
+    setRefreshToken(null);
+    setTokenExpiry(null);
+
+    // Clear localStorage
+    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(REFRESH_TOKEN_KEY);
+    localStorage.removeItem(USER_KEY);
+
+    setIsLoading(false);
+
+    // Redirect if specified
+    if (redirectTo) {
+      router.push(redirectTo);
+    }
+  };
 
   // Centralized function to fetch and transform user data
   const fetchUserData = async (token: string): Promise<AuthUser> => {
@@ -174,6 +217,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => window.removeEventListener("focus", handleFocus);
   }, [tokenExpiry, refreshToken]);
 
+  // Listen for account deleted event from 410 interceptor
+  useEffect(() => {
+    const handleAccountDeleted = (event: Event) => {
+      console.log(
+        "Account deleted event received:",
+        (event as CustomEvent).detail,
+      );
+      clearAuthSession("/account-deleted");
+    };
+
+    window.addEventListener("accountDeleted", handleAccountDeleted);
+
+    return () => {
+      window.removeEventListener("accountDeleted", handleAccountDeleted);
+    };
+  }, []);
+
   const clearError = () => setError(null);
 
   const handleAuthResponse = async (response: AuthResponse) => {
@@ -226,7 +286,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const register = async (email: string, password: string, plan: string, firstName?: string, lastName?: string, language?: string) => {
+  const register = async (
+    email: string,
+    password: string,
+    plan: string,
+    firstName?: string,
+    lastName?: string,
+    language?: string,
+  ) => {
     try {
       setIsLoading(true);
       setError(null);
@@ -248,7 +315,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch (err) {
       const apiError = err as ApiError;
       setError(
-        apiError.error?.message || "Failed to register. Please try again."
+        apiError.error?.message || "Failed to register. Please try again.",
       );
       throw err;
     } finally {
@@ -256,7 +323,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const loginWithGoogle = async (credential: string, plan?: string, language?: string) => {
+  const loginWithGoogle = async (
+    credential: string,
+    plan?: string,
+    language?: string,
+  ) => {
     try {
       setIsLoading(true);
       setError(null);
@@ -268,7 +339,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch (err) {
       const apiError = err as ApiError;
       setError(
-        apiError.error?.message || "Failed to sign in with Google. Please try again."
+        apiError.error?.message ||
+          "Failed to sign in with Google. Please try again.",
       );
       throw err;
     } finally {
@@ -276,7 +348,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const registerWithGoogle = async (credential: string, plan: string = "pro", language?: string) => {
+  const registerWithGoogle = async (
+    credential: string,
+    plan: string = "pro",
+    language?: string,
+  ) => {
     try {
       setIsLoading(true);
       setError(null);
@@ -289,7 +365,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch (err) {
       const apiError = err as ApiError;
       setError(
-        apiError.error?.message || "Failed to sign up with Google. Please try again."
+        apiError.error?.message ||
+          "Failed to sign up with Google. Please try again.",
       );
       throw err;
     } finally {
@@ -307,24 +384,38 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch {
       // Continue with local logout even if API call fails
     } finally {
-      // Clear refresh timer
-      if (refreshTimer) {
-        clearTimeout(refreshTimer);
-        setRefreshTimer(null);
+      clearAuthSession("/login");
+    }
+  };
+
+  const deleteAccount = async (): Promise<{
+    success: boolean;
+    deletedAt?: string;
+  }> => {
+    if (!token) {
+      throw new Error("Not authenticated");
+    }
+
+    try {
+      setIsLoading(true);
+      const response = await authApi.deleteAccount(token);
+
+      // On 202 success, clear session and redirect to confirmation page
+      // Use window.location.href to force full page reload and ensure
+      // RouteGuard sees user as unauthenticated (localStorage is cleared synchronously)
+      clearAuthSession();
+      
+      if (typeof window !== "undefined") {
+        window.location.href = "/account-deleted";
       }
 
-      // Clear local state and storage
-      setUser(null);
-      setToken(null);
-      setRefreshToken(null);
-      setTokenExpiry(null);
-      localStorage.removeItem(TOKEN_KEY);
-      localStorage.removeItem(REFRESH_TOKEN_KEY);
-      localStorage.removeItem(USER_KEY);
+      return {
+        success: true,
+        deletedAt: response.data.deleted_at,
+      };
+    } catch (error) {
       setIsLoading(false);
-
-      // Redirect to login
-      router.push("/login");
+      throw error;
     }
   };
 
@@ -339,6 +430,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     loginWithGoogle,
     registerWithGoogle,
     logout,
+    deleteAccount,
     error,
     clearError,
   };
