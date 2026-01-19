@@ -134,7 +134,7 @@ export default function NewClientPage() {
                       <h3 className="text-sm font-medium text-red-800">
                         {errorMessage}
                       </h3>
-                      {errors.base.length > 0 && (
+                      {errors.base && errors.base.length > 0 && (
                         <div className="mt-2 text-sm text-red-700">
                           <ul className="list-disc list-inside space-y-1">
                             {errors.base.map((msg, idx) => (
