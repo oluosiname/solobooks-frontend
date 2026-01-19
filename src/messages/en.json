@@ -852,7 +852,28 @@
       "annually": "annually",
       "mostPopular": "Most Popular",
       "freeTrial": "14-day Pro trial included",
-      "continue": "Continue with {plan}"
+      "continue": "Continue with {plan}",
+      "features": {
+        "starter": {
+          "invoices": "Up to 5 invoices per month",
+          "reporting": "Basic reporting",
+          "support": "Email support"
+        },
+        "plus": {
+          "invoices": "Up to 20 invoices per month",
+          "bankSync": "Bank sync",
+          "reporting": "Advanced reporting",
+          "support": "Priority support"
+        },
+        "pro": {
+          "invoices": "Unlimited invoices",
+          "bankSync": "Bank sync",
+          "reporting": "Advanced reporting",
+          "vat": "VAT automation",
+          "support": "Priority support",
+          "elster": "Elster integration"
+        }
+      }
     }
   },
   "errors": {

@@ -112,87 +112,89 @@ export function GroupedTransactionsTable({
             <div className={cn(styles.cardHeader, "bg-slate-50")}>
               <h3 className="font-semibold text-slate-900">{month}</h3>
             </div>
-            <table className={styles.table}>
-              <thead>
-                <tr>
-                  <th className={styles.th}>
-                    {t("transactions.columns.description")}
-                  </th>
-                  <th className={styles.th}>
-                    {t("transactions.columns.date")}
-                  </th>
-                  <th className={styles.th}>
-                    {t("transactions.columns.amount")}
-                  </th>
-                  <th className={styles.th}>
-                    {t("transactions.columns.receipt")}
-                  </th>
-                  <th className={cn(styles.th, "w-24")}>
-                    {t("transactions.columns.actions")}
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {monthTransactions.map((transaction) => (
-                  <tr key={transaction.id} className="hover:bg-slate-50">
-                    <td className={styles.td}>
-                      <div>
-                        <p className="font-medium text-slate-900">
-                          {transaction.description}
-                        </p>
-                        <p className="text-sm text-slate-500">
-                          {transaction.category?.name || "Unknown"}
-                        </p>
-                      </div>
-                    </td>
-                    <td className={styles.td}>
-                      {formatDate(transaction.date)}
-                    </td>
-                    <td className={styles.td}>
-                      <span
-                        className={`font-medium ${
-                          transaction.transactionType === "Income"
-                            ? "text-emerald-600"
-                            : "text-slate-700"
-                        }`}
-                      >
-                        {transaction.transactionType === "Income" ? "+" : ""}
-                        {formatCurrency(transaction.amount)}
-                      </span>
-                    </td>
-                    <td className={styles.td}>
-                      {transaction.receiptUrl ? (
-                        <Link href={transaction.receiptUrl} target="_blank">
-                          <Receipt className="h-4 w-4 text-slate-400" />
-                        </Link>
-                      ) : (
-                        <span className="text-slate-300">—</span>
-                      )}
-                    </td>
-                    <td className={styles.td}>
-                      <div className="flex gap-1">
-                        <button
-                          onClick={() => handleEdit(transaction)}
-                          className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
-                        >
-                          <Edit2 className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteClick(transaction)}
-                          disabled={
-                            deleteTransactionMutation.isPending ||
-                            discardTransactionMutation.isPending
-                          }
-                          className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-red-50 hover:text-red-600 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </td>
+            <div className="overflow-x-auto">
+              <table className={styles.table}>
+                <thead>
+                  <tr>
+                    <th className={styles.th}>
+                      {t("transactions.columns.description")}
+                    </th>
+                    <th className={cn(styles.th, "hidden sm:table-cell")}>
+                      {t("transactions.columns.date")}
+                    </th>
+                    <th className={styles.th}>
+                      {t("transactions.columns.amount")}
+                    </th>
+                    <th className={cn(styles.th, "hidden md:table-cell")}>
+                      {t("transactions.columns.receipt")}
+                    </th>
+                    <th className={cn(styles.th, "w-24")}>
+                      {t("transactions.columns.actions")}
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {monthTransactions.map((transaction) => (
+                    <tr key={transaction.id} className="hover:bg-slate-50">
+                      <td className={styles.td}>
+                        <div>
+                          <p className="font-medium text-slate-900">
+                            {transaction.description}
+                          </p>
+                          <p className="text-sm text-slate-500">
+                            {transaction.category?.name || "Unknown"}
+                          </p>
+                        </div>
+                      </td>
+                      <td className={cn(styles.td, "hidden sm:table-cell")}>
+                        {formatDate(transaction.date)}
+                      </td>
+                      <td className={styles.td}>
+                        <span
+                          className={`font-medium ${
+                            transaction.transactionType === "Income"
+                              ? "text-emerald-600"
+                              : "text-slate-700"
+                          }`}
+                        >
+                          {transaction.transactionType === "Income" ? "+" : ""}
+                          {formatCurrency(transaction.amount)}
+                        </span>
+                      </td>
+                      <td className={cn(styles.td, "hidden md:table-cell")}>
+                        {transaction.receiptUrl ? (
+                          <Link href={transaction.receiptUrl} target="_blank">
+                            <Receipt className="h-4 w-4 text-slate-400" />
+                          </Link>
+                        ) : (
+                          <span className="text-slate-300">—</span>
+                        )}
+                      </td>
+                      <td className={styles.td}>
+                        <div className="flex gap-1">
+                          <button
+                            onClick={() => handleEdit(transaction)}
+                            className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
+                          >
+                            <Edit2 className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteClick(transaction)}
+                            disabled={
+                              deleteTransactionMutation.isPending ||
+                              discardTransactionMutation.isPending
+                            }
+                            className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-red-50 hover:text-red-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )
       )}

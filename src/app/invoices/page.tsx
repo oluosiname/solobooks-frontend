@@ -131,11 +131,12 @@ export default function InvoicesPage() {
           </div>
         )}
         {/* Header Actions */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <Tabs tabs={tabs} activeTab={activeTab} onChange={setActiveTab} />
           <Link href="/invoices/new" className={buttonStyles('primary')}>
             <Plus className="h-4 w-4" />
-            {t('invoices.newInvoice')}
+            <span className="hidden sm:inline">{t('invoices.newInvoice')}</span>
+            <span className="sm:hidden">New</span>
           </Link>
         </div>
 
@@ -149,42 +150,43 @@ export default function InvoicesPage() {
 
         {/* Table */}
         <div className={cn(styles.card, 'overflow-hidden animate-slide-up')}>
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th className={styles.th}>{t('invoices.columns.invoiceNumber')}</th>
-                <th className={styles.th}>{t('invoices.columns.client')}</th>
-                <th className={styles.th}>{t('invoices.columns.invoiceDate')}</th>
-                <th className={styles.th}>{t('invoices.columns.dueDate')}</th>
-                <th className={styles.th}>{t('invoices.columns.total')}</th>
-                <th className={styles.th}>{t('invoices.columns.status')}</th>
-                <th className={cn(styles.th, 'w-12')}>{t('invoices.columns.actions')}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {isLoading ? (
+          <div className="overflow-x-auto">
+            <table className={styles.table}>
+              <thead>
                 <tr>
-                  <td colSpan={7} className="py-8 text-center text-slate-500">
-                    {t('common.loading')}
-                  </td>
+                  <th className={styles.th}>{t('invoices.columns.invoiceNumber')}</th>
+                  <th className={cn(styles.th, 'hidden sm:table-cell')}>{t('invoices.columns.client')}</th>
+                  <th className={cn(styles.th, 'hidden md:table-cell')}>{t('invoices.columns.invoiceDate')}</th>
+                  <th className={cn(styles.th, 'hidden lg:table-cell')}>{t('invoices.columns.dueDate')}</th>
+                  <th className={styles.th}>{t('invoices.columns.total')}</th>
+                  <th className={styles.th}>{t('invoices.columns.status')}</th>
+                  <th className={cn(styles.th, 'w-12')}>{t('invoices.columns.actions')}</th>
                 </tr>
-              ) : invoices.length === 0 ? (
-                <tr>
-                  <td colSpan={7} className="py-8 text-center text-slate-500">
-                    {t('invoices.noInvoices')}
-                  </td>
-                </tr>
-              ) : (
-                invoices.map((invoice) => (
-                  <tr key={invoice.id} className="hover:bg-slate-50">
-                    <td className={cn(styles.td, 'font-medium text-slate-900')}>{invoice.invoiceNumber}</td>
-                    <td className={styles.td}>{invoice.clientName}</td>
-                    <td className={styles.td}>{formatDate(invoice.date)}</td>
-                    <td className={styles.td}>{formatDate(invoice.dueDate)}</td>
-                    <td className={cn(styles.td, 'font-medium')}>{formatCurrency(invoice.totalAmount)}</td>
-                    <td className={styles.td}>
-                      <Badge status={invoice.status} />
+              </thead>
+              <tbody>
+                {isLoading ? (
+                  <tr>
+                    <td colSpan={7} className="py-8 text-center text-slate-500">
+                      {t('common.loading')}
                     </td>
+                  </tr>
+                ) : invoices.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="py-8 text-center text-slate-500">
+                      {t('invoices.noInvoices')}
+                    </td>
+                  </tr>
+                ) : (
+                  invoices.map((invoice) => (
+                    <tr key={invoice.id} className="hover:bg-slate-50">
+                      <td className={cn(styles.td, 'font-medium text-slate-900')}>{invoice.invoiceNumber}</td>
+                      <td className={cn(styles.td, 'hidden sm:table-cell')}>{invoice.clientName}</td>
+                      <td className={cn(styles.td, 'hidden md:table-cell')}>{formatDate(invoice.date)}</td>
+                      <td className={cn(styles.td, 'hidden lg:table-cell')}>{formatDate(invoice.dueDate)}</td>
+                      <td className={cn(styles.td, 'font-medium')}>{formatCurrency(invoice.totalAmount)}</td>
+                      <td className={styles.td}>
+                        <Badge status={invoice.status} />
+                      </td>
                     <td className={styles.td}>
                       <div data-dropdown className="relative">
                         <button
@@ -240,10 +242,11 @@ export default function InvoicesPage() {
                       </div>
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
 
           {/* Pagination */}
           {invoicesData?.meta && invoicesData.meta.totalCount > 0 && (

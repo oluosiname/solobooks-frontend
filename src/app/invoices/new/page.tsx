@@ -235,6 +235,31 @@ export default function NewInvoicePage() {
       )}
 
       <div className="grid gap-6 lg:grid-cols-3">
+        {/* Summary Sidebar - Mobile First */}
+        <div className="lg:hidden">
+          <div className={cn(styles.card)}>
+            <div className={styles.cardContent}>
+              <h3 className="text-lg font-semibold text-slate-900">Summary</h3>
+              <div className="mt-6 space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-600">Subtotal</span>
+                  <span className="font-medium text-slate-900">
+                    €{subtotal.toFixed(2)}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between border-t border-slate-200 pt-4">
+                  <span className="font-semibold text-slate-900">
+                    {t("invoices.new.total")}
+                  </span>
+                  <span className="text-lg font-semibold text-slate-900">
+                    €{total.toFixed(2)}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Main Form */}
         <div className="space-y-6 lg:col-span-2">
           {/* Invoice Details */}
@@ -354,8 +379,8 @@ export default function NewInvoicePage() {
                 {t("invoices.new.lineItems")}
               </h3>
               <div className="mt-6">
-                {/* Header */}
-                <div className="mb-4 grid grid-cols-12 gap-4 text-sm font-medium text-slate-600">
+                {/* Header - Hidden on mobile */}
+                <div className="mb-4 hidden md:grid grid-cols-12 gap-4 text-sm font-medium text-slate-600">
                   <div className="col-span-5">
                     {t("invoices.new.description")}
                   </div>
@@ -368,8 +393,11 @@ export default function NewInvoicePage() {
                 {/* Items */}
                 <div className="space-y-4">
                   {lineItems.map((item) => (
-                    <div key={item.id} className="grid grid-cols-12 gap-4">
-                      <div className="col-span-5">
+                    <div key={item.id} className="space-y-3 md:space-y-0 md:grid md:grid-cols-12 md:gap-4 p-4 md:p-0 border md:border-0 border-slate-200 rounded-lg md:rounded-none">
+                      <div className="md:col-span-5">
+                        <label className="block md:hidden text-sm font-medium text-slate-700 mb-1.5">
+                          {t("invoices.new.description")}
+                        </label>
                         <input
                           type="text"
                           className={styles.input}
@@ -384,7 +412,10 @@ export default function NewInvoicePage() {
                           }
                         />
                       </div>
-                      <div className="col-span-2">
+                      <div className="md:col-span-2">
+                        <label className="block md:hidden text-sm font-medium text-slate-700 mb-1.5">
+                          {t("invoices.new.price")}
+                        </label>
                         <input
                           type="number"
                           className={styles.input}
@@ -399,42 +430,53 @@ export default function NewInvoicePage() {
                           }
                         />
                       </div>
-                      <div className="col-span-2">
-                        <select
-                          className={styles.input}
-                          value={item.unit}
-                          onChange={(e) =>
-                            updateLineItem(item.id, "unit", e.target.value)
-                          }
-                        >
-                          <option value="pc">pc</option>
-                          <option value="hr">hr</option>
-                          <option value="day">day</option>
-                          <option value="month">month</option>
-                        </select>
+                      <div className="grid grid-cols-2 gap-3 md:col-span-4 md:grid-cols-2">
+                        <div className="md:col-span-1">
+                          <label className="block md:hidden text-sm font-medium text-slate-700 mb-1.5">
+                            {t("invoices.new.unit")}
+                          </label>
+                          <select
+                            className={styles.input}
+                            value={item.unit}
+                            onChange={(e) =>
+                              updateLineItem(item.id, "unit", e.target.value)
+                            }
+                          >
+                            <option value="pc">pc</option>
+                            <option value="hr">hr</option>
+                            <option value="day">day</option>
+                            <option value="month">month</option>
+                          </select>
+                        </div>
+                        <div className="md:col-span-1">
+                          <label className="block md:hidden text-sm font-medium text-slate-700 mb-1.5">
+                            {t("invoices.new.quantity")}
+                          </label>
+                          <input
+                            type="number"
+                            className={styles.input}
+                            min="1"
+                            value={item.quantity}
+                            onChange={(e) =>
+                              updateLineItem(
+                                item.id,
+                                "quantity",
+                                parseInt(e.target.value) || 1
+                              )
+                            }
+                          />
+                        </div>
                       </div>
-                      <div className="col-span-2">
-                        <input
-                          type="number"
-                          className={styles.input}
-                          min="1"
-                          value={item.quantity}
-                          onChange={(e) =>
-                            updateLineItem(
-                              item.id,
-                              "quantity",
-                              parseInt(e.target.value) || 1
-                            )
-                          }
-                        />
-                      </div>
-                      <div className="col-span-1 flex items-center justify-center">
+                      <div className="md:col-span-1 flex items-center justify-center">
                         <button
                           onClick={() => removeLineItem(item.id)}
-                          className="rounded p-2 text-red-500 hover:bg-red-50"
+                          className="w-full md:w-auto rounded-lg p-2 text-red-500 hover:bg-red-50 disabled:opacity-50"
                           disabled={lineItems.length === 1}
                         >
-                          <Trash2 className="h-4 w-4" />
+                          <div className="flex items-center justify-center gap-2">
+                            <Trash2 className="h-4 w-4" />
+                            <span className="md:hidden">Remove</span>
+                          </div>
                         </button>
                       </div>
                     </div>
@@ -454,8 +496,8 @@ export default function NewInvoicePage() {
           </div>
         </div>
 
-        {/* Summary Sidebar */}
-        <div className="lg:col-span-1">
+        {/* Summary Sidebar - Desktop */}
+        <div className="hidden lg:block lg:col-span-1">
           <div className={cn(styles.card, "sticky top-6")}>
             <div className={styles.cardContent}>
               <h3 className="text-lg font-semibold text-slate-900">Summary</h3>
@@ -504,6 +546,35 @@ export default function NewInvoicePage() {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Action Buttons - Mobile */}
+        <div className="lg:hidden space-y-3">
+          <button
+            className={cn(
+              buttonStyles("primary"),
+              "w-full justify-center"
+            )}
+            onClick={handleSave}
+            disabled={
+              createInvoiceMutation.isPending ||
+              !creationRequirements?.canCreate
+            }
+          >
+            <Check className="h-4 w-4" />
+            {createInvoiceMutation.isPending
+              ? "Creating..."
+              : t("invoices.new.saveInvoice")}
+          </button>
+          <button
+            onClick={() => router.back()}
+            className={cn(
+              buttonStyles("secondary"),
+              "w-full justify-center"
+            )}
+          >
+            {t("common.cancel")}
+          </button>
         </div>
       </div>
     </AppShell>

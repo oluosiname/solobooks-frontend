@@ -80,29 +80,31 @@ export default function TransactionsPage() {
         )}
 
         {/* Header Actions */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <Tabs tabs={tabs} activeTab={activeTab} onChange={setActiveTab} />
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <Link
               href="/transactions/new-expense"
               className={buttonStyles("secondary")}
             >
               <Plus className="h-4 w-4" />
-              {t("transactions.addExpense")}
+              <span className="hidden sm:inline">{t("transactions.addExpense")}</span>
+              <span className="sm:hidden">Expense</span>
             </Link>
             <Link
               href="/transactions/new-income"
               className={buttonStyles("secondary")}
             >
               <Plus className="h-4 w-4" />
-              {t("transactions.addIncome")}
+              <span className="hidden sm:inline">{t("transactions.addIncome")}</span>
+              <span className="sm:hidden">Income</span>
             </Link>
             <Link
               href="/transactions/import"
               className={buttonStyles("secondary")}
             >
               <Upload className="h-4 w-4" />
-              Import
+              <span className="hidden sm:inline">Import</span>
             </Link>
           </div>
         </div>
