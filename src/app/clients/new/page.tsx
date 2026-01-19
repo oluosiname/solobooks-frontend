@@ -16,6 +16,7 @@ import {
 import { InputField, SelectField } from "@/components/molecules";
 import { PageHeader } from "@/components/organisms";
 import { api } from "@/services/api";
+import type { ApiError } from "@/types";
 
 export default function NewClientPage() {
   const router = useRouter();
@@ -84,16 +85,17 @@ export default function NewClientPage() {
 
       // Redirect to clients list
       router.push("/clients");
-    } catch (error: any) {
+    } catch (error: unknown) {
       // Handle API errors
-      if (error?.error) {
-        const errorMsg = error.error.message || "Failed to create client";
+      const apiError = error as ApiError;
+      if (apiError?.error) {
+        const errorMsg = apiError.error.message || "Failed to create client";
         setErrorMessage(errorMsg);
         showToast.error(errorMsg);
 
         // Set field-specific validation errors
-        if (error.error.details) {
-          setErrors(error.error.details);
+        if (apiError.error.details) {
+          setErrors(apiError.error.details);
         }
       } else {
         const errorMsg = "An unexpected error occurred";

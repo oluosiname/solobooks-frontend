@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 import { styles, buttonStyles } from "@/lib/styles";
 import { api } from "@/services/api";
 import { showToast } from "@/lib/toast";
-import type { Client, InvoiceCategory } from "@/types";
+import type { Client, InvoiceCategory, ApiError } from "@/types";
 
 interface LineItem {
   id: string;
@@ -56,7 +56,7 @@ export default function NewInvoicePage() {
       showToast.success(t("invoices.success.invoiceCreated"));
       router.push("/invoices");
     },
-    onError: (error: any) => {
+    onError: (error: ApiError) => {
       showToast.apiError(error, t("invoices.success.invoiceCreationFailed"));
     },
   });

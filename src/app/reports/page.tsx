@@ -25,6 +25,7 @@ import {
 } from "@/components/atoms";
 import { api, processPnlForRevenueChart, processPnlForCategoryChart, processPnlForProfitChart, downloadPnlPdf } from "@/services/api";
 import { formatCurrency, cn } from "@/lib/utils";
+import { showToast } from "@/lib/toast";
 
 export default function ReportsPage() {
   const t = useTranslations();

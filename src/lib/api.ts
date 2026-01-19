@@ -31,7 +31,7 @@ export const api = {
   deleteClient: newApi.deleteClient,
 
   // Invoices
-  async getInvoices(status?: string, params?: any) {
+  async getInvoices(status?: string, params?: Record<string, string | number | boolean | undefined>) {
     const result = await newApi.fetchInvoices(params);
     let invoices = result.invoices;
 
