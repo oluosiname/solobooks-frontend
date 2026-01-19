@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#eef2ff"/>
+      <stop offset="100%" style="stop-color:#e0e7ff"/>
+    </linearGradient>
+    <linearGradient id="bookGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6366f1"/>
+      <stop offset="100%" style="stop-color:#4f46e5"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bgGradient)"/>
+
+  <!-- Book Icon -->
+  <g transform="translate(380, 180)">
+    <!-- Left page -->
+    <path d="M10 24 C10 16, 20 8, 40 8 L90 8 L90 172 L40 172 C20 172, 10 164, 10 156 Z"
+          fill="url(#bookGradient)" opacity="0.9"/>
+    <!-- Right page -->
+    <path d="M190 24 C190 16, 180 8, 160 8 L110 8 L110 172 L160 172 C180 172, 190 164, 190 156 Z"
+          fill="url(#bookGradient)" opacity="0.7"/>
+    <!-- Spine -->
+    <rect x="86" y="8" width="28" height="164" fill="#4338ca"/>
+    <!-- Page lines left -->
+    <line x1="28" y1="44" x2="76" y2="44" stroke="#e0e7ff" stroke-width="6" stroke-linecap="round"/>
+    <line x1="28" y1="72" x2="76" y2="72" stroke="#e0e7ff" stroke-width="6" stroke-linecap="round"/>
+    <line x1="28" y1="100" x2="64" y2="100" stroke="#e0e7ff" stroke-width="6" stroke-linecap="round"/>
+    <!-- Page lines right -->
+    <line x1="124" y1="44" x2="172" y2="44" stroke="#e0e7ff" stroke-width="6" stroke-linecap="round"/>
+    <line x1="124" y1="72" x2="172" y2="72" stroke="#e0e7ff" stroke-width="6" stroke-linecap="round"/>
+    <line x1="124" y1="100" x2="160" y2="100" stroke="#e0e7ff" stroke-width="6" stroke-linecap="round"/>
+  </g>
+
+  <!-- Text: Solobooks -->
+  <text x="600" y="480" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="72" font-weight="700" fill="#0f172a">
+    <tspan fill="url(#bookGradient)">Solo</tspan><tspan fill="#0f172a">books</tspan>
+  </text>
+
+  <!-- Tagline -->
+  <text x="600" y="540" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="400" fill="#64748b">
+    Simple bookkeeping for freelancers
+  </text>
+</svg>
