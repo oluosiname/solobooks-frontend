@@ -92,8 +92,6 @@ export default function SubscriptionPage() {
 
       showToast.success(t("subscription.planChangedSuccessfully"));
     } catch (error: unknown) {
-      console.error("Failed to change plan:", error);
-
       // Handle specific plan change restrictions
       const errorMessage = error instanceof Error ? error.message : String(error);
       if (errorMessage.includes("downgrade") || errorMessage.includes("not allowed")) {

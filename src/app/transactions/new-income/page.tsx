@@ -54,8 +54,7 @@ export default function NewIncomePage() {
       queryClient.invalidateQueries({ queryKey: ["unchecked-transactions"] });
       router.push("/transactions");
     },
-    onError: (error: unknown) => {
-      console.error("Failed to create transaction:", error);
+    onError: () => {
       showToast.error("Failed to create transaction. Please try again.");
     },
   });

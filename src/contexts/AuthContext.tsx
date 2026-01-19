@@ -100,8 +100,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           // Schedule next refresh
           scheduleTokenRefresh(newExpiresIn);
         }
-      } catch (error) {
-        console.error("Failed to refresh token:", error);
+      } catch {
+        // Token refresh failed silently - will retry on next interval
       }
     }, refreshInMs);
 
@@ -130,16 +130,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
           // Schedule refresh for existing tokens (assume 1 hour if we don't know)
           scheduleTokenRefresh(3600);
-        } catch (error) {
-          console.error(
-            "Access token expired, attempting automatic refresh..."
-          );
+        } catch {
           // Token likely expired, try to refresh automatically
           try {
             const refreshResponse = await authApi.refresh(storedRefreshToken);
             await handleAuthResponse(refreshResponse);
-          } catch (refreshError) {
-            console.error("Token refresh failed:", refreshError);
+          } catch {
             // Only clear tokens if refresh also fails
             localStorage.removeItem(TOKEN_KEY);
             localStorage.removeItem(REFRESH_TOKEN_KEY);
@@ -161,13 +157,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (tokenExpiry && refreshToken) {
         const timeUntilExpiry = tokenExpiry.getTime() - Date.now();
         if (timeUntilExpiry < 600000) {
-          // Less than 10 minutes
-          console.log("Token close to expiry, refreshing on focus...");
+          // Less than 10 minutes - refresh token on focus
           authApi
             .refresh(refreshToken)
             .then(handleAuthResponse)
-            .catch((error) => {
-              console.error("Failed to refresh token on focus:", error);
+            .catch(() => {
+              // Silent failure - will redirect to login if token fully expires
             });
         }
       }
@@ -202,8 +197,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (transformedUser.locale) {
         document.cookie = `locale=${transformedUser.locale}; path=/; max-age=31536000; SameSite=Lax`;
       }
-    } catch (error) {
-      console.error("Failed to fetch user details:", error);
+    } catch {
       // Continue without user data - token is still valid
       setUser(null);
     }
@@ -267,8 +261,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (token) {
         await authApi.logout(token);
       }
-    } catch (err) {
-      console.error("Logout error:", err);
+    } catch {
       // Continue with local logout even if API call fails
     } finally {
       // Clear refresh timer

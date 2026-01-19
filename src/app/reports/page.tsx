@@ -87,9 +87,8 @@ export default function ReportsPage() {
     setIsDownloadingPdf(true);
     try {
       await downloadPnlPdf(startDate, endDate);
-    } catch (error) {
-      console.error('Failed to download PDF:', error);
-      // You might want to show a toast notification here
+    } catch {
+      showToast.error(t('reports.downloadError'));
     } finally {
       setIsDownloadingPdf(false);
     }

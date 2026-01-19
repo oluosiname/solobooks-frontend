@@ -51,8 +51,7 @@ export default function ClientsPage() {
       setDeleteDialogOpen(false);
       setClientToDelete(null);
     },
-    onError: (error: any) => {
-      console.error("Failed to delete client:", error);
+    onError: () => {
       showToast.error(t("clients.delete.error"));
     },
   });

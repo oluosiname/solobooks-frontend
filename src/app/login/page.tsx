@@ -50,8 +50,7 @@ export default function LoginPage() {
   };
 
   const handleGoogleLogin = () => {
-    // Handle Google OAuth login
-    console.log("Google login");
+    // TODO: Implement Google OAuth login
   };
 
   return (

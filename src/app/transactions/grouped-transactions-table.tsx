@@ -37,8 +37,7 @@ export function GroupedTransactionsTable({
       setDeleteDialogOpen(false);
       setTransactionToDelete(null);
     },
-    onError: (error) => {
-      console.error("Failed to delete transaction:", error);
+    onError: () => {
       showToast.error(t("transactions.deleteError"));
     },
   });
@@ -53,8 +52,7 @@ export function GroupedTransactionsTable({
       setDeleteDialogOpen(false);
       setTransactionToDelete(null);
     },
-    onError: (error) => {
-      console.error("Failed to discard transaction:", error);
+    onError: () => {
       showToast.error(t("transactions.discardError"));
     },
   });
