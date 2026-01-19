@@ -4,12 +4,12 @@ import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
-import { Plus, MoreVertical, ChevronLeft, ChevronRight, Send, CreditCard } from 'lucide-react';
+import { Plus, MoreVertical, ChevronLeft, ChevronRight, Send, CreditCard, Download } from 'lucide-react';
 import Link from 'next/link';
 import { AppShell } from '@/components/layout';
 import { SearchInput, Tabs, Badge } from '@/components/ui';
 import { api } from '@/lib/api';
-import { fetchInvoices, sendInvoice, payInvoice } from '@/services/api';
+import { fetchInvoices, sendInvoice, payInvoice, downloadInvoicePdf } from '@/services/api';
 import { formatCurrency, formatDate, cn } from '@/lib/utils';
 import { styles, buttonStyles } from '@/lib/styles';
 import { showToast } from '@/lib/toast';
@@ -81,6 +81,33 @@ export default function InvoicesPage() {
     },
     onError: (error: any) => {
       showToast.error(error?.message || t('invoices.actions.paidError'));
+    },
+  });
+
+  const downloadPdfMutation = useMutation({
+    mutationFn: async (invoiceId: string) => {
+      const blob = await downloadInvoicePdf(invoiceId);
+      return { blob, invoiceId };
+    },
+    onSuccess: ({ blob, invoiceId }) => {
+      // Find the invoice to get the invoice number for filename
+      const invoice = invoices.find(inv => inv.id === invoiceId);
+      const filename = invoice ? `${invoice.invoiceNumber}.pdf` : `invoice-${invoiceId}.pdf`;
+
+      // Create download link
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+
+      setOpenDropdownId(null);
+    },
+    onError: (error: any) => {
+      showToast.error(error?.message || t('invoices.actions.downloadError'));
     },
   });
 
@@ -193,6 +220,19 @@ export default function InvoicesPage() {
                               >
                                 <CreditCard className="h-4 w-4" />
                                 {payInvoiceMutation.isPending ? t('common.loading') : t('invoices.actions.markAsPaid')}
+                              </button>
+                            )}
+                            {invoice.pdfAttached && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  downloadPdfMutation.mutate(invoice.id);
+                                }}
+                                disabled={downloadPdfMutation.isPending}
+                                className="flex w-full items-center gap-2 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+                              >
+                                <Download className="h-4 w-4" />
+                                {downloadPdfMutation.isPending ? t('common.loading') : t('invoices.actions.downloadPdf')}
                               </button>
                             )}
                           </div>

@@ -290,6 +290,10 @@ export async function payInvoice(id: string): Promise<Invoice> {
   return transformInvoiceData(response.data);
 }
 
+export async function downloadInvoicePdf(id: string): Promise<Blob> {
+  return await invoicesApi.downloadInvoicePdf(id);
+}
+
 // ============================================
 // Transactions API
 // ============================================
@@ -731,6 +735,7 @@ export const api = {
   fetchInvoiceCreationRequirements,
   sendInvoice,
   payInvoice,
+  downloadInvoicePdf,
 
   // Transactions
   fetchTransactions,

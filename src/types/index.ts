@@ -65,6 +65,7 @@ export interface Invoice {
   currency: string;
   notes?: string;
   createdAt: string;
+  pdfAttached: boolean;
 }
 
 export interface InvoiceCreationRequirements {
