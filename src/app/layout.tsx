@@ -21,6 +21,27 @@ export const metadata: Metadata = {
   description:
     "Professional accounting and invoicing for freelancers and small businesses",
   viewport: "width=device-width, initial-scale=1",
+  icons: {
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+    ],
+    apple: [
+      { url: "/apple-touch-icon.svg", type: "image/svg+xml", sizes: "180x180" },
+    ],
+  },
+  manifest: "/site.webmanifest",
+  openGraph: {
+    title: "Solobooks - Freelance Accounting Made Simple",
+    description: "Professional accounting and invoicing for freelancers and small businesses",
+    images: [{ url: "/og-image.svg", width: 1200, height: 630 }],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Solobooks - Freelance Accounting Made Simple",
+    description: "Professional accounting and invoicing for freelancers and small businesses",
+    images: ["/og-image.svg"],
+  },
 };
 
 export default async function RootLayout({
