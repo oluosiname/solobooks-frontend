@@ -150,6 +150,28 @@ class InvoicesApiClient extends BaseApiClient {
   async payInvoice(id: string | number): Promise<InvoiceResponse> {
     return this.patch<InvoiceResponse>(`/api/v1/invoices/${id}/pay`);
   }
+
+  /**
+   * Download invoice PDF
+   * GET /api/v1/invoices/{id}/pdf
+   */
+  async downloadInvoicePdf(id: string | number): Promise<Blob> {
+    const url = `${this.baseUrl}/api/v1/invoices/${id}/pdf`;
+    const token = this.getAuthToken();
+
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to download PDF: ${response.statusText}`);
+    }
+
+    return response.blob();
+  }
 }
 
 export const invoicesApi = new InvoicesApiClient();

@@ -120,8 +120,10 @@
     "actions": {
       "markAsSent": "Als gesendet markieren",
       "markAsPaid": "Als bezahlt markieren",
+      "downloadPdf": "PDF herunterladen",
       "sentSuccess": "Rechnung erfolgreich als gesendet markiert",
       "paidSuccess": "Rechnung erfolgreich als bezahlt markiert",
+      "downloadError": "Fehler beim Herunterladen der PDF",
       "sentError": "Fehler beim Markieren der Rechnung als gesendet",
       "paidError": "Fehler beim Markieren der Rechnung als bezahlt"
     },

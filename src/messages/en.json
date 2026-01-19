@@ -120,8 +120,10 @@
     "actions": {
       "markAsSent": "Mark as Sent",
       "markAsPaid": "Mark as Paid",
+      "downloadPdf": "Download PDF",
       "sentSuccess": "Invoice marked as sent successfully",
       "paidSuccess": "Invoice marked as paid successfully",
+      "downloadError": "Failed to download PDF",
       "sentError": "Failed to mark invoice as sent",
       "paidError": "Failed to mark invoice as paid"
     },
