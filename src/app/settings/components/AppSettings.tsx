@@ -19,7 +19,7 @@ export function AppSettings({ settings }: AppSettingsProps) {
 
   const [formData, setFormData] = useState({
     language: settings?.language || "en",
-    currency: settings?.currency.code || "EUR",
+    currency: settings?.currency?.code || "EUR",
   });
 
   // Update form data when settings change
@@ -27,7 +27,7 @@ export function AppSettings({ settings }: AppSettingsProps) {
     if (settings) {
       setFormData({
         language: settings.language,
-        currency: settings.currency.code,
+        currency: settings.currency?.code || "EUR",
       });
     }
   }, [settings]);
