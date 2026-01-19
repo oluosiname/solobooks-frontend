@@ -1,5 +1,8 @@
 # Solobooks Frontend
 
+[![CI](https://github.com/YOUR_ORG/solobooks-frontend/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR_ORG/solobooks-frontend/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/YOUR_ORG/solobooks-frontend/actions/workflows/codeql.yml/badge.svg)](https://github.com/YOUR_ORG/solobooks-frontend/actions/workflows/codeql.yml)
+
 Professional accounting and invoicing application for freelancers and small businesses. Built with Next.js 16, React 19, TypeScript, and Tailwind CSS.
 
 ## 🚀 Features
@@ -198,6 +201,15 @@ npm run test:coverage
 - Unit tests: `**/__tests__/*.test.ts(x)`
 - Testing utilities: `src/test/setup.ts`
 - Current coverage: Auth, RouteGuard, Login, Register pages
+
+### CI/CD Testing
+
+All tests run automatically on:
+- Every push to `main` or `develop` branches
+- Every pull request
+- Coverage reports generated and stored as artifacts
+
+See [`.github/workflows/README.md`](.github/workflows/README.md) for details.
 
 ## 🚢 Deployment
 
@@ -419,13 +431,40 @@ npm install
 
 ## 🤝 Contributing
 
-1. Create a feature branch: `git checkout -b feature/my-feature`
-2. Make changes and test thoroughly
-3. Run linter: `npm run lint:fix`
-4. Run tests: `npm test`
-5. Commit changes: `git commit -m "Add my feature"`
-6. Push to branch: `git push origin feature/my-feature`
-7. Create Pull Request
+We welcome contributions! Please follow these steps:
+
+1. **Create a feature branch**: `git checkout -b feature/my-feature`
+2. **Make changes and test thoroughly**
+3. **Run all checks locally**:
+   ```bash
+   npm run lint:fix    # Fix linting issues
+   npm test            # Run tests
+   npx tsc --noEmit    # Check types
+   npm run build       # Verify build
+   ```
+4. **Commit changes**: `git commit -m "Add my feature"`
+5. **Push to branch**: `git push origin feature/my-feature`
+6. **Create Pull Request** using the provided template
+
+### Automated Checks
+
+When you open a PR, the following checks run automatically:
+- ✅ ESLint code quality checks
+- ✅ Vitest unit tests with coverage
+- ✅ TypeScript type checking
+- ✅ Production build verification
+- 🔒 Security vulnerability scanning
+- 🏷️ Automatic PR labeling
+
+See [`.github/workflows/README.md`](.github/workflows/README.md) for more details.
+
+### PR Guidelines
+
+- Keep PRs small and focused
+- Write clear descriptions
+- Add tests for new features
+- Update documentation as needed
+- Ensure all CI checks pass
 
 ## 📄 License
 
