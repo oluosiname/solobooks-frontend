@@ -109,7 +109,10 @@ export default function RegisterPage() {
   const handleGoogleSignUp = async (credential: string) => {
     clearError();
     try {
-      await registerWithGoogle(credential, selectedPlan);
+      const langParam = searchParams.get("language") || searchParams.get("lang");
+      const language = langParam && locales.includes(langParam as Locale) ? langParam : undefined;
+
+      await registerWithGoogle(credential, selectedPlan, language);
     } catch {
       // Error handled by auth context
     }

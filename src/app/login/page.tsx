@@ -57,7 +57,10 @@ export default function LoginPage() {
       const validPlans = ["starter", "plus", "pro"];
       const plan = planParam && validPlans.includes(planParam) ? planParam : undefined;
 
-      await loginWithGoogle(credential, plan);
+      const langParam = searchParams.get("language") || searchParams.get("lang");
+      const language = langParam && locales.includes(langParam as Locale) ? langParam : undefined;
+
+      await loginWithGoogle(credential, plan, language);
     } catch {
       // Error handled by auth context
     }

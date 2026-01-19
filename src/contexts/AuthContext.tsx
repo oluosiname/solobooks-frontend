@@ -45,8 +45,8 @@ interface AuthContextType {
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, plan: string, firstName?: string, lastName?: string, language?: string) => Promise<void>;
-  loginWithGoogle: (credential: string, plan?: string) => Promise<void>;
-  registerWithGoogle: (credential: string, plan?: string) => Promise<void>;
+  loginWithGoogle: (credential: string, plan?: string, language?: string) => Promise<void>;
+  registerWithGoogle: (credential: string, plan?: string, language?: string) => Promise<void>;
   logout: () => Promise<void>;
   error: string | null;
   clearError: () => void;
@@ -256,12 +256,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const loginWithGoogle = async (credential: string, plan?: string) => {
+  const loginWithGoogle = async (credential: string, plan?: string, language?: string) => {
     try {
       setIsLoading(true);
       setError(null);
 
-      const response = await authApi.googleAuth(credential, plan);
+      const response = await authApi.googleAuth(credential, plan, language);
       await handleAuthResponse(response);
 
       router.push("/");
@@ -276,13 +276,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const registerWithGoogle = async (credential: string, plan: string = "pro") => {
+  const registerWithGoogle = async (credential: string, plan: string = "pro", language?: string) => {
     try {
       setIsLoading(true);
       setError(null);
 
       // Backend handles both login and registration
-      const response = await authApi.googleAuth(credential, plan);
+      const response = await authApi.googleAuth(credential, plan, language);
       await handleAuthResponse(response);
 
       router.push("/");
