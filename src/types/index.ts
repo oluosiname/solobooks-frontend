@@ -67,6 +67,14 @@ export interface Invoice {
   createdAt: string;
 }
 
+export interface InvoiceCreationRequirements {
+  canCreate: boolean;
+  requirements: {
+    profileComplete: boolean;
+    invoiceSettingExists: boolean;
+  };
+}
+
 export type TransactionType = "income" | "expense";
 
 export interface TransactionCategory {

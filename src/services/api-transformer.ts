@@ -31,9 +31,10 @@ import {
   Bank,
   PnlData,
   PnlReportResponse,
+  InvoiceCreationRequirements,
 } from "@/types";
 import humps from "humps";
-import { InvoiceData } from "@/lib/invoices-api";
+import { InvoiceData, InvoiceCreationRequirementsResponse } from "@/lib/invoices-api";
 
 export function camelize<T>(input: unknown): T {
   return humps.camelizeKeys(input) as T;
@@ -177,4 +178,10 @@ export function transformInvoiceData(data: InvoiceData): Invoice {
 
 export function transformPnlData(data: PnlReportResponse["data"]): PnlData {
   return camelize<PnlData>(data);
+}
+
+export function transformInvoiceCreationRequirements(
+  data: InvoiceCreationRequirementsResponse
+): InvoiceCreationRequirements {
+  return camelize<InvoiceCreationRequirements>(data);
 }

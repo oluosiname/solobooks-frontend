@@ -1,11 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
-import { ArrowLeft, Plus, Trash2, Check } from "lucide-react";
+import Link from "next/link";
+import { ArrowLeft, Plus, Trash2, Check, ExternalLink, AlertCircle } from "lucide-react";
 import { AppShell } from "@/components/layout";
+import { AlertBanner } from "@/components/organisms";
 import { cn } from "@/lib/utils";
 import { styles, buttonStyles } from "@/lib/styles";
 import { api } from "@/services/api";
@@ -38,6 +40,11 @@ export default function NewInvoicePage() {
   const { data: currencies } = useQuery({
     queryKey: ["currencies"],
     queryFn: api.fetchCurrencies,
+  });
+
+  const { data: creationRequirements } = useQuery({
+    queryKey: ["invoice-creation-requirements"],
+    queryFn: api.fetchInvoiceCreationRequirements,
   });
 
   const queryClient = useQueryClient();
@@ -190,6 +197,42 @@ export default function NewInvoicePage() {
           </span>
         </button>
       </div>
+
+      {/* Creation Requirements Banners */}
+      {creationRequirements && !creationRequirements.requirements.profileComplete && (
+        <div className="mb-6 rounded-lg border border-amber-200 bg-amber-50 p-4">
+          <div className="flex items-center gap-3">
+            <AlertCircle className="h-5 w-5 text-amber-600" />
+            <div className="flex-1">
+              <p className="text-amber-800">{t("invoices.new.profileIncomplete")}</p>
+            </div>
+            <Link
+              href="/settings"
+              className="inline-flex items-center gap-2 rounded-md bg-amber-600 px-3 py-2 text-sm font-medium text-white hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2"
+            >
+              {t("invoices.new.completeProfile")}
+              <ExternalLink className="h-4 w-4" />
+            </Link>
+          </div>
+        </div>
+      )}
+      {creationRequirements && !creationRequirements.requirements.invoiceSettingExists && (
+        <div className="mb-6 rounded-lg border border-amber-200 bg-amber-50 p-4">
+          <div className="flex items-center gap-3">
+            <AlertCircle className="h-5 w-5 text-amber-600" />
+            <div className="flex-1">
+              <p className="text-amber-800">{t("invoices.new.invoiceSettingsMissing")}</p>
+            </div>
+            <Link
+              href="/settings"
+              className="inline-flex items-center gap-2 rounded-md bg-amber-600 px-3 py-2 text-sm font-medium text-white hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2"
+            >
+              {t("invoices.new.configureSettings")}
+              <ExternalLink className="h-4 w-4" />
+            </Link>
+          </div>
+        </div>
+      )}
 
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Main Form */}
@@ -439,7 +482,10 @@ export default function NewInvoicePage() {
                     "w-full justify-center"
                   )}
                   onClick={handleSave}
-                  disabled={createInvoiceMutation.isPending}
+                  disabled={
+                    createInvoiceMutation.isPending ||
+                    !creationRequirements?.canCreate
+                  }
                 >
                   <Check className="h-4 w-4" />
                   {createInvoiceMutation.isPending

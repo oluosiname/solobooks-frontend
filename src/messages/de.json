@@ -99,7 +99,11 @@
       "selectClient": "Kunde auswählen",
       "addLineItem": "Position hinzufügen",
       "itemDescription": "Artikelbeschreibung",
-      "saveInvoice": "Rechnung speichern"
+      "saveInvoice": "Rechnung speichern",
+      "profileIncomplete": "Bitte vervollständigen Sie Ihr Profil, bevor Sie Rechnungen erstellen.",
+      "invoiceSettingsMissing": "Bitte konfigurieren Sie Ihre Rechnungseinstellungen, bevor Sie Rechnungen erstellen.",
+      "completeProfile": "Profil vervollständigen",
+      "configureSettings": "Einstellungen konfigurieren"
     },
     "columns": {
       "invoiceNumber": "Rechnungsnummer",
