@@ -100,8 +100,7 @@ export default function RegisterPage() {
   };
 
   const handleGoogleSignUp = () => {
-    // Handle Google OAuth sign up
-    console.log("Google sign up");
+    // TODO: Implement Google OAuth sign up
   };
 
   if (step === "plan") {

@@ -48,9 +48,8 @@ export default function ImportTransactionsPage() {
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error("Failed to download CSV template:", error);
-      // You might want to show a toast here
+    } catch {
+      showToast.error(t("transactions.import.downloadError"));
     }
   };
 
@@ -65,9 +64,8 @@ export default function ImportTransactionsPage() {
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error("Failed to download XLSX template:", error);
-      showToast.error("Failed to download XLSX template");
+    } catch {
+      showToast.error(t("transactions.import.downloadError"));
     }
   };
 
@@ -143,7 +141,6 @@ export default function ImportTransactionsPage() {
         router.push("/transactions");
       }, 2000);
     } catch (error: unknown) {
-      console.error("Upload failed:", error);
       setUploadProgress("");
 
       const apiError = error as any; // Type assertion for API error handling

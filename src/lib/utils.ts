@@ -22,7 +22,6 @@ export function formatDate(dateString: string | null | undefined): string {
     const date = new Date(dateString);
     // Check if the date is valid
     if (isNaN(date.getTime())) {
-      console.warn("Invalid date string:", dateString);
       return "—";
     }
 
@@ -31,8 +30,7 @@ export function formatDate(dateString: string | null | undefined): string {
       month: "2-digit",
       day: "2-digit",
     }).format(date);
-  } catch (error) {
-    console.warn("Error formatting date:", dateString, error);
+  } catch {
     return "—";
   }
 }
@@ -47,7 +45,6 @@ export function formatRelativeTime(
   const date = new Date(dateString);
   // Check if the date is valid
   if (isNaN(date.getTime())) {
-    console.warn("Invalid date string for relative time:", dateString);
     return "—";
   }
 

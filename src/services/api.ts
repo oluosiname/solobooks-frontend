@@ -267,9 +267,8 @@ export async function fetchInvoiceCreationRequirements(): Promise<InvoiceCreatio
   try {
     const response = await invoicesApi.getCreationRequirements();
     return transformInvoiceCreationRequirements(response);
-  } catch (error) {
+  } catch {
     // Return default values if the endpoint doesn't exist yet
-    console.warn("Invoice creation requirements endpoint not available:", error);
     return {
       canCreate: true,
       requirements: {
@@ -468,7 +467,6 @@ export async function downloadPnlPdf(
     document.body.removeChild(link);
     window.URL.revokeObjectURL(url);
   } catch (error) {
-    console.error('Failed to download PNL PDF:', error);
     throw error;
   }
 }

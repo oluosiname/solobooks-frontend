@@ -17,11 +17,8 @@ export const api = {
     try {
       const transactions = await newApi.fetchTransactions();
       return transactions.data.slice(0, limit);
-    } catch (error) {
-      console.warn(
-        "Failed to fetch transactions from API, falling back to empty array:",
-        error
-      );
+    } catch {
+      // Fallback to empty array if API fails
       return [];
     }
   },

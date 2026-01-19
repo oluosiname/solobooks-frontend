@@ -41,8 +41,7 @@ export default function BankConnectionsPage() {
       await api.syncBankConnection(bankId);
       await refetch();
       showToast.success(t("bankConnections.syncSuccess"));
-    } catch (error: unknown) {
-      console.error("Failed to sync bank connection:", error);
+    } catch {
       showToast.error(t("bankConnections.syncError"));
     } finally {
       setSyncingId(null);
@@ -55,8 +54,7 @@ export default function BankConnectionsPage() {
       await api.toggleBankConnection(bankId);
       await refetch();
       showToast.success(t("bankConnections.toggleSuccess"));
-    } catch (error: unknown) {
-      console.error("Failed to toggle bank connection:", error);
+    } catch {
       showToast.error(t("bankConnections.toggleError"));
     } finally {
       setTogglingId(null);

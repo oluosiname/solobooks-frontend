@@ -47,9 +47,6 @@ export default function AddBankConnectionPage() {
       );
 
       if (!authWindow) {
-        console.error(
-          "Failed to open authentication window - popup blocker may be active"
-        );
         showToast.error("Popup blocked. Please allow popups and try again.");
         return;
       }
@@ -60,8 +57,7 @@ export default function AddBankConnectionPage() {
       showToast.success(
         "Bank authentication window opened. Complete authentication in the new window."
       );
-    } catch (error) {
-      console.error("Failed to initiate bank connection:", error);
+    } catch {
       showToast.error("Failed to connect to bank. Please try again.");
     } finally {
       setIsConnecting(false);

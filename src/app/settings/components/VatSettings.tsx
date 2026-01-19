@@ -57,8 +57,7 @@ export function VatSettings() {
           setStartsOn(data.startsOn || "");
           setTaxExemptReason(data.taxExemptReason || "");
         }
-      } catch (error) {
-        console.error("Failed to load VAT status:", error);
+      } catch {
         showToast.error("Failed to load VAT settings");
       } finally {
         setLoading(false);
@@ -69,8 +68,7 @@ export function VatSettings() {
       try {
         const certificate = await getElsterCertificate();
         setElsterCertificate(certificate);
-      } catch (error) {
-        console.error("Failed to load Elster certificate:", error);
+      } catch {
         // Don't show error toast for certificate loading as it's optional
       } finally {
         setCertificateLoading(false);
@@ -120,8 +118,6 @@ export function VatSettings() {
         showToast.created("VAT settings");
       }
     } catch (error: unknown) {
-      console.error("Failed to save VAT status:", error);
-
       // Handle API errors
       const apiError = error as { error?: { message?: string; details?: Record<string, string[]> } };
       if (apiError?.error) {
@@ -177,7 +173,6 @@ export function VatSettings() {
       setCertificatePassword("");
       showToast.success("Elster certificate uploaded successfully");
     } catch (error: unknown) {
-      console.error("Failed to upload certificate:", error);
       const apiError = error as { response?: { data?: { error?: { message?: string } } } };
       const message = apiError?.response?.data?.error?.message || "Failed to upload certificate";
       showToast.error(message);
@@ -195,7 +190,6 @@ export function VatSettings() {
       setElsterCertificate(null);
       showToast.success("Elster certificate deleted successfully");
     } catch (error: unknown) {
-      console.error("Failed to delete certificate:", error);
       const apiError = error as { response?: { data?: { error?: { message?: string } } } };
       const message = apiError?.response?.data?.error?.message || "Failed to delete certificate";
       showToast.error(message);

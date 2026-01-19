@@ -32,8 +32,7 @@ export function Header({ title, onMenuClick, showMenuButton = false }: HeaderPro
       showToast.success(t("settings.languageChanged"));
       // Refresh the page to apply the new language
       window.location.reload();
-    } catch (error) {
-      console.error("Failed to update language:", error);
+    } catch {
       showToast.error(t("settings.languageChangeFailed"));
     }
     setIsLanguageMenuOpen(false);

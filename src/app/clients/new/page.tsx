@@ -85,8 +85,6 @@ export default function NewClientPage() {
       // Redirect to clients list
       router.push("/clients");
     } catch (error: any) {
-      console.error("Failed to create client:", error);
-
       // Handle API errors
       if (error?.error) {
         const errorMsg = error.error.message || "Failed to create client";

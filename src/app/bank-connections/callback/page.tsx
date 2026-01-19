@@ -31,7 +31,6 @@ export default function BankConnectionCallbackPage() {
       }, 3000);
     },
     onError: (error: any) => {
-      console.error("Failed to complete bank connection:", error);
       setStatus("error");
       setErrorMessage(
         error?.error?.message || t("bankConnections.callback.errorDescription")
