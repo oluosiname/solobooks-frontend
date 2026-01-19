@@ -5,6 +5,7 @@
  */
 
 import toast from 'react-hot-toast';
+import type { ApiError } from '@/types';
 
 export const showToast = {
   // Success messages
@@ -18,8 +19,9 @@ export const showToast = {
   },
 
   // API Error handler
-  apiError: (error: any, defaultMessage: string = 'An error occurred') => {
-    const message = error?.error?.message || defaultMessage;
+  apiError: (error: unknown, defaultMessage: string = 'An error occurred') => {
+    const apiError = error as ApiError;
+    const message = apiError?.error?.message || apiError?.message || defaultMessage;
     toast.error(message);
   },
 

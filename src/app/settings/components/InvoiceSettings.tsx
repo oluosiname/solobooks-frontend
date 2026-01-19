@@ -2,28 +2,15 @@ import { useTranslations } from "next-intl";
 import { Check, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { styles, buttonStyles } from "@/lib/styles";
-import type { InvoiceSettings as InvoiceSettingsType, Currency } from "@/types";
+import type { InvoiceSettings as InvoiceSettingsType, Currency, InvoiceSettingsInput } from "@/types";
 
 interface InvoiceSettingsProps {
   invoiceSettings: InvoiceSettingsType | null | undefined;
   currencies?: Currency[];
   isLoading: boolean;
   isSaving: boolean;
-  formData: {
-    prefix: string;
-    currencyId: number;
-    language: string;
-    accountHolder: string;
-    accountNumber?: string;
-    bankName?: string;
-    iban?: string;
-    bic?: string;
-    swift?: string;
-    sortCode?: string;
-    routingNumber?: string;
-    defaultNote?: string;
-  };
-  onFormChange: (data: any) => void;
+  formData: InvoiceSettingsInput;
+  onFormChange: (data: InvoiceSettingsProps["formData"]) => void;
   onSave: () => void;
 }
 

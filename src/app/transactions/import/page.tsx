@@ -22,6 +22,7 @@ import { api } from "@/services/api";
 import { cn } from "@/lib/utils";
 import { styles } from "@/lib/styles";
 import { showToast } from "@/lib/toast";
+import type { ApiError } from "@/types";
 
 export default function ImportTransactionsPage() {
   const router = useRouter();
@@ -143,23 +144,18 @@ export default function ImportTransactionsPage() {
     } catch (error: unknown) {
       setUploadProgress("");
 
-      const apiError = error as any; // Type assertion for API error handling
-      if (apiError?.response?.status === 422) {
+      const apiError = error as ApiError;
+      if (apiError?.error?.details) {
         // Parsing failed - show detailed error
-        const errorDetails = apiError.response?.data?.error?.details;
-        if (errorDetails) {
-          const errorMessages = Object.entries(errorDetails)
-            .map(
-              ([field, messages]) =>
-                `${field}: ${(messages as string[]).join(", ")}`
-            )
-            .join("\n");
-          showToast.error(`File parsing failed:\n${errorMessages}`);
-        } else {
-          showToast.error(
-            "File parsing failed. Please check your file format."
-          );
-        }
+        const errorMessages = Object.entries(apiError.error.details)
+          .map(
+            ([field, messages]) =>
+              `${field}: ${messages.join(", ")}`
+          )
+          .join("\n");
+        showToast.error(`File parsing failed:\n${errorMessages}`);
+      } else if (apiError?.error?.message) {
+        showToast.error(apiError.error.message);
       } else {
         showToast.apiError(error, "Failed to import transactions");
       }

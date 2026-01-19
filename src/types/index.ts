@@ -137,6 +137,7 @@ export interface TransactionFilters {
   startDate?: string;
   endDate?: string;
   description?: string;
+  [key: string]: string | number | boolean | undefined;
 }
 
 export interface PaginationMeta {
@@ -436,4 +437,19 @@ export interface ElsterCertificate {
   id: string;
   expired: boolean;
   expiringSoon: boolean;
+}
+
+// Google OAuth types
+export interface GoogleAuthRequest {
+  id_token: string; // Google ID token (JWT)
+  plan?: string; // Selected subscription plan
+}
+
+export interface GoogleAuthResponse {
+  data: {
+    access_token: string;
+    refresh_token: string;
+    expires_in: number;
+    token_type: string;
+  };
 }

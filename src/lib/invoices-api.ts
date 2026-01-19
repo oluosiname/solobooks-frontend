@@ -94,6 +94,7 @@ export interface InvoicesQueryParams {
   start_date?: string;
   end_date?: string;
   query?: string;
+  [key: string]: string | number | boolean | undefined;
 }
 
 export interface InvoiceCreationRequirementsResponse {

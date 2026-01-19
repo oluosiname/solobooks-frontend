@@ -11,6 +11,7 @@ import { styles, buttonStyles } from "@/lib/styles";
 import { createTransaction, updateTransaction, fetchCategories, fetchTransaction } from "@/services/api";
 import { showToast } from "@/lib/toast";
 import { FileUpload } from "@/components/molecules/FileUpload";
+import type { TransactionInput, ApiError } from "@/types";
 import * as humps from "humps";
 
 export default function EditIncomePage() {
@@ -73,7 +74,7 @@ export default function EditIncomePage() {
   }, [transactionData, isLoadingTransaction]);
 
   const updateTransactionMutation = useMutation({
-    mutationFn: (data: { id: string; transactionData: any }) =>
+    mutationFn: (data: { id: string; transactionData: TransactionInput }) =>
       updateTransaction(data.id, data.transactionData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
@@ -81,7 +82,7 @@ export default function EditIncomePage() {
       showToast.success("Income transaction updated successfully");
       router.push("/transactions");
     },
-    onError: (error: any) => {
+    onError: (error: ApiError) => {
       showToast.apiError(error, "Failed to update income transaction");
     },
   });
@@ -100,16 +101,14 @@ export default function EditIncomePage() {
     }
 
     const transactionData = {
+      transaction_type: "income" as const,
       description: formData.description,
       amount: parseFloat(formData.amount),
+      date: formData.date,
+      financial_category_id: formData.categoryId,
       vat_rate: formData.vatRate,
-      vat_amount: (parseFloat(formData.amount) * formData.vatRate) / 100,
       customer_location: formData.customerLocation,
       customer_vat_number: formData.customerVatNumber || undefined,
-      vat_technique: "reverse_charge",
-      source: "manual",
-      date: formData.date,
-      category_id: parseInt(formData.categoryId),
       receipt: receiptFile || undefined,
     };
 

@@ -45,6 +45,8 @@ interface AuthContextType {
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, plan: string, firstName?: string, lastName?: string, language?: string) => Promise<void>;
+  loginWithGoogle: (credential: string, plan?: string) => Promise<void>;
+  registerWithGoogle: (credential: string, plan?: string) => Promise<void>;
   logout: () => Promise<void>;
   error: string | null;
   clearError: () => void;
@@ -254,6 +256,47 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const loginWithGoogle = async (credential: string, plan?: string) => {
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      const response = await authApi.googleAuth(credential, plan);
+      await handleAuthResponse(response);
+
+      router.push("/");
+    } catch (err) {
+      const apiError = err as ApiError;
+      setError(
+        apiError.error?.message || "Failed to sign in with Google. Please try again."
+      );
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const registerWithGoogle = async (credential: string, plan: string = "pro") => {
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      // Backend handles both login and registration
+      const response = await authApi.googleAuth(credential, plan);
+      await handleAuthResponse(response);
+
+      router.push("/");
+    } catch (err) {
+      const apiError = err as ApiError;
+      setError(
+        apiError.error?.message || "Failed to sign up with Google. Please try again."
+      );
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const logout = async () => {
     try {
       setIsLoading(true);
@@ -293,6 +336,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     isAuthenticated: !!user && !!token,
     login,
     register,
+    loginWithGoogle,
+    registerWithGoogle,
     logout,
     error,
     clearError,
