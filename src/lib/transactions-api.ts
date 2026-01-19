@@ -61,6 +61,7 @@ export interface TransactionFilters {
   start_date?: string;
   end_date?: string;
   description?: string;
+  [key: string]: string | number | boolean | undefined;
 }
 
 export interface BankConnectionSummary {

@@ -212,6 +212,21 @@ class AuthApiClient {
       }),
     });
   }
+
+  /**
+   * Google OAuth Sign-In
+   * POST /api/v1/auth/google
+   * Request: { "id_token": "eyJhbGciOiJSUzI1NiIsImtpZCI6Ij...", "plan": "pro" }
+   */
+  async googleAuth(idToken: string, plan?: string): Promise<AuthResponse> {
+    return this.request<AuthResponse>("/api/v1/auth/google", {
+      method: "POST",
+      body: JSON.stringify({
+        id_token: idToken,
+        ...(plan && { plan }),
+      }),
+    });
+  }
 }
 
 export const authApi = new AuthApiClient();

@@ -9,6 +9,7 @@ import { Button, Card } from "@/components/atoms";
 import { api } from "@/services/api";
 import { showToast } from "@/lib/toast";
 import { CheckCircle, XCircle, Loader2, RefreshCw } from "lucide-react";
+import type { ApiError } from "@/types";
 
 export default function BankConnectionCallbackPage() {
   const router = useRouter();
@@ -30,7 +31,7 @@ export default function BankConnectionCallbackPage() {
         router.push("/bank-connections");
       }, 3000);
     },
-    onError: (error: any) => {
+    onError: (error: ApiError) => {
       setStatus("error");
       setErrorMessage(
         error?.error?.message || t("bankConnections.callback.errorDescription")
