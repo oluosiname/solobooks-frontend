@@ -511,41 +511,29 @@ export function PrivacySettings({
           </p>
           <div className="mt-6 grid gap-6 md:grid-cols-2">
             <div>
-              <label className="block text-sm font-medium text-slate-700">
+              <p className="text-sm font-medium text-slate-700">
                 {t("settings.privacy.dpo.nameLabel")}
-              </label>
-              <input
-                type="text"
-                className={cn(styles.input, "mt-1.5")}
-                defaultValue="Dr. Maria Schmidt"
-              />
+              </p>
+              <p className="mt-1.5 text-sm text-slate-900">
+                Olumuyiwa Osiname
+              </p>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700">
+              <p className="text-sm font-medium text-slate-700">
                 {t("settings.privacy.dpo.emailLabel")}
-              </label>
-              <input
-                type="email"
-                className={cn(styles.input, "mt-1.5")}
-                defaultValue="dpo@solobooks.com"
-              />
+              </p>
+              <p className="mt-1.5 text-sm text-slate-900">
+                olu@solobooks.de
+              </p>
             </div>
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-slate-700">
+              <p className="text-sm font-medium text-slate-700">
                 {t("settings.privacy.dpo.addressLabel")}
-              </label>
-              <input
-                type="text"
-                className={cn(styles.input, "mt-1.5")}
-                defaultValue="123 Data Protection Street, Berlin, Germany"
-              />
+              </p>
+              <p className="mt-1.5 text-sm text-slate-900">
+                Dorfstr 36D, 13057 Berlin, Germany
+              </p>
             </div>
-          </div>
-          <div className="mt-6 flex justify-end border-t border-slate-100 pt-6">
-            <button className={buttonStyles("primary")}>
-              <Check className="h-4 w-4" />
-              {t("settings.privacy.dpo.saveButton")}
-            </button>
           </div>
         </div>
       </div>
