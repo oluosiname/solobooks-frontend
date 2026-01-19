@@ -443,6 +443,7 @@ export interface ElsterCertificate {
 export interface GoogleAuthRequest {
   id_token: string; // Google ID token (JWT)
   plan?: string; // Selected subscription plan
+  language?: string; // User language preference
 }
 
 export interface GoogleAuthResponse {

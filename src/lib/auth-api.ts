@@ -216,14 +216,15 @@ class AuthApiClient {
   /**
    * Google OAuth Sign-In
    * POST /api/v1/auth/google
-   * Request: { "id_token": "eyJhbGciOiJSUzI1NiIsImtpZCI6Ij...", "plan": "pro" }
+   * Request: { "id_token": "eyJhbGciOiJSUzI1NiIsImtpZCI6Ij...", "plan": "pro", "language": "en" }
    */
-  async googleAuth(idToken: string, plan?: string): Promise<AuthResponse> {
+  async googleAuth(idToken: string, plan?: string, language?: string): Promise<AuthResponse> {
     return this.request<AuthResponse>("/api/v1/auth/google", {
       method: "POST",
       body: JSON.stringify({
         id_token: idToken,
         ...(plan && { plan }),
+        ...(language && { language }),
       }),
     });
   }
