@@ -90,7 +90,7 @@ class AuthApiClient {
       return data;
     } catch (error) {
       // Re-throw API errors
-      if ((error as any)?.error) {
+      if ((error as ApiError)?.error) {
         throw error;
       }
 

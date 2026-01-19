@@ -1,5 +1,19 @@
 // Core business types for Solobooks
 
+// API Error types
+export interface ApiErrorDetails {
+  [field: string]: string[];
+}
+
+export interface ApiError {
+  error?: {
+    code?: string;
+    message?: string;
+    details?: ApiErrorDetails;
+  };
+  message?: string;
+}
+
 export interface Profile {
   id: number;
   fullName: string;
@@ -101,6 +115,19 @@ export interface Transaction {
   category: TransactionCategory;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface TransactionInput {
+  transaction_type: "income" | "expense";
+  amount: number;
+  date: string;
+  description: string;
+  financial_category_id: string;
+  vat_rate?: number;
+  customer_location?: string;
+  customer_vat_number?: string;
+  synced_transaction_id?: string;
+  receipt?: File;
 }
 
 export interface TransactionFilters {

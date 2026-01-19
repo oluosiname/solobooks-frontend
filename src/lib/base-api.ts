@@ -159,7 +159,7 @@ export class BaseApiClient {
       return data;
     } catch (error) {
       // Re-throw API errors
-      if ((error as any)?.error) {
+      if ((error as ApiError)?.error) {
         throw error;
       }
 
@@ -179,7 +179,7 @@ export class BaseApiClient {
    */
   protected async get<T>(
     endpoint: string,
-    params?: Record<string, any>
+    params?: Record<string, string | number | boolean | undefined>
   ): Promise<T> {
     let url = endpoint;
 
@@ -203,7 +203,7 @@ export class BaseApiClient {
   /**
    * Make a POST request
    */
-  protected async post<T>(endpoint: string, data?: any): Promise<T> {
+  protected async post<T>(endpoint: string, data?: unknown): Promise<T> {
     return this.request<T>(endpoint, {
       method: "POST",
       body: data ? JSON.stringify(data) : undefined,
@@ -213,7 +213,7 @@ export class BaseApiClient {
   /**
    * Make a PUT request
    */
-  protected async put<T>(endpoint: string, data?: any): Promise<T> {
+  protected async put<T>(endpoint: string, data?: unknown): Promise<T> {
     return this.request<T>(endpoint, {
       method: "PUT",
       body: data ? JSON.stringify(data) : undefined,
@@ -223,7 +223,7 @@ export class BaseApiClient {
   /**
    * Make a PATCH request
    */
-  protected async patch<T>(endpoint: string, data?: any): Promise<T> {
+  protected async patch<T>(endpoint: string, data?: unknown): Promise<T> {
     return this.request<T>(endpoint, {
       method: "PATCH",
       body: data ? JSON.stringify(data) : undefined,

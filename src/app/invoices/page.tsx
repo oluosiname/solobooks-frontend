@@ -13,7 +13,7 @@ import { fetchInvoices, sendInvoice, payInvoice, downloadInvoicePdf } from '@/se
 import { formatCurrency, formatDate, cn } from '@/lib/utils';
 import { styles, buttonStyles } from '@/lib/styles';
 import { showToast } from '@/lib/toast';
-import type { InvoiceStatus } from '@/types';
+import type { InvoiceStatus, ApiError } from '@/types';
 
 export default function InvoicesPage() {
   const t = useTranslations();
@@ -49,7 +49,7 @@ export default function InvoicesPage() {
   const { data: invoicesData, isLoading } = useQuery({
     queryKey: ['invoices', activeTab, searchQuery, currentPage, clientId],
     queryFn: () => fetchInvoices({
-      status: activeTab === 'all' ? undefined : activeTab as any,
+      status: activeTab === 'all' ? undefined : activeTab as InvoiceStatus,
       query: searchQuery || undefined,
       client_id: clientId || undefined,
       page: currentPage,
@@ -67,8 +67,8 @@ export default function InvoicesPage() {
       queryClient.invalidateQueries({ queryKey: ['invoices'] });
       setOpenDropdownId(null);
     },
-    onError: (error: any) => {
-      showToast.error(error?.message || t('invoices.actions.sentError'));
+    onError: (error: ApiError) => {
+      showToast.error(error?.error?.message || error?.message || t('invoices.actions.sentError'));
     },
   });
 
@@ -79,8 +79,8 @@ export default function InvoicesPage() {
       queryClient.invalidateQueries({ queryKey: ['invoices'] });
       setOpenDropdownId(null);
     },
-    onError: (error: any) => {
-      showToast.error(error?.message || t('invoices.actions.paidError'));
+    onError: (error: ApiError) => {
+      showToast.error(error?.error?.message || error?.message || t('invoices.actions.paidError'));
     },
   });
 
@@ -106,8 +106,8 @@ export default function InvoicesPage() {
 
       setOpenDropdownId(null);
     },
-    onError: (error: any) => {
-      showToast.error(error?.message || t('invoices.actions.downloadError'));
+    onError: (error: ApiError) => {
+      showToast.error(error?.error?.message || error?.message || t('invoices.actions.downloadError'));
     },
   });
 
