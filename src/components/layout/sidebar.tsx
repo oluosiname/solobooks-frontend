@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import {
@@ -78,13 +79,14 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
     }`}>
       <div className="flex h-full flex-col">
         {/* Logo */}
-        <div className="flex h-16 items-center gap-3 border-b border-slate-200 px-6">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-linear-to-br from-indigo-500 to-purple-600">
-            <span className="text-lg font-bold text-white">S</span>
-          </div>
-          <span className="text-xl font-semibold tracking-tight text-slate-900">
-            Solobooks
-          </span>
+        <div className="flex h-16 items-center border-b border-slate-200 px-6">
+          <Image
+            src="/images/logo/logo.svg"
+            alt="Solobooks"
+            width={160}
+            height={40}
+            priority
+          />
         </div>
 
         {/* Main Navigation */}
