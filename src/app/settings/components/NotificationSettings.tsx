@@ -19,17 +19,41 @@ interface NotificationSettingsProps {
     vatSubmitted: boolean;
     taxYearEnd: boolean;
   };
+  onNotificationsChange?: (changes: Partial<NotificationSettingsProps['notifications']>) => void;
   unifiedSettings?: Settings;
 }
 
 export function NotificationSettings({
   notifications,
+  onNotificationsChange,
   unifiedSettings,
 }: NotificationSettingsProps) {
   const t = useTranslations();
   const queryClient = useQueryClient();
 
-  // Component is currently read-only - no save functionality
+  const updateNotificationsMutation = useMutation({
+    mutationFn: (data: Partial<ApiSettingsData>) => api.updateSettings(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["unifiedSettings"] });
+      showToast.success("Notification preferences saved successfully");
+    },
+    onError: (error: unknown) => {
+      showToast.apiError(error, "Failed to save notification preferences");
+    },
+  });
+
+  const handleSave = () => {
+    if (unifiedSettings) {
+      updateNotificationsMutation.mutate({
+        notification_preferences: {
+          invoice_created: notifications.invoiceCreated,
+          payment_received: notifications.paymentReceived,
+          invoice_overdue: notifications.invoiceOverdue,
+          monthly_summary: notifications.monthlySummary,
+        },
+      });
+    }
+  };
 
   return (
     <div className={cn(styles.card)}>
@@ -50,6 +74,7 @@ export function NotificationSettings({
             </div>
             <Toggle
               enabled={notifications.invoiceCreated}
+              onChange={() => onNotificationsChange?.({ invoiceCreated: !notifications.invoiceCreated })}
             />
           </div>
           <div className="flex items-center justify-between">
@@ -63,6 +88,7 @@ export function NotificationSettings({
             </div>
             <Toggle
               enabled={notifications.paymentReceived}
+              onChange={() => onNotificationsChange?.({ paymentReceived: !notifications.paymentReceived })}
             />
           </div>
           <div className="flex items-center justify-between">
@@ -76,6 +102,7 @@ export function NotificationSettings({
             </div>
             <Toggle
               enabled={notifications.invoiceOverdue}
+              onChange={() => onNotificationsChange?.({ invoiceOverdue: !notifications.invoiceOverdue })}
             />
           </div>
           <div className="flex items-center justify-between">
@@ -89,6 +116,7 @@ export function NotificationSettings({
             </div>
             <Toggle
               enabled={notifications.newClient}
+              onChange={() => onNotificationsChange?.({ newClient: !notifications.newClient })}
             />
           </div>
         </div>
@@ -110,6 +138,7 @@ export function NotificationSettings({
               </div>
               <Toggle
                 enabled={notifications.monthlySummary}
+                onChange={() => onNotificationsChange?.({ monthlySummary: !notifications.monthlySummary })}
               />
             </div>
             <div className="flex items-center justify-between">
@@ -125,6 +154,7 @@ export function NotificationSettings({
               </div>
               <Toggle
                 enabled={notifications.vatSubmitted}
+                onChange={() => onNotificationsChange?.({ vatSubmitted: !notifications.vatSubmitted })}
               />
             </div>
             <div className="flex items-center justify-between">
@@ -138,6 +168,7 @@ export function NotificationSettings({
               </div>
               <Toggle
                 enabled={notifications.taxYearEnd}
+                onChange={() => onNotificationsChange?.({ taxYearEnd: !notifications.taxYearEnd })}
               />
             </div>
           </div>
@@ -146,10 +177,13 @@ export function NotificationSettings({
         <div className="mt-6 flex justify-end border-t border-slate-100 pt-6">
           <button
             className={buttonStyles("primary")}
-            disabled={true}
+            onClick={handleSave}
+            disabled={updateNotificationsMutation.isPending}
           >
             <Check className="h-4 w-4" />
-            {t("settings.notifications.savePreferences")} (Coming Soon)
+            {updateNotificationsMutation.isPending
+              ? "Saving..."
+              : t("settings.notifications.savePreferences")}
           </button>
         </div>
       </div>
