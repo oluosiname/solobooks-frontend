@@ -57,15 +57,12 @@ export default function TransactionsPage() {
           >
             <AlertCircle className="h-5 w-5" />
             <div className="flex-1">
-              <p
-                className="font-medium text-amber-900"
-                dangerouslySetInnerHTML={{
-                  __html: t("dashboard.uncheckedTransactions.title", { count: uncheckedTransactions.length }).replace(
-                    String(uncheckedTransactions.length),
-                    `<span class="font-semibold">${uncheckedTransactions.length}</span>`
-                  ),
-                }}
-              />
+              <p className="font-medium text-amber-900">
+                {t.rich("dashboard.uncheckedTransactions.title", {
+                  count: uncheckedTransactions.length,
+                  bold: (chunks) => <span className="font-semibold">{chunks}</span>
+                })}
+              </p>
               <p className="text-sm text-amber-700">
                 {t("dashboard.uncheckedTransactions.description")}
               </p>
