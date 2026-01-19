@@ -117,6 +117,14 @@
     "tabs": {
       "all": "All"
     },
+    "actions": {
+      "markAsSent": "Mark as Sent",
+      "markAsPaid": "Mark as Paid",
+      "sentSuccess": "Invoice marked as sent successfully",
+      "paidSuccess": "Invoice marked as paid successfully",
+      "sentError": "Failed to mark invoice as sent",
+      "paidError": "Failed to mark invoice as paid"
+    },
     "status": {
       "draft": "Draft",
       "sent": "Sent",

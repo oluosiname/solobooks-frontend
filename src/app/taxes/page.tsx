@@ -254,25 +254,27 @@ export default function TaxesPage() {
 
                   <div className="flex items-center gap-4">
                     <div className="flex gap-2">
-                      <Button
-                        variant="secondary"
-                        onClick={() =>
-                          previewVatReportMutation.mutate(report.id)
-                        }
-                        disabled={previewVatReportMutation.isPending}
-                      >
-                        {previewVatReportMutation.isPending ? (
-                          <>
-                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-slate-600 mr-2" />
-                            Loading...
-                          </>
-                        ) : (
-                          <>
-                            <Eye className="h-4 w-4" />
-                            Preview
-                          </>
-                        )}
-                      </Button>
+                      {activeTab !== "submitted" && (
+                        <Button
+                          variant="secondary"
+                          onClick={() =>
+                            previewVatReportMutation.mutate(report.id)
+                          }
+                          disabled={previewVatReportMutation.isPending}
+                        >
+                          {previewVatReportMutation.isPending ? (
+                            <>
+                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-slate-600 mr-2" />
+                              Loading...
+                            </>
+                          ) : (
+                            <>
+                              <Eye className="h-4 w-4" />
+                              Preview
+                            </>
+                          )}
+                        </Button>
+                      )}
 
                       {report.canSubmit && (
                         <>
@@ -333,10 +335,12 @@ export default function TaxesPage() {
                               PDF
                             </Button>
                           )}
-                          <Button variant="secondary">
-                            <FileCode className="h-4 w-4" />
-                            XML
-                          </Button>
+                          {activeTab !== "submitted" && (
+                            <Button variant="secondary">
+                              <FileCode className="h-4 w-4" />
+                              XML
+                            </Button>
+                          )}
                         </>
                       )}
                     </div>

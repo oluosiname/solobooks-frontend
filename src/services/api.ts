@@ -280,6 +280,16 @@ export async function fetchInvoiceCreationRequirements(): Promise<InvoiceCreatio
   }
 }
 
+export async function sendInvoice(id: string): Promise<Invoice> {
+  const response = await invoicesApi.sendInvoice(id);
+  return transformInvoiceData(response.data);
+}
+
+export async function payInvoice(id: string): Promise<Invoice> {
+  const response = await invoicesApi.payInvoice(id);
+  return transformInvoiceData(response.data);
+}
+
 // ============================================
 // Transactions API
 // ============================================
@@ -719,6 +729,8 @@ export const api = {
   updateInvoice,
   deleteInvoice,
   fetchInvoiceCreationRequirements,
+  sendInvoice,
+  payInvoice,
 
   // Transactions
   fetchTransactions,
