@@ -134,6 +134,22 @@ class InvoicesApiClient extends BaseApiClient {
   async getCreationRequirements(): Promise<InvoiceCreationRequirementsResponse> {
     return this.get<InvoiceCreationRequirementsResponse>("/api/v1/invoices/creation_requirements");
   }
+
+  /**
+   * Mark invoice as sent
+   * PATCH /api/v1/invoices/{id}/send
+   */
+  async sendInvoice(id: string | number): Promise<InvoiceResponse> {
+    return this.patch<InvoiceResponse>(`/api/v1/invoices/${id}/send`);
+  }
+
+  /**
+   * Mark invoice as paid
+   * PATCH /api/v1/invoices/{id}/pay
+   */
+  async payInvoice(id: string | number): Promise<InvoiceResponse> {
+    return this.patch<InvoiceResponse>(`/api/v1/invoices/${id}/pay`);
+  }
 }
 
 export const invoicesApi = new InvoicesApiClient();

@@ -1,17 +1,18 @@
 'use client';
 
-import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useState, useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
-import { Plus, MoreVertical, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Plus, MoreVertical, ChevronLeft, ChevronRight, Send, CreditCard } from 'lucide-react';
 import Link from 'next/link';
 import { AppShell } from '@/components/layout';
 import { SearchInput, Tabs, Badge } from '@/components/ui';
 import { api } from '@/lib/api';
-import { fetchInvoices } from '@/services/api';
+import { fetchInvoices, sendInvoice, payInvoice } from '@/services/api';
 import { formatCurrency, formatDate, cn } from '@/lib/utils';
 import { styles, buttonStyles } from '@/lib/styles';
+import { showToast } from '@/lib/toast';
 import type { InvoiceStatus } from '@/types';
 
 export default function InvoicesPage() {
@@ -22,7 +23,28 @@ export default function InvoicesPage() {
   const [activeTab, setActiveTab] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
   const itemsPerPage = 10;
+
+  const queryClient = useQueryClient();
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      // Only close if clicking outside any dropdown
+      const target = event.target as Element;
+      const isInsideDropdown = target.closest('[data-dropdown]');
+
+      if (!isInsideDropdown) {
+        setOpenDropdownId(null);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const { data: invoicesData, isLoading } = useQuery({
     queryKey: ['invoices', activeTab, searchQuery, currentPage, clientId],
@@ -37,6 +59,30 @@ export default function InvoicesPage() {
 
   const invoices = invoicesData?.invoices || [];
   const totalPages = invoicesData?.meta?.totalPages || 1;
+
+  const sendInvoiceMutation = useMutation({
+    mutationFn: (invoiceId: string) => sendInvoice(invoiceId),
+    onSuccess: () => {
+      showToast.success(t('invoices.actions.sentSuccess'));
+      queryClient.invalidateQueries({ queryKey: ['invoices'] });
+      setOpenDropdownId(null);
+    },
+    onError: (error: any) => {
+      showToast.error(error?.message || t('invoices.actions.sentError'));
+    },
+  });
+
+  const payInvoiceMutation = useMutation({
+    mutationFn: (invoiceId: string) => payInvoice(invoiceId),
+    onSuccess: () => {
+      showToast.success(t('invoices.actions.paidSuccess'));
+      queryClient.invalidateQueries({ queryKey: ['invoices'] });
+      setOpenDropdownId(null);
+    },
+    onError: (error: any) => {
+      showToast.error(error?.message || t('invoices.actions.paidError'));
+    },
+  });
 
   const tabs = [
     { id: 'all', label: t('invoices.tabs.all') },
@@ -113,9 +159,45 @@ export default function InvoicesPage() {
                       <Badge status={invoice.status} />
                     </td>
                     <td className={styles.td}>
-                      <button className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600">
-                        <MoreVertical className="h-4 w-4" />
-                      </button>
+                      <div data-dropdown className="relative">
+                        <button
+                          onClick={() => setOpenDropdownId(openDropdownId === invoice.id ? null : invoice.id)}
+                          className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
+                        >
+                          <MoreVertical className="h-4 w-4" />
+                        </button>
+
+                        {openDropdownId === invoice.id && (
+                          <div data-dropdown className="absolute right-0 z-10 mt-1 w-48 rounded-md border border-slate-200 bg-white py-1 shadow-lg">
+                            {invoice.status === 'draft' && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  sendInvoiceMutation.mutate(invoice.id);
+                                }}
+                                disabled={sendInvoiceMutation.isPending}
+                                className="flex w-full items-center gap-2 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+                              >
+                                <Send className="h-4 w-4" />
+                                {sendInvoiceMutation.isPending ? t('common.loading') : t('invoices.actions.markAsSent')}
+                              </button>
+                            )}
+                            {(invoice.status === 'draft' || invoice.status === 'sent') && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  payInvoiceMutation.mutate(invoice.id);
+                                }}
+                                disabled={payInvoiceMutation.isPending}
+                                className="flex w-full items-center gap-2 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+                              >
+                                <CreditCard className="h-4 w-4" />
+                                {payInvoiceMutation.isPending ? t('common.loading') : t('invoices.actions.markAsPaid')}
+                              </button>
+                            )}
+                          </div>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))

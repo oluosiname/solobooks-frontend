@@ -117,6 +117,14 @@
     "tabs": {
       "all": "Alle"
     },
+    "actions": {
+      "markAsSent": "Als gesendet markieren",
+      "markAsPaid": "Als bezahlt markieren",
+      "sentSuccess": "Rechnung erfolgreich als gesendet markiert",
+      "paidSuccess": "Rechnung erfolgreich als bezahlt markiert",
+      "sentError": "Fehler beim Markieren der Rechnung als gesendet",
+      "paidError": "Fehler beim Markieren der Rechnung als bezahlt"
+    },
     "status": {
       "draft": "Entwurf",
       "sent": "Gesendet",
