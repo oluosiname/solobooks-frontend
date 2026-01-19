@@ -8,7 +8,7 @@ import Link from "next/link";
 import { Button, Card, Input, Label } from "@/components/atoms";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
-import { locales } from "@/i18n/config";
+import { locales, type Locale } from "@/i18n/config";
 
 const plans = [
   {
@@ -63,7 +63,7 @@ export default function RegisterPage() {
   // Handle language from URL parameter
   useEffect(() => {
     const langParam = searchParams.get("language") || searchParams.get("lang");
-    if (langParam && locales.includes(langParam as any)) {
+    if (langParam && locales.includes(langParam as Locale)) {
       // Check if cookie is already set to avoid infinite reload
       const currentLocale = document.cookie
         .split("; ")
@@ -89,7 +89,7 @@ export default function RegisterPage() {
     clearError();
 
     const langParam = searchParams.get("language") || searchParams.get("lang");
-    const language = langParam && locales.includes(langParam as any) ? langParam : undefined;
+    const language = langParam && locales.includes(langParam as Locale) ? langParam : undefined;
 
     try {
       await register(formData.email, formData.password, selectedPlan, formData.firstName, formData.lastName, language);
