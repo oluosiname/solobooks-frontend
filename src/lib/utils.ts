@@ -67,6 +67,26 @@ export function formatRelativeTime(
   }
 }
 
+export function isLastSyncWithin24Hours(
+  dateString: string | null | undefined
+): boolean {
+  if (!dateString) {
+    return false;
+  }
+
+  const date = new Date(dateString);
+  // Check if the date is valid
+  if (isNaN(date.getTime())) {
+    return false;
+  }
+
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffHours = diffMs / (1000 * 60 * 60);
+
+  return diffHours < 24;
+}
+
 export function getStatusColor(status: string): string {
   const colors: Record<string, string> = {
     draft: "bg-slate-100 text-slate-700",

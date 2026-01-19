@@ -329,6 +329,7 @@
     "disconnected": "Getrennt",
     "lastSync": "Zuletzt synchronisiert {time}",
     "syncNow": "Jetzt synchronisieren",
+    "syncDisabledTooltip": "Synchronisierung ist nur einmal alle 24 Stunden verfügbar",
     "syncSuccess": "Bankkonto erfolgreich synchronisiert",
     "syncError": "Synchronisation des Bankkontos fehlgeschlagen",
     "toggleSuccess": "Synchronisationseinstellungen erfolgreich aktualisiert",

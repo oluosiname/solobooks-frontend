@@ -17,7 +17,7 @@ import { AppShell } from "@/components/layout";
 import { Button, Card } from "@/components/atoms";
 import { AlertBanner } from "@/components/organisms";
 import { api } from "@/services/api";
-import { formatRelativeTime, cn } from "@/lib/utils";
+import { formatRelativeTime, isLastSyncWithin24Hours, cn } from "@/lib/utils";
 import { showToast } from "@/lib/toast";
 
 export default function BankConnectionsPage() {
@@ -203,6 +203,8 @@ export default function BankConnectionsPage() {
                     variant="secondary"
                     onClick={() => handleSync(bank.id)}
                     isLoading={syncingId === bank.id}
+                    disabled={isLastSyncWithin24Hours(bank.lastSynced)}
+                    title={isLastSyncWithin24Hours(bank.lastSynced) ? t("bankConnections.syncDisabledTooltip") : undefined}
                   >
                     <RefreshCw
                       className={cn(
