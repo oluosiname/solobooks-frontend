@@ -696,6 +696,26 @@
           "button": "Löschung anfordern"
         }
       },
+      "deleteAccount": {
+        "title": "Konto löschen",
+        "description": "Löschen Sie Ihr Konto und alle zugehörigen Daten dauerhaft",
+        "dialogTitle": "Konto löschen?",
+        "warning": "Diese Aktion kann nicht rückgängig gemacht werden. Alle Ihre Daten werden dauerhaft gelöscht.",
+        "whatWillBeDeleted": "Folgendes wird dauerhaft gelöscht:",
+        "deletedItems": {
+          "profile": "Ihr Profil und Geschäftsinformationen",
+          "invoices": "Alle Rechnungen und Rechnungseinstellungen",
+          "clients": "Alle Kundendaten",
+          "transactions": "Alle Transaktionen und Belege",
+          "bankConnections": "Alle Bankverbindungen"
+        },
+        "typeToConfirm": "Geben Sie \"{word}\" zur Bestätigung ein",
+        "confirmationWord": "LÖSCHEN",
+        "confirmButton": "Konto löschen",
+        "delete": "Mein Konto löschen",
+        "deleting": "Wird gelöscht...",
+        "error": "Konto konnte nicht gelöscht werden. Bitte versuchen Sie es erneut."
+      },
       "dataRetention": {
         "title": "Datenaufbewahrung & -verarbeitung",
         "retentionLabel": "Datenaufbewahrungszeitraum",
@@ -785,12 +805,6 @@
         "title": "Daten exportieren",
         "description": "Laden Sie eine Kopie aller Ihrer in Solobooks gespeicherten Daten herunter",
         "export": "Daten exportieren"
-      },
-      "deleteAccount": {
-        "title": "Konto löschen",
-        "description": "Löschen Sie Ihr Konto und alle zugehörigen Daten dauerhaft",
-        "warning": "Diese Aktion kann nicht rückgängig gemacht werden. Alle Ihre Daten werden dauerhaft gelöscht.",
-        "delete": "Mein Konto löschen"
       }
     }
   },
@@ -897,5 +911,17 @@
       "minLength": "Muss mindestens {min} Zeichen haben",
       "maxLength": "Darf höchstens {max} Zeichen haben"
     }
+  },
+  "accountDeleted": {
+    "title": "Konto gelöscht",
+    "description": "Ihr Solobooks-Konto wurde erfolgreich gelöscht.",
+    "whatHappensNext": "Was passiert als nächstes:",
+    "next": {
+      "dataDeleted": "Alle Ihre Daten werden innerhalb von 30 Tagen dauerhaft entfernt",
+      "emailConfirmation": "Sie erhalten eine Bestätigungs-E-Mail",
+      "subscriptionCancelled": "Alle aktiven Abonnements wurden gekündigt"
+    },
+    "returnHome": "Zur Startseite zurückkehren",
+    "questions": "Fragen? Kontaktieren Sie uns unter"
   }
 }

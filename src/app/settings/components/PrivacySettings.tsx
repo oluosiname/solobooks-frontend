@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
@@ -13,9 +14,10 @@ import { styles, buttonStyles } from "@/lib/styles";
 import { Toggle } from "@/components/atoms";
 import { api } from "@/services/api";
 import { showToast } from "@/lib/toast";
-import * as humps from "humps";
 import type { Settings } from "@/types";
 import type { SettingsData as ApiSettingsData } from "@/lib/settings-api";
+import { useAuth } from "@/contexts/AuthContext";
+import { DeleteAccountDialog } from "@/components/dialogs/DeleteAccountDialog";
 
 interface PrivacySettingsProps {
   privacy: {
@@ -54,6 +56,8 @@ export function PrivacySettings({
 }: PrivacySettingsProps) {
   const t = useTranslations();
   const queryClient = useQueryClient();
+  const { deleteAccount } = useAuth();
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   const updatePrivacyMutation = useMutation({
     mutationFn: (data: Partial<ApiSettingsData>) => api.updateSettings(data),
@@ -64,6 +68,14 @@ export function PrivacySettings({
     onError: (error: unknown) => {
       showToast.apiError(error, "Failed to save privacy preferences");
     },
+  });
+
+  const deleteAccountMutation = useMutation({
+    mutationFn: deleteAccount,
+    onError: (error: unknown) => {
+      showToast.apiError(error, t("settings.privacy.deleteAccount.error"));
+    },
+    // Note: onSuccess not needed - redirect happens in AuthContext
   });
 
   const handleConsentSave = () => {
@@ -282,7 +294,10 @@ export function PrivacySettings({
                   </p>
                 </div>
               </div>
-              <button className="rounded-lg border border-red-200 bg-white px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50">
+              <button
+                onClick={() => setDeleteDialogOpen(true)}
+                className="rounded-lg border border-red-200 bg-white px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50"
+              >
                 {t("settings.privacy.dataRights.erasure.button")}
               </button>
             </div>
@@ -649,6 +664,16 @@ export function PrivacySettings({
           </div>
         </div>
       </div>
+
+      {/* Delete Account Dialog */}
+      <DeleteAccountDialog
+        isOpen={deleteDialogOpen}
+        onClose={() => setDeleteDialogOpen(false)}
+        onConfirm={async () => {
+          await deleteAccountMutation.mutateAsync();
+        }}
+        isPending={deleteAccountMutation.isPending}
+      />
     </>
   );
 }

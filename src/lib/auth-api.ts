@@ -154,6 +154,25 @@ class AuthApiClient {
   }
 
   /**
+   * Delete user account
+   * DELETE /api/v1/account
+   *
+   * Response codes:
+   * - 202: Deletion initiated successfully
+   * - 401: Unauthorized
+   * - 410: Account already deleted
+   * - 422: Deletion failed
+   */
+  async deleteAccount(token: string): Promise<{ data: { message: string; deleted_at: string } }> {
+    return this.request<{ data: { message: string; deleted_at: string } }>("/api/v1/account", {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  }
+
+  /**
    * Get current user details
    * GET /api/v1/auth/me
    */
