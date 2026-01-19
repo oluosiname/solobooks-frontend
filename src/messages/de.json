@@ -854,7 +854,28 @@
       "monthly": "monatlich",
       "annually": "jährlich",
       "mostPopular": "Am beliebtesten",
-      "continue": "Weiter mit {plan}"
+      "continue": "Weiter mit {plan}",
+      "features": {
+        "starter": {
+          "invoices": "Bis zu 5 Rechnungen pro Monat",
+          "reporting": "Basis-Reporting",
+          "support": "E-Mail-Support"
+        },
+        "plus": {
+          "invoices": "Bis zu 20 Rechnungen pro Monat",
+          "bankSync": "Bank-Synchronisierung",
+          "reporting": "Erweitertes Reporting",
+          "support": "Prioritäts-Support"
+        },
+        "pro": {
+          "invoices": "Unbegrenzte Rechnungen",
+          "bankSync": "Bank-Synchronisierung",
+          "reporting": "Erweitertes Reporting",
+          "vat": "USt-Automatisierung",
+          "support": "Prioritäts-Support",
+          "elster": "Elster-Integration"
+        }
+      }
     }
   },
   "errors": {

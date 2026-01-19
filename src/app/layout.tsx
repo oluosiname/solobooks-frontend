@@ -20,6 +20,7 @@ export const metadata: Metadata = {
   title: "Solobooks - Freelance Accounting Made Simple",
   description:
     "Professional accounting and invoicing for freelancers and small businesses",
+  viewport: "width=device-width, initial-scale=1",
 };
 
 export default async function RootLayout({

@@ -20,10 +20,20 @@ export default function LoginPage() {
 
   // Handle language from URL parameter
   useEffect(() => {
-    const langParam = searchParams.get("lang");
+    const langParam = searchParams.get("language") || searchParams.get("lang");
     if (langParam && locales.includes(langParam as Locale)) {
-      // Set locale cookie for immediate language switching
-      document.cookie = `locale=${langParam}; path=/; max-age=31536000; SameSite=Lax`;
+      // Check if cookie is already set to avoid infinite reload
+      const currentLocale = document.cookie
+        .split("; ")
+        .find((row) => row.startsWith("locale="))
+        ?.split("=")[1];
+
+      if (currentLocale !== langParam) {
+        // Set locale cookie for immediate language switching
+        document.cookie = `locale=${langParam}; path=/; max-age=31536000; SameSite=Lax`;
+        // Force page reload to apply new language
+        window.location.reload();
+      }
     }
   }, [searchParams]);
 

@@ -14,32 +14,32 @@ const plans = [
   {
     id: "starter",
     price: "€0",
-    features: [
-      "Up to 5 invoices per month",
-      "Basic reporting",
-      "Email support",
+    featureKeys: [
+      "auth.plans.features.starter.invoices",
+      "auth.plans.features.starter.reporting",
+      "auth.plans.features.starter.support",
     ],
   },
   {
     id: "plus",
     price: "€4.99",
-    features: [
-      "Up to 20 invoices per month",
-      "Bank sync",
-      "Advanced reporting",
-      "Priority support",
+    featureKeys: [
+      "auth.plans.features.plus.invoices",
+      "auth.plans.features.plus.bankSync",
+      "auth.plans.features.plus.reporting",
+      "auth.plans.features.plus.support",
     ],
   },
   {
     id: "pro",
     price: "€7.99",
-    features: [
-      "Unlimited invoices",
-      "Bank sync",
-      "Advanced reporting",
-      "VAT automation",
-      "Priority support",
-      "Elster integration",
+    featureKeys: [
+      "auth.plans.features.pro.invoices",
+      "auth.plans.features.pro.bankSync",
+      "auth.plans.features.pro.reporting",
+      "auth.plans.features.pro.vat",
+      "auth.plans.features.pro.support",
+      "auth.plans.features.pro.elster",
     ],
     popular: true,
   },
@@ -62,10 +62,20 @@ export default function RegisterPage() {
 
   // Handle language from URL parameter
   useEffect(() => {
-    const langParam = searchParams.get("lang");
+    const langParam = searchParams.get("language") || searchParams.get("lang");
     if (langParam && locales.includes(langParam as any)) {
-      // Set locale cookie for immediate language switching
-      document.cookie = `locale=${langParam}; path=/; max-age=31536000; SameSite=Lax`;
+      // Check if cookie is already set to avoid infinite reload
+      const currentLocale = document.cookie
+        .split("; ")
+        .find((row) => row.startsWith("locale="))
+        ?.split("=")[1];
+
+      if (currentLocale !== langParam) {
+        // Set locale cookie for immediate language switching
+        document.cookie = `locale=${langParam}; path=/; max-age=31536000; SameSite=Lax`;
+        // Force page reload to apply new language
+        window.location.reload();
+      }
     }
   }, [searchParams]);
 
@@ -78,7 +88,7 @@ export default function RegisterPage() {
     e.preventDefault();
     clearError();
 
-    const langParam = searchParams.get("lang");
+    const langParam = searchParams.get("language") || searchParams.get("lang");
     const language = langParam && locales.includes(langParam as any) ? langParam : undefined;
 
     try {
@@ -158,11 +168,11 @@ export default function RegisterPage() {
                   </span>
                 </div>
 
-                <ul className="space-y-3 flex-grow mb-6">
-                  {plan.features.map((feature, index) => (
+                <ul className="space-y-3 grow mb-6">
+                  {plan.featureKeys.map((featureKey, index) => (
                     <li key={index} className="flex items-start gap-2">
                       <Check className="mt-0.5 h-5 w-5 shrink-0 text-emerald-500" />
-                      <span className="text-sm text-slate-600">{feature}</span>
+                      <span className="text-sm text-slate-600">{t(featureKey)}</span>
                     </li>
                   ))}
                 </ul>

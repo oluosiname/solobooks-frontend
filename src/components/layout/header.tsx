@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Bell, HelpCircle, Globe } from "lucide-react";
+import { Bell, HelpCircle, Globe, Menu } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { api } from "@/services/api";
 import { showToast } from "@/lib/toast";
@@ -10,9 +10,11 @@ import { useAuth } from "@/contexts/AuthContext";
 
 interface HeaderProps {
   title: string;
+  onMenuClick?: () => void;
+  showMenuButton?: boolean;
 }
 
-export function Header({ title }: HeaderProps) {
+export function Header({ title, onMenuClick, showMenuButton = false }: HeaderProps) {
   const t = useTranslations();
   const [isLanguageMenuOpen, setIsLanguageMenuOpen] = useState(false);
   const { user: authUser } = useAuth();
@@ -55,9 +57,19 @@ export function Header({ title }: HeaderProps) {
   const initials = getInitials(displayName);
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-slate-200 bg-white/95 px-6 backdrop-blur">
-      <h1 className="text-2xl font-semibold text-slate-900">{title}</h1>
+    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-slate-200 bg-white/95 px-4 sm:px-6 backdrop-blur">
       <div className="flex items-center gap-4">
+        {showMenuButton && (
+          <button
+            onClick={onMenuClick}
+            className="flex h-10 w-10 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-700 lg:hidden"
+          >
+            <Menu className="h-5 w-5" />
+          </button>
+        )}
+        <h1 className="text-xl sm:text-2xl font-semibold text-slate-900">{title}</h1>
+      </div>
+      <div className="flex items-center gap-2 sm:gap-4">
         {/* Notification Bell */}
         <button className="relative flex h-10 w-10 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-700">
           <Bell className="h-5 w-5" />
@@ -105,8 +117,8 @@ export function Header({ title }: HeaderProps) {
         </div>
 
         {/* User Menu */}
-        <div className="flex items-center gap-3 rounded-lg border border-slate-200 py-1.5 pl-3 pr-2 transition-colors hover:bg-slate-50">
-          <div className="text-right">
+        <div className="flex items-center gap-2 sm:gap-3 rounded-lg border border-slate-200 py-1.5 pl-2 sm:pl-3 pr-2 transition-colors hover:bg-slate-50">
+          <div className="hidden sm:block text-right">
             <p className="text-sm font-medium text-slate-900">{displayName}</p>
             <p className="text-xs text-slate-500">
               {currentLocale.toUpperCase()}
@@ -117,7 +129,7 @@ export function Header({ title }: HeaderProps) {
               )}
             </p>
           </div>
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 text-sm font-medium text-white">
+          <div className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-lg bg-linear-to-br from-indigo-500 to-purple-600 text-xs sm:text-sm font-medium text-white">
             {initials}
           </div>
         </div>
