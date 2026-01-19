@@ -116,12 +116,39 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
         {/* Trial Banner */}
         {user?.onTrial && trialDaysLeft !== null && trialDaysLeft > 0 && (
           <div className="border-t border-slate-200 px-3 py-4">
-            <div className="rounded-lg bg-slate-50 p-3">
-              <div className="flex items-center gap-2 text-xs font-medium text-slate-500 mb-1">
+            <div
+              className={cn(
+                "rounded-lg p-3",
+                trialDaysLeft <= 3
+                  ? "bg-red-50"
+                  : trialDaysLeft <= 7
+                    ? "bg-amber-50"
+                    : "bg-slate-50"
+              )}
+            >
+              <div
+                className={cn(
+                  "flex items-center gap-2 text-xs font-medium mb-1",
+                  trialDaysLeft <= 3
+                    ? "text-red-600"
+                    : trialDaysLeft <= 7
+                      ? "text-amber-600"
+                      : "text-slate-500"
+                )}
+              >
                 <Clock className="h-3.5 w-3.5" />
                 {t("trialTimeSensitive")}
               </div>
-              <p className="text-sm text-slate-700 mb-3">
+              <p
+                className={cn(
+                  "text-sm font-medium mb-3",
+                  trialDaysLeft <= 3
+                    ? "text-red-700"
+                    : trialDaysLeft <= 7
+                      ? "text-amber-700"
+                      : "text-slate-700"
+                )}
+              >
                 {trialDaysLeft === 1
                   ? t("trialLastDay")
                   : t("trialDaysLeft", { days: trialDaysLeft })}
@@ -129,7 +156,14 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
               <Link
                 href="/subscription"
                 onClick={handleLinkClick}
-                className="block w-full rounded-lg bg-slate-900 px-3 py-2 text-center text-sm font-medium text-white transition-colors hover:bg-slate-800"
+                className={cn(
+                  "block w-full rounded-lg px-3 py-2 text-center text-sm font-medium text-white transition-colors",
+                  trialDaysLeft <= 3
+                    ? "bg-red-600 hover:bg-red-700"
+                    : trialDaysLeft <= 7
+                      ? "bg-amber-600 hover:bg-amber-700"
+                      : "bg-slate-900 hover:bg-slate-800"
+                )}
               >
                 {t("upgradePlan")}
               </Link>
