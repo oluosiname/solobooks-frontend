@@ -397,8 +397,7 @@ export interface PnlReportResponse {
 
 // Elster Certificate types
 export interface ElsterCertificate {
-  id: number;
-  certificateType: "p12" | "pfx";
-  createdAt: string;
-  updatedAt: string;
+  id: string;
+  expired: boolean;
+  expiringSoon: boolean;
 }

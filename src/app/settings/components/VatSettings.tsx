@@ -432,8 +432,16 @@ export function VatSettings() {
                     Certificate Uploaded
                   </h4>
                   <div className="mt-2 text-sm text-green-700">
-                    <p>Type: {elsterCertificate.certificateType.toUpperCase()}</p>
-                    <p>Uploaded: {new Date(elsterCertificate.createdAt).toLocaleDateString()}</p>
+                    <p>ID: {elsterCertificate.id}</p>
+                    {elsterCertificate.expired && (
+                      <p className="text-red-600">Status: Expired</p>
+                    )}
+                    {elsterCertificate.expiringSoon && !elsterCertificate.expired && (
+                      <p className="text-yellow-600">Status: Expiring Soon</p>
+                    )}
+                    {!elsterCertificate.expired && !elsterCertificate.expiringSoon && (
+                      <p className="text-green-600">Status: Valid</p>
+                    )}
                   </div>
                   <div className="mt-3">
                     <button
