@@ -14,9 +14,11 @@ import {
   CreditCard,
   Settings,
   LogOut,
+  Clock,
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface NavItem {
   href: string;
@@ -48,9 +50,21 @@ const bottomNavItems: NavItem[] = [
   { href: "/settings", labelKey: "settings", icon: Settings },
 ];
 
+function calculateTrialDaysLeft(trialEndsAt: string | undefined): number | null {
+  if (!trialEndsAt) return null;
+  const endDate = new Date(trialEndsAt);
+  const now = new Date();
+  const diffTime = endDate.getTime() - now.getTime();
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  return diffDays;
+}
+
 export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
   const pathname = usePathname();
   const t = useTranslations("nav");
+  const { user } = useAuth();
+
+  const trialDaysLeft = user?.onTrial ? calculateTrialDaysLeft(user.trialEndsAt) : null;
 
   const handleLinkClick = () => {
     if (onClose) {
@@ -96,6 +110,30 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
             );
           })}
         </nav>
+
+        {/* Trial Banner */}
+        {user?.onTrial && trialDaysLeft !== null && trialDaysLeft > 0 && (
+          <div className="border-t border-slate-200 px-3 py-4">
+            <div className="rounded-lg bg-slate-50 p-3">
+              <div className="flex items-center gap-2 text-xs font-medium text-slate-500 mb-1">
+                <Clock className="h-3.5 w-3.5" />
+                {t("trialTimeSensitive")}
+              </div>
+              <p className="text-sm text-slate-700 mb-3">
+                {trialDaysLeft === 1
+                  ? t("trialLastDay")
+                  : t("trialDaysLeft", { days: trialDaysLeft })}
+              </p>
+              <Link
+                href="/subscription"
+                onClick={handleLinkClick}
+                className="block w-full rounded-lg bg-slate-900 px-3 py-2 text-center text-sm font-medium text-white transition-colors hover:bg-slate-800"
+              >
+                {t("upgradePlan")}
+              </Link>
+            </div>
+          </div>
+        )}
 
         {/* Bottom Navigation */}
         <div className="border-t border-slate-200 px-3 py-4">

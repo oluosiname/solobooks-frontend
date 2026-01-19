@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import {
@@ -14,7 +14,6 @@ import {
   CreditCard,
 } from "lucide-react";
 import { AppShell } from "@/components/layout";
-import { api } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { api as newApi } from "@/services/api";
 import type { InvoiceSettingsInput, Profile, ApiError } from "@/types";
@@ -68,10 +67,35 @@ export default function SettingsPage() {
     queryFn: newApi.fetchSettings,
   });
 
-  // Compute form data from API responses using useMemo
-  const notifications = useMemo(() => {
+  // Local state for notifications settings
+  const [notifications, setNotifications] = useState({
+    invoiceCreated: true,
+    paymentReceived: true,
+    invoiceOverdue: true,
+    monthlySummary: true,
+    newClient: false,
+    vatSubmitted: false,
+    taxYearEnd: false,
+  });
+
+  // Local state for privacy settings
+  const [privacy, setPrivacy] = useState({
+    essential: true,
+    analytics: true,
+    marketing: false,
+    thirdParty: true,
+    clientConsentTrackingEnabled: true,
+    clientDeletionRequestsEnabled: true,
+    emailBreach: true,
+    smsBreach: true,
+    dataRetentionYears: 10,
+    dataProcessingLocation: "eu_only" as "eu_only" | "global",
+  });
+
+  // Update notifications when unifiedSettings loads
+  useEffect(() => {
     if (unifiedSettings) {
-      return {
+      setNotifications({
         invoiceCreated: unifiedSettings.notificationPreferences.invoiceCreated,
         paymentReceived: unifiedSettings.notificationPreferences.paymentReceived,
         invoiceOverdue: unifiedSettings.notificationPreferences.invoiceOverdue,
@@ -79,22 +103,14 @@ export default function SettingsPage() {
         newClient: false, // Not in unified settings
         vatSubmitted: false, // Not in unified settings
         taxYearEnd: false, // Not in unified settings
-      };
+      });
     }
-    return {
-      invoiceCreated: true,
-      paymentReceived: true,
-      invoiceOverdue: true,
-      monthlySummary: true,
-      newClient: false,
-      vatSubmitted: false,
-      taxYearEnd: false,
-    };
   }, [unifiedSettings]);
 
-  const privacy = useMemo(() => {
+  // Update privacy when unifiedSettings loads
+  useEffect(() => {
     if (unifiedSettings) {
-      return {
+      setPrivacy({
         essential: true, // Not in unified settings
         analytics: unifiedSettings.privacyPreferences.analytics,
         marketing: unifiedSettings.privacyPreferences.marketing,
@@ -109,20 +125,8 @@ export default function SettingsPage() {
           unifiedSettings.privacyPreferences.dataRetentionYears ?? 10,
         dataProcessingLocation: (unifiedSettings.privacyPreferences
           .dataProcessingLocation === "eu_only" ? "eu_only" : "global") as "eu_only" | "global",
-      };
+      });
     }
-    return {
-      essential: true,
-      analytics: true,
-      marketing: false,
-      thirdParty: true,
-      clientConsentTrackingEnabled: true,
-      clientDeletionRequestsEnabled: true,
-      emailBreach: true,
-      smsBreach: true,
-      dataRetentionYears: 10,
-      dataProcessingLocation: "eu_only" as "eu_only" | "global",
-    };
   }, [unifiedSettings]);
 
   // Mutation for updating profile
@@ -205,7 +209,7 @@ export default function SettingsPage() {
   const handleInvoiceSettingsSave = async () => {
     try {
       await saveInvoiceSettingsMutation.mutateAsync(invoiceFormData);
-    } catch (error) {
+    } catch {
       // Error is handled by onError callback
     }
   };
@@ -263,6 +267,7 @@ export default function SettingsPage() {
           {activeTab === "notifications" && (
             <NotificationSettings
               notifications={notifications}
+              onNotificationsChange={(changes) => setNotifications((prev) => ({ ...prev, ...changes }))}
               unifiedSettings={unifiedSettings}
             />
           )}
@@ -277,7 +282,7 @@ export default function SettingsPage() {
           {activeTab === "privacy" && (
             <PrivacySettings
               privacy={privacy}
-              onPrivacyChange={() => {}} // Read-only for now
+              onPrivacyChange={(changes) => setPrivacy((prev) => ({ ...prev, ...changes }))}
               unifiedSettings={unifiedSettings}
             />
           )}
