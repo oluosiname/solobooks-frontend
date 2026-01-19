@@ -4,6 +4,7 @@
     "save": "Save",
     "cancel": "Cancel",
     "delete": "Delete",
+    "deleting": "Deleting...",
     "discard": "Discard",
     "discarding": "Discarding...",
     "edit": "Edit",
@@ -62,7 +63,7 @@
       "viewReport": "View Year Report"
     },
     "uncheckedTransactions": {
-      "title": "You have {count} unchecked transactions synced from your bank account(s)",
+      "title": "You have <bold>{count}</bold> unchecked transactions synced from your bank account(s)",
       "description": "Review and categorize your synced transactions to keep your books accurate.",
       "viewPending": "View Pending"
     },
@@ -233,6 +234,7 @@
     "addManualIncome": "Add Manual Income",
     "import": {
       "title": "Import Transactions",
+      "downloadError": "Failed to download template",
       "backToTransactions": "Back to Transactions",
       "uploadFile": "Upload Your File",
       "uploadDescription": "Click to upload or drag and drop",
@@ -429,7 +431,9 @@
       "monthly": "Monthly"
     },
     "dataNotAvailable": "Reports data not available",
-    "dataNotAvailableDescription": "Some report data is not yet available from the backend. These features will be implemented in a future update."
+    "dataNotAvailableDescription": "Some report data is not yet available from the backend. These features will be implemented in a future update.",
+    "downloadError": "Failed to download PDF",
+    "downloading": "Downloading..."
   },
   "taxes": {
     "title": "Taxes",

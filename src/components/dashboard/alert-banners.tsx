@@ -48,17 +48,12 @@ export function AlertBanners({ uncheckedCount }: AlertBannersProps) {
         <div className={cn(styles.alert, styles.alertWarning)}>
           <AlertCircle className="h-5 w-5 text-amber-600" />
           <div className="flex-1">
-            <p
-              className="font-medium text-amber-900"
-              dangerouslySetInnerHTML={{
-                __html: t("dashboard.uncheckedTransactions.title", {
-                  count: uncheckedCount,
-                }).replace(
-                  String(uncheckedCount),
-                  `<span class="font-semibold">${uncheckedCount}</span>`
-                ),
-              }}
-            />
+            <p className="font-medium text-amber-900">
+              {t.rich("dashboard.uncheckedTransactions.title", {
+                count: uncheckedCount,
+                bold: (chunks) => <span className="font-semibold">{chunks}</span>
+              })}
+            </p>
             <p className="text-sm text-amber-700">
               {t("dashboard.uncheckedTransactions.description")}
             </p>

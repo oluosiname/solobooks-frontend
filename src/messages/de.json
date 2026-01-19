@@ -4,6 +4,7 @@
     "save": "Speichern",
     "cancel": "Abbrechen",
     "delete": "Löschen",
+    "deleting": "Wird gelöscht...",
     "discard": "Verwerfen",
     "discarding": "Wird verworfen...",
     "edit": "Bearbeiten",
@@ -62,7 +63,7 @@
       "viewReport": "Jahresbericht anzeigen"
     },
     "uncheckedTransactions": {
-      "title": "Sie haben {count} ungeprüfte Transaktionen von Ihrem Bankkonto synchronisiert",
+      "title": "Sie haben <bold>{count}</bold> ungeprüfte Transaktionen von Ihrem Bankkonto synchronisiert",
       "description": "Überprüfen und kategorisieren Sie Ihre synchronisierten Transaktionen, um Ihre Buchhaltung aktuell zu halten.",
       "viewPending": "Ausstehende anzeigen"
     },
@@ -281,6 +282,7 @@
     },
     "import": {
       "title": "Transaktionen importieren",
+      "downloadError": "Fehler beim Herunterladen der Vorlage",
       "backToTransactions": "Zurück zu Transaktionen",
       "uploadFile": "Datei hochladen",
       "uploadDescription": "Klicken zum Hochladen oder Drag & Drop",
@@ -430,7 +432,9 @@
       "monthly": "Monatlich"
     },
     "dataNotAvailable": "Berichtsdaten nicht verfügbar",
-    "dataNotAvailableDescription": "Einige Berichtsdaten sind noch nicht vom Backend verfügbar. Diese Funktionen werden in einem zukünftigen Update implementiert."
+    "dataNotAvailableDescription": "Einige Berichtsdaten sind noch nicht vom Backend verfügbar. Diese Funktionen werden in einem zukünftigen Update implementiert.",
+    "downloadError": "Fehler beim Herunterladen des PDFs",
+    "downloading": "Wird heruntergeladen..."
   },
   "taxes": {
     "title": "Steuern",
