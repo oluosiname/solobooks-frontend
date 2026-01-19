@@ -42,7 +42,12 @@
     "taxes": "Steuern",
     "subscription": "Abonnement",
     "settings": "Einstellungen",
-    "logout": "Abmelden"
+    "logout": "Abmelden",
+    "trialDaysLeft": "Noch {days} Tage Testversion",
+    "trialLastDay": "Letzter Tag der Testversion",
+    "trialExpired": "Testversion abgelaufen",
+    "trialTimeSensitive": "Zeitkritisch",
+    "upgradePlan": "Upgrade"
   },
   "dashboard": {
     "title": "Dashboard",

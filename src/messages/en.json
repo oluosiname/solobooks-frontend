@@ -42,7 +42,12 @@
     "taxes": "Taxes",
     "subscription": "Subscription",
     "settings": "Settings",
-    "logout": "Logout"
+    "logout": "Logout",
+    "trialDaysLeft": "{days} days left in trial",
+    "trialLastDay": "Last day of trial",
+    "trialExpired": "Trial expired",
+    "trialTimeSensitive": "Time sensitive",
+    "upgradePlan": "Upgrade"
   },
   "dashboard": {
     "title": "Dashboard",
