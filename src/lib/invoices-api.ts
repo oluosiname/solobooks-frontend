@@ -96,6 +96,14 @@ export interface InvoicesQueryParams {
   query?: string;
 }
 
+export interface InvoiceCreationRequirementsResponse {
+  can_create: boolean;
+  requirements: {
+    profile_complete: boolean;
+    invoice_setting_exists: boolean;
+  };
+}
+
 // ============================================
 // API Client
 // ============================================
@@ -117,6 +125,14 @@ class InvoicesApiClient extends BaseApiClient {
    */
   async createInvoice(data: CreateInvoiceRequest): Promise<InvoiceResponse> {
     return this.post<InvoiceResponse>("/api/v1/invoices", data);
+  }
+
+  /**
+   * Get invoice creation requirements
+   * GET /api/v1/invoices/creation_requirements
+   */
+  async getCreationRequirements(): Promise<InvoiceCreationRequirementsResponse> {
+    return this.get<InvoiceCreationRequirementsResponse>("/api/v1/invoices/creation_requirements");
   }
 }
 

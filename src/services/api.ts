@@ -62,6 +62,7 @@ import type {
   InvoiceSettings,
   InvoiceSettingsInput,
   InvoiceCategory,
+  InvoiceCreationRequirements,
   Currency,
   VatStatus,
   VatStatusInput,
@@ -86,6 +87,7 @@ import {
   transformBankData,
   transformSyncedTransactionData,
   transformSettingsData,
+  transformInvoiceCreationRequirements,
   transformDashboardStatsData,
   transformFinancialCategoryData,
   transformInvoiceCategoryData,
@@ -259,6 +261,23 @@ export async function updateInvoice(
 
 export async function deleteInvoice(id: string): Promise<boolean> {
   throw new Error("Delete invoice API endpoint not implemented yet");
+}
+
+export async function fetchInvoiceCreationRequirements(): Promise<InvoiceCreationRequirements> {
+  try {
+    const response = await invoicesApi.getCreationRequirements();
+    return transformInvoiceCreationRequirements(response);
+  } catch (error) {
+    // Return default values if the endpoint doesn't exist yet
+    console.warn("Invoice creation requirements endpoint not available:", error);
+    return {
+      canCreate: true,
+      requirements: {
+        profileComplete: true,
+        invoiceSettingExists: true,
+      },
+    };
+  }
 }
 
 // ============================================
@@ -699,6 +718,7 @@ export const api = {
   createInvoice,
   updateInvoice,
   deleteInvoice,
+  fetchInvoiceCreationRequirements,
 
   // Transactions
   fetchTransactions,

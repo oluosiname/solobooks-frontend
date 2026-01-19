@@ -99,7 +99,11 @@
       "selectClient": "Select client",
       "addLineItem": "Add line item",
       "itemDescription": "Item description",
-      "saveInvoice": "Save Invoice"
+      "saveInvoice": "Save Invoice",
+      "profileIncomplete": "Please complete your profile before creating invoices.",
+      "invoiceSettingsMissing": "Please configure your invoice settings before creating invoices.",
+      "completeProfile": "Complete Profile",
+      "configureSettings": "Configure Settings"
     },
     "columns": {
       "invoiceNumber": "Invoice Number",
