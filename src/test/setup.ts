@@ -15,6 +15,9 @@ vi.mock('next/navigation', () => ({
     prefetch: vi.fn(),
   }),
   usePathname: () => '/',
+  useSearchParams: () => ({
+    get: vi.fn((_key: string) => null),
+  }),
 }));
 
 // Mock localStorage

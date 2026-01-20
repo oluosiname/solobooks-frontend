@@ -14,6 +14,11 @@ vi.mock('@/contexts/AuthContext', () => ({
   useAuth: vi.fn(),
 }));
 
+// Mock GoogleSignInButton
+vi.mock('@/components/auth/GoogleSignInButton', () => ({
+  GoogleSignInButton: () => <div data-testid="google-signin-button">Google Sign In</div>,
+}));
+
 describe('LoginPage', () => {
   const mockLogin = vi.fn();
   const mockClearError = vi.fn();

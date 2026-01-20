@@ -14,6 +14,11 @@ vi.mock('@/contexts/AuthContext', () => ({
   useAuth: vi.fn(),
 }));
 
+// Mock GoogleSignInButton
+vi.mock('@/components/auth/GoogleSignInButton', () => ({
+  GoogleSignInButton: () => <div data-testid="google-signin-button">Google Sign In</div>,
+}));
+
 describe('RegisterPage', () => {
   const mockRegister = vi.fn();
   const mockClearError = vi.fn();
@@ -94,14 +99,14 @@ describe('RegisterPage', () => {
       const user = userEvent.setup();
       render(<RegisterPage />);
 
-      // Navigate to details step
-      const proButtons = screen.getAllByRole('button');
-      const continueButton = proButtons.find((btn) =>
+      // Navigate to details step - click the pro plan button (last continue button, or find by most popular badge)
+      const continueButtons = screen.getAllByRole('button').filter((btn) =>
         btn.textContent?.includes('auth.plans.continue')
       );
-
-      if (continueButton) {
-        await user.click(continueButton);
+      
+      // Click the last continue button (should be pro plan, which is last in the plans array)
+      if (continueButtons.length > 0) {
+        await user.click(continueButtons[continueButtons.length - 1]);
       }
 
       await waitFor(() => {
@@ -178,7 +183,10 @@ describe('RegisterPage', () => {
         expect(mockRegister).toHaveBeenCalledWith(
           'john@example.com',
           'password123',
-          'pro'
+          'pro',
+          'John',
+          'Doe',
+          undefined
         );
       }, { timeout: 3000 });
     });
@@ -285,15 +293,13 @@ describe('RegisterPage', () => {
 
       render(<RegisterPage />);
 
-      // Navigate to details step with pro plan (default)
-      const initialButtons = screen.getAllByRole('button');
-      const proContinue = initialButtons.find((btn) =>
-        btn.textContent?.includes('auth.plans.continue') &&
-        btn.textContent?.includes('pro')
+      // Navigate to details step with pro plan (default) - click the last continue button (pro plan)
+      const initialContinueButtons = screen.getAllByRole('button').filter((btn) =>
+        btn.textContent?.includes('auth.plans.continue')
       );
-
-      if (proContinue) {
-        await user.click(proContinue);
+      
+      if (initialContinueButtons.length > 0) {
+        await user.click(initialContinueButtons[initialContinueButtons.length - 1]);
       }
 
       await waitFor(() => {
@@ -310,18 +316,23 @@ describe('RegisterPage', () => {
         expect(screen.getByText('auth.plans.starter')).toBeInTheDocument();
       });
 
-      // Continue with pro plan again
-      const buttonsAgain = screen.getAllByRole('button');
-      const proContinueAgain = buttonsAgain.find((btn) =>
-        btn.textContent?.includes('auth.plans.continue') &&
-        btn.textContent?.includes('pro')
+      // Continue with pro plan again - click the last continue button (pro plan)
+      const buttonsAgain = screen.getAllByRole('button').filter((btn) =>
+        btn.textContent?.includes('auth.plans.continue')
       );
 
-      if (proContinueAgain) {
-        await user.click(proContinueAgain);
+      if (buttonsAgain.length > 0) {
+        await user.click(buttonsAgain[buttonsAgain.length - 1]);
       }
 
+      // Wait for details step to appear
+      await waitFor(() => {
+        expect(screen.getByText('auth.register.title')).toBeInTheDocument();
+      });
+
       // Fill form and submit
+      await user.type(screen.getByLabelText('auth.register.firstName'), 'Test');
+      await user.type(screen.getByLabelText('auth.register.lastName'), 'User');
       await user.type(screen.getByLabelText('auth.register.email'), 'test@test.com');
       await user.type(screen.getByLabelText('auth.register.password'), 'pass123');
       await user.click(screen.getByRole('checkbox'));
@@ -334,7 +345,10 @@ describe('RegisterPage', () => {
         expect(mockRegister).toHaveBeenCalledWith(
           'test@test.com',
           'pass123',
-          'pro'
+          'pro',
+          'Test',
+          'User',
+          undefined
         );
       }, { timeout: 3000 });
     });
