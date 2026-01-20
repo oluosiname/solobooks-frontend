@@ -71,14 +71,14 @@ export default function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4 py-12">
       <div className="w-full max-w-md">
         {/* Logo */}
-        <div className="mb-8 flex justify-center">
+        <div className="mb-6 flex justify-center">
           <Image
-            src="/images/logo/logo.svg"
+            src="/images/logo/logo-icon.svg"
             alt="Solobooks"
             width={160}
             height={40}
             priority
-            className="h-10 w-auto"
+            className="h-16 w-auto"
           />
         </div>
 

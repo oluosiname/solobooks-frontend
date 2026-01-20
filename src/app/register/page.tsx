@@ -132,12 +132,12 @@ export default function RegisterPage() {
           {/* Logo */}
           <div className="mb-8 flex justify-center">
             <Image
-              src="/images/logo/logo.svg"
+              src="/images/logo/logo-icon.svg"
               alt="Solobooks"
               width={160}
               height={40}
               priority
-              className="h-10 w-auto"
+              className="h-16 w-auto"
             />
           </div>
 
