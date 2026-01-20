@@ -50,13 +50,19 @@ export default function RegisterPage() {
   const t = useTranslations();
   const { register, registerWithGoogle, error, clearError, isLoading } = useAuth();
   const searchParams = useSearchParams();
-  const [step, setStep] = useState<"plan" | "details">("plan");
 
   // Initialize selectedPlan from URL parameter
   const [selectedPlan, setSelectedPlan] = useState(() => {
     const planParam = searchParams.get("plan");
     const validPlans = ["starter", "plus", "pro"];
     return planParam && validPlans.includes(planParam) ? planParam : "pro";
+  });
+
+  // Initialize step - skip to details if a valid plan is provided in URL
+  const [step, setStep] = useState<"plan" | "details">(() => {
+    const planParam = searchParams.get("plan");
+    const validPlans = ["starter", "plus", "pro"];
+    return planParam && validPlans.includes(planParam) ? "details" : "plan";
   });
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
