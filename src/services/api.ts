@@ -25,7 +25,7 @@ import type {
 import { profileApi } from "@/lib/profile-api";
 import type { UpdateProfileRequest } from "@/lib/profile-api";
 import { pnlReportsApi } from "@/lib/pnl-reports-api";
-import type { PnlData, PnlReportResponse } from "@/types";
+import type { PnlData } from "@/types";
 import { transactionsApi } from "@/lib/transactions-api";
 import type {
   TransactionFilters as ApiTransactionFilters,
@@ -67,7 +67,6 @@ import type {
   VatStatus,
   VatStatusInput,
   Plan,
-  VatReportsResponse,
   VatReportPreview,
 } from "@/types";
 
@@ -95,9 +94,6 @@ import {
   transformPnlData,
 } from "./api-transformer";
 
-// Simulate network delay
-const delay = (ms: number = 300) =>
-  new Promise((resolve) => setTimeout(resolve, ms));
 
 // ============================================
 // Profile API
@@ -209,7 +205,7 @@ export async function fetchInvoices(params?: InvoicesQueryParams): Promise<{
   };
 }
 
-export async function fetchInvoice(id: string): Promise<Invoice | null> {
+export async function fetchInvoice(_id: string): Promise<Invoice | null> {
   throw new Error("Fetch invoice by ID API endpoint not implemented yet");
 }
 
@@ -227,7 +223,7 @@ export async function createInvoice(data: {
     unit: string;
     quantity: number;
   }>;
-}): Promise<any> {
+}): Promise<Invoice> {
   const invoiceData = {
     invoice: {
       client_id: data.clientId,
@@ -253,13 +249,13 @@ export async function createInvoice(data: {
 }
 
 export async function updateInvoice(
-  id: string,
-  data: Partial<Invoice>
+  _id: string,
+  _data: Partial<Invoice>
 ): Promise<Invoice | null> {
   throw new Error("Update invoice API endpoint not implemented yet");
 }
 
-export async function deleteInvoice(id: string): Promise<boolean> {
+export async function deleteInvoice(_id: string): Promise<boolean> {
   throw new Error("Delete invoice API endpoint not implemented yet");
 }
 

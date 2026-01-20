@@ -17,7 +17,6 @@ export function GoogleOAuthWrapper({ children }: GoogleOAuthWrapperProps) {
         tags: { errorType: 'missing_env_var' },
       });
     } else {
-      // eslint-disable-next-line no-console
       console.error("NEXT_PUBLIC_GOOGLE_CLIENT_ID is not set");
     }
     return <>{children}</>;

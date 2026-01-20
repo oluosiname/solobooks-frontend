@@ -30,7 +30,7 @@ module.exports = {
   // Custom parser for JSON files with nested structure
   parser: {
     parse: (content) => JSON.parse(content),
-    flatten: (obj, prefix = "") => {
+    flatten: (obj, _prefix = "") => {
       const result = {};
 
       function flatten(obj, prefix = "") {

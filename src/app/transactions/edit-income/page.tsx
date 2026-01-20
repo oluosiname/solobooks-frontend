@@ -3,22 +3,19 @@
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useTranslations } from "next-intl";
 import { ArrowLeft, Check } from "lucide-react";
 import { AppShell } from "@/components/layout";
 import { cn } from "@/lib/utils";
 import { styles, buttonStyles } from "@/lib/styles";
-import { createTransaction, updateTransaction, fetchCategories, fetchTransaction } from "@/services/api";
+import { updateTransaction, fetchCategories, fetchTransaction } from "@/services/api";
 import { showToast } from "@/lib/toast";
 import { FileUpload } from "@/components/molecules/FileUpload";
 import type { TransactionInput, ApiError } from "@/types";
-import * as humps from "humps";
 
 export default function EditIncomePage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const queryClient = useQueryClient();
-  const t = useTranslations();
 
   const transactionId = searchParams.get('id');
 
@@ -60,6 +57,7 @@ export default function EditIncomePage() {
   // Update form data when transaction data is loaded
   useEffect(() => {
     if (transactionData && !isLoadingTransaction) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setFormData({
         transactionType: transactionData.transactionType || "Income",
         categoryId: transactionData.category?.id.toString() || "",
