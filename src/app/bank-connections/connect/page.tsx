@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { ArrowLeft, Search, Check, Shield, RefreshCw } from "lucide-react";
@@ -164,13 +165,13 @@ export default function AddBankConnectionPage() {
                     <div className="p-8 text-center text-gray-500">
                       <p>
                         {t("bankConnections.connect.noBanksFound", {
-                          searchTerm,
+                          query: searchTerm,
                         })}
                       </p>
                     </div>
                   ) : (
                     <div className="divide-y divide-gray-200">
-                      {filteredBanks?.slice(0, 10).map((bank) => (
+                          {filteredBanks?.slice(0, 10).map((bank) => (
                         <button
                           key={bank.id}
                           onClick={() => handleBankSelect(bank)}
@@ -181,9 +182,11 @@ export default function AddBankConnectionPage() {
                           }`}
                         >
                           {bank.logo ? (
-                            <img
+                            <Image
                               src={bank.logo}
                               alt={`${bank.name} logo`}
+                              width={40}
+                              height={40}
                               className="w-10 h-10 rounded-lg object-contain bg-white"
                               onError={(e) => {
                                 // Fallback to generic bank icon if logo fails to load

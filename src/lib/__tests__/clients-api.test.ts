@@ -2,6 +2,8 @@
  * Tests for Clients API Client
  */
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { clientsApi } from '../clients-api';
 import type { ClientListResponse, ClientResponse } from '../clients-api';

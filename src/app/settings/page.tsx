@@ -95,6 +95,7 @@ export default function SettingsPage() {
   // Update notifications when unifiedSettings loads
   useEffect(() => {
     if (unifiedSettings) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setNotifications({
         invoiceCreated: unifiedSettings.notificationPreferences.invoiceCreated,
         paymentReceived: unifiedSettings.notificationPreferences.paymentReceived,
@@ -110,6 +111,7 @@ export default function SettingsPage() {
   // Update privacy when unifiedSettings loads
   useEffect(() => {
     if (unifiedSettings) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setPrivacy({
         essential: true, // Not in unified settings
         analytics: unifiedSettings.privacyPreferences.analytics,
@@ -172,6 +174,7 @@ export default function SettingsPage() {
   // Update form when settings are loaded
   useEffect(() => {
     if (invoiceSettings) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setInvoiceFormData({
         prefix: invoiceSettings.prefix,
         currencyId: invoiceSettings.currency.id,

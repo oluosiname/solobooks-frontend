@@ -1,13 +1,12 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { ArrowLeft, Plus, Trash2, Check, ExternalLink, AlertCircle } from "lucide-react";
 import { AppShell } from "@/components/layout";
-import { AlertBanner } from "@/components/organisms";
 import { cn } from "@/lib/utils";
 import { styles, buttonStyles } from "@/lib/styles";
 import { api } from "@/services/api";
@@ -80,6 +79,7 @@ export default function NewInvoicePage() {
       // Find EUR currency or use the first available
       const eurCurrency = currencies.find((c) => c.code === "EUR");
       if (eurCurrency) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setFormData((prev) => ({
           ...prev,
           currency: eurCurrency.id.toString(),
