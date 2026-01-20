@@ -73,15 +73,14 @@ export function GoogleSignInButton({
 
   return (
     <div className="w-full">
-      <div className="[&>div]:w-full [&>div>div]:w-full! [&_iframe]:min-h-11">
-        <GoogleLogin
-          onSuccess={handleSuccess}
-          onError={handleError}
-          text={text === "signup" ? "signup_with" : "continue_with"}
-          size="large"
-          logo_alignment="left"
-        />
-      </div>
+      <GoogleLogin
+        onSuccess={handleSuccess}
+        onError={handleError}
+        text={text === "signup" ? "signup_with" : "continue_with"}
+        size="large"
+        logo_alignment="left"
+        width="384"
+      />
     </div>
   );
 }
