@@ -27,7 +27,6 @@ export function GoogleSignInButton({
           tags: { errorType: 'google_oauth_missing_credential' },
         });
       } else {
-        // eslint-disable-next-line no-console
         console.error("No credential received from Google");
       }
       return;
@@ -42,7 +41,6 @@ export function GoogleSignInButton({
           tags: { errorType: 'google_signin_error' },
         });
       } else {
-        // eslint-disable-next-line no-console
         console.error("Google sign-in error:", error);
       }
     } finally {
@@ -57,7 +55,6 @@ export function GoogleSignInButton({
         tags: { errorType: 'google_oauth_error' },
       });
     } else {
-      // eslint-disable-next-line no-console
       console.error("Google OAuth error");
     }
   };

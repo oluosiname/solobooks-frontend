@@ -14,7 +14,7 @@ export function PaymentSettings() {
   const queryClient = useQueryClient();
   const [showPaymentForm, setShowPaymentForm] = useState(false);
 
-  const { data: paymentMethod, isLoading } = useQuery({
+  const { data: paymentMethod } = useQuery({
     queryKey: ["paymentMethod"],
     queryFn: api.fetchPaymentMethod,
   });

@@ -34,6 +34,7 @@ export function ProfileSettings({
   // Update form when profile loads
   useEffect(() => {
     if (profile) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setFormData({
         businessName: profile.businessName || "",
         fullName: profile.fullName || "",
