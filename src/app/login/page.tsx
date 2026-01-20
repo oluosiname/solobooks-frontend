@@ -3,8 +3,9 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Eye, EyeOff, Calculator } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { Button, Card, Input, Label } from "@/components/atoms";
 import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
 import { useAuth } from "@/contexts/AuthContext";
@@ -71,9 +72,14 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="mb-8 flex justify-center">
-          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-600">
-            <Calculator className="h-8 w-8 text-white" />
-          </div>
+          <Image
+            src="/images/logo/logo.svg"
+            alt="Solobooks"
+            width={160}
+            height={40}
+            priority
+            className="h-10 w-auto"
+          />
         </div>
 
         {/* Title */}
