@@ -102,7 +102,7 @@ export default function TaxesPage() {
 
   const previewVatReportMutation = useMutation({
     mutationFn: (reportId: number) => api.previewVatReport(reportId.toString()),
-    onSuccess: (data: VatReportPreview) => {
+    onSuccess: (_data: VatReportPreview) => {
       setPreviewModalOpen(true);
     },
     onError: (error: unknown) => {

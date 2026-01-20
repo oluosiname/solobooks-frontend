@@ -59,9 +59,7 @@ export interface InitiateConnectionResponse {
   };
 }
 
-export interface CompleteConnectionRequest {
-  // No parameters needed - backend handles internally
-}
+export type CompleteConnectionRequest = Record<string, never>;
 
 export interface CompleteConnectionResponse {
   data: BankConnectionData;

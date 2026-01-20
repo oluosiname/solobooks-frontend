@@ -8,7 +8,6 @@ import { Plus, MoreVertical, ChevronLeft, ChevronRight, Send, CreditCard, Downlo
 import Link from 'next/link';
 import { AppShell } from '@/components/layout';
 import { SearchInput, Tabs, Badge } from '@/components/ui';
-import { api } from '@/lib/api';
 import { fetchInvoices, sendInvoice, payInvoice, downloadInvoicePdf } from '@/services/api';
 import { formatCurrency, formatDate, cn } from '@/lib/utils';
 import { styles, buttonStyles } from '@/lib/styles';

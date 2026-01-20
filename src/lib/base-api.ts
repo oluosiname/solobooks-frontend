@@ -90,7 +90,6 @@ export class BaseApiClient {
           });
         });
       } else {
-        // eslint-disable-next-line no-console
         console.error("Token refresh failed:", error);
       }
       // If refresh fails, trigger logout by clearing tokens and reloading

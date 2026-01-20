@@ -79,6 +79,7 @@ describe("AuthContext", () => {
       localStorage.setItem("solobooks_user", JSON.stringify(mockUser));
 
       // Mock the me call that happens during initialization
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (authApiModule.authApi.me as any).mockResolvedValueOnce({
         data: { id: "user-123", email: "test@example.com", confirmed: true, created_at: "2024-01-01", updated_at: "2024-01-01" }
       });
@@ -108,6 +109,7 @@ describe("AuthContext", () => {
         updatedAt: "2024-01-01",
       };
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (authApiModule.authApi.login as any).mockResolvedValueOnce({
         data: {
           access_token: mockToken,
@@ -117,6 +119,7 @@ describe("AuthContext", () => {
         },
       });
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (authApiModule.authApi.me as any).mockResolvedValueOnce({
         data: mockUser,
       });
@@ -152,6 +155,7 @@ describe("AuthContext", () => {
         },
       };
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (authApiModule.authApi.login as any).mockRejectedValueOnce(mockError);
 
       const wrapper = ({ children }: { children: React.ReactNode }) => (
@@ -163,7 +167,7 @@ describe("AuthContext", () => {
       await act(async () => {
         try {
           await result.current.login("wrong@example.com", "wrongpass");
-        } catch (error) {
+        } catch (_error) {
           // Expected to throw
         }
       });
@@ -184,6 +188,7 @@ describe("AuthContext", () => {
         updatedAt: "2024-01-01",
       };
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (authApiModule.authApi.register as any).mockResolvedValueOnce({
         data: {
           access_token: mockToken,
@@ -193,6 +198,7 @@ describe("AuthContext", () => {
         },
       });
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (authApiModule.authApi.me as any).mockResolvedValueOnce({
         data: mockUser,
       });
@@ -231,6 +237,7 @@ describe("AuthContext", () => {
         },
       };
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (authApiModule.authApi.register as any).mockRejectedValueOnce(mockError);
 
       const wrapper = ({ children }: { children: React.ReactNode }) => (
@@ -242,7 +249,7 @@ describe("AuthContext", () => {
       await act(async () => {
         try {
           await result.current.register("existing@example.com", "pass", "pro");
-        } catch (error) {
+        } catch (_error) {
           // Expected to throw
         }
       });
@@ -262,10 +269,12 @@ describe("AuthContext", () => {
       );
 
       // Mock the me call that happens during initialization
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (authApiModule.authApi.me as any).mockResolvedValueOnce({
         data: { id: "123", email: "test@example.com", confirmed: true, created_at: "2024-01-01", updated_at: "2024-01-01" }
       });
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (authApiModule.authApi.logout as any).mockResolvedValueOnce({});
 
       const wrapper = ({ children }: { children: React.ReactNode }) => (
@@ -297,6 +306,7 @@ describe("AuthContext", () => {
       localStorage.setItem("solobooks_auth_token", "test-token");
       localStorage.setItem("solobooks_refresh_token", "test-refresh-token");
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (authApiModule.authApi.logout as any).mockRejectedValueOnce(
         new Error("Network error")
       );
@@ -326,6 +336,7 @@ describe("AuthContext", () => {
       const { result } = renderHook(() => useAuth(), { wrapper });
 
       // Manually set an error
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (authApiModule.authApi.login as any).mockRejectedValueOnce({
         error: { message: "Test error" },
       });
@@ -333,7 +344,7 @@ describe("AuthContext", () => {
       await act(async () => {
         try {
           await result.current.login("test@test.com", "pass");
-        } catch (e) {
+        } catch (_error) {
           // Expected
         }
       });

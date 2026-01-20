@@ -15,6 +15,7 @@ describe('AuthAPI', () => {
         data: { token: 'test-token-123' },
       };
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (global.fetch as any).mockResolvedValueOnce({
         ok: true,
         json: async () => mockResponse,
@@ -46,6 +47,7 @@ describe('AuthAPI', () => {
         },
       };
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (global.fetch as any).mockResolvedValueOnce({
         ok: false,
         json: async () => mockError,
@@ -60,6 +62,7 @@ describe('AuthAPI', () => {
     });
 
     it('should handle network errors', async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (global.fetch as any).mockRejectedValueOnce(new Error('Network error'));
 
       await expect(
@@ -82,6 +85,7 @@ describe('AuthAPI', () => {
         data: { token: 'new-user-token' },
       };
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (global.fetch as any).mockResolvedValueOnce({
         ok: true,
         json: async () => mockResponse,
@@ -116,6 +120,7 @@ describe('AuthAPI', () => {
         data: { token: 'new-user-token' },
       };
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (global.fetch as any).mockResolvedValueOnce({
         ok: true,
         json: async () => mockResponse,
@@ -128,6 +133,7 @@ describe('AuthAPI', () => {
       });
 
       const callBody = JSON.parse(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (global.fetch as any).mock.calls[0][1].body
       );
       expect(callBody.user.plan).toBe('pro');
@@ -144,6 +150,7 @@ describe('AuthAPI', () => {
         },
       };
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (global.fetch as any).mockResolvedValueOnce({
         ok: false,
         json: async () => mockError,
@@ -171,6 +178,7 @@ describe('AuthAPI', () => {
         },
       };
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (global.fetch as any).mockResolvedValueOnce({
         ok: true,
         json: async () => mockResponse,
@@ -198,6 +206,7 @@ describe('AuthAPI', () => {
         },
       };
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (global.fetch as any).mockResolvedValueOnce({
         ok: false,
         json: async () => mockError,
@@ -209,6 +218,7 @@ describe('AuthAPI', () => {
 
   describe('logout', () => {
     it('should successfully logout', async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (global.fetch as any).mockResolvedValueOnce({
         ok: true,
         json: async () => ({}),

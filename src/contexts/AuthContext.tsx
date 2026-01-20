@@ -193,7 +193,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     initializeAuth();
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Handle window focus to refresh tokens if needed
   useEffect(() => {
@@ -215,11 +215,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     window.addEventListener("focus", handleFocus);
     return () => window.removeEventListener("focus", handleFocus);
-  }, [tokenExpiry, refreshToken]);
+  }, [tokenExpiry, refreshToken]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Listen for account deleted event from 410 interceptor
   useEffect(() => {
-    const handleAccountDeleted = (event: Event) => {
+    const handleAccountDeleted = (_event: Event) => {
  
       clearAuthSession("/account-deleted");
     };
@@ -229,7 +229,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => {
       window.removeEventListener("accountDeleted", handleAccountDeleted);
     };
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const clearError = () => setError(null);
 
