@@ -2,6 +2,7 @@
 
 import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
 import { useState } from "react";
+import * as Sentry from "@sentry/nextjs";
 
 interface GoogleSignInButtonProps {
   onSuccess: (credential: string) => Promise<void>;
@@ -18,7 +19,15 @@ export function GoogleSignInButton({
 
   const handleSuccess = async (credentialResponse: CredentialResponse) => {
     if (!credentialResponse.credential) {
-      console.error("No credential received from Google");
+      if (process.env.NODE_ENV === 'production') {
+        Sentry.captureMessage("No credential received from Google", {
+          level: 'error',
+          tags: { errorType: 'google_oauth_missing_credential' },
+        });
+      } else {
+        // eslint-disable-next-line no-console
+        console.error("No credential received from Google");
+      }
       return;
     }
 
@@ -26,14 +35,29 @@ export function GoogleSignInButton({
       setIsLoading(true);
       await onSuccess(credentialResponse.credential);
     } catch (error) {
-      console.error("Google sign-in error:", error);
+      if (process.env.NODE_ENV === 'production') {
+        Sentry.captureException(error, {
+          tags: { errorType: 'google_signin_error' },
+        });
+      } else {
+        // eslint-disable-next-line no-console
+        console.error("Google sign-in error:", error);
+      }
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleError = () => {
-    console.error("Google OAuth error");
+    if (process.env.NODE_ENV === 'production') {
+      Sentry.captureMessage("Google OAuth error", {
+        level: 'error',
+        tags: { errorType: 'google_oauth_error' },
+      });
+    } else {
+      // eslint-disable-next-line no-console
+      console.error("Google OAuth error");
+    }
   };
 
   if (disabled || isLoading) {

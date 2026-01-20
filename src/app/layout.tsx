@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { DM_Sans, JetBrains_Mono } from "next/font/google";
 import { getLocale, getMessages } from "next-intl/server";
 import { Providers } from "@/components/providers";
@@ -16,14 +16,18 @@ const jetbrainsMono = JetBrains_Mono({
   weight: ["400", "500"],
 });
 
+// Get base URL from environment or use default
+const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
+
 export const metadata: Metadata = {
+  metadataBase: new URL(baseUrl),
   title: "Solobooks - Freelance Accounting Made Simple",
   description:
     "Professional accounting and invoicing for freelancers and small businesses",
-  viewport: "width=device-width, initial-scale=1",
   icons: {
     icon: [
-      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/favicon.svg", type: "image/svg+xml", sizes: "64x64" },
     ],
     apple: [
       { url: "/apple-touch-icon.svg", type: "image/svg+xml", sizes: "180x180" },
@@ -42,6 +46,11 @@ export const metadata: Metadata = {
     description: "Professional accounting and invoicing for freelancers and small businesses",
     images: ["/og-image.svg"],
   },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default async function RootLayout({

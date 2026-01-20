@@ -81,7 +81,18 @@ export class BaseApiClient {
 
       return newAccessToken;
     } catch (error) {
-      console.error("Token refresh failed:", error);
+      // Report to Sentry in production, log in development
+      if (process.env.NODE_ENV === 'production') {
+        // Dynamic import to avoid bundling Sentry in all environments
+        import('@sentry/nextjs').then((Sentry) => {
+          Sentry.captureException(error, {
+            tags: { errorType: 'token_refresh_failed' },
+          });
+        });
+      } else {
+        // eslint-disable-next-line no-console
+        console.error("Token refresh failed:", error);
+      }
       // If refresh fails, trigger logout by clearing tokens and reloading
       if (typeof window !== "undefined") {
         localStorage.removeItem("solobooks_auth_token");

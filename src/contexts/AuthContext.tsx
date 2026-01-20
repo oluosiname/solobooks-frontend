@@ -220,10 +220,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Listen for account deleted event from 410 interceptor
   useEffect(() => {
     const handleAccountDeleted = (event: Event) => {
-      console.log(
-        "Account deleted event received:",
-        (event as CustomEvent).detail,
-      );
+ 
       clearAuthSession("/account-deleted");
     };
 
