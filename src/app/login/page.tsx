@@ -168,7 +168,7 @@ export default function LoginPage() {
               disabled={isLoading}
             >
               {isLoading
-                ? t("auth.login.signingIn") || "Signing in..."
+              ? t("auth.login.signingIn")
                 : t("auth.login.signIn")}
             </Button>
 

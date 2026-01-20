@@ -63,7 +63,7 @@ function calculateTrialDaysLeft(trialEndsAt: string | undefined): number | null 
 export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
   const pathname = usePathname();
   const t = useTranslations("nav");
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
 
   const trialDaysLeft = user?.onTrial ? calculateTrialDaysLeft(user.trialEndsAt) : null;
 
@@ -193,7 +193,10 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
               </Link>
             );
           })}
-          <button className="mt-1 flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50 hover:text-slate-900">
+          <button
+            onClick={logout}
+            className="mt-1 flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50 hover:text-slate-900"
+          >
             <LogOut className="h-5 w-5" />
             {t("logout")}
           </button>
