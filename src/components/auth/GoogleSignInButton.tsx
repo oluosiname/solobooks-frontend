@@ -1,6 +1,7 @@
 "use client";
 
 import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import * as Sentry from "@sentry/nextjs";
 
@@ -16,6 +17,7 @@ export function GoogleSignInButton({
   disabled = false,
 }: GoogleSignInButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const t = useTranslations("common");
 
   const handleSuccess = async (credentialResponse: CredentialResponse) => {
     if (!credentialResponse.credential) {
@@ -64,7 +66,7 @@ export function GoogleSignInButton({
     return (
       <div className="flex w-full items-center justify-center gap-3 rounded-lg border border-slate-300 bg-slate-50 px-4 py-2.5 opacity-50 cursor-not-allowed">
         <div className="h-5 w-5 animate-spin rounded-full border-2 border-slate-300 border-t-slate-600" />
-        <span className="text-sm font-medium text-slate-700">Loading...</span>
+        <span className="text-sm font-medium text-slate-700">{t("loading")}</span>
       </div>
     );
   }
