@@ -55,11 +55,14 @@ export interface MeResponse {
         transaction: { current: number; max: number; available: boolean };
         client: { current: number; max: number; available: boolean };
       };
-      features: Record<string, {
-        available: boolean;
-        required_plan: string;
-        upgrade_message: string;
-      }>;
+      features: Record<
+        string,
+        {
+          available: boolean;
+          required_plan: string;
+          upgrade_message: string;
+        }
+      >;
     };
   };
 }
@@ -67,7 +70,7 @@ export interface MeResponse {
 class AuthApiClient {
   private async request<T>(
     endpoint: string,
-    options: RequestInit = {}
+    options: RequestInit = {},
   ): Promise<T> {
     const url = `${API_BASE_URL}${endpoint}`;
 
@@ -163,13 +166,18 @@ class AuthApiClient {
    * - 410: Account already deleted
    * - 422: Deletion failed
    */
-  async deleteAccount(token: string): Promise<{ data: { message: string; deleted_at: string } }> {
-    return this.request<{ data: { message: string; deleted_at: string } }>("/api/v1/account", {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
+  async deleteAccount(
+    token: string,
+  ): Promise<{ data: { message: string; deleted_at: string } }> {
+    return this.request<{ data: { message: string; deleted_at: string } }>(
+      "/api/v1/account",
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       },
-    });
+    );
   }
 
   /**
@@ -206,9 +214,7 @@ class AuthApiClient {
     return this.request<{ message: string }>("/api/v1/auth/password/reset", {
       method: "POST",
       body: JSON.stringify({
-        user: {
-          email,
-        },
+        email,
       }),
     });
   }
@@ -219,7 +225,7 @@ class AuthApiClient {
    */
   async resetPassword(
     token: string,
-    password: string
+    password: string,
   ): Promise<{ message: string }> {
     return this.request<{ message: string }>("/api/v1/auth/password", {
       method: "PUT",
@@ -237,7 +243,11 @@ class AuthApiClient {
    * POST /api/v1/auth/google
    * Request: { "id_token": "eyJhbGciOiJSUzI1NiIsImtpZCI6Ij...", "plan": "pro", "language": "en" }
    */
-  async googleAuth(idToken: string, plan?: string, language?: string): Promise<AuthResponse> {
+  async googleAuth(
+    idToken: string,
+    plan?: string,
+    language?: string,
+  ): Promise<AuthResponse> {
     return this.request<AuthResponse>("/api/v1/auth/google", {
       method: "POST",
       body: JSON.stringify({
