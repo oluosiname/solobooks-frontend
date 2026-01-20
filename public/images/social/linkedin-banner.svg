@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1584 396" width="1584" height="396">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#eef2ff"/>
+      <stop offset="100%" style="stop-color:#e0e7ff"/>
+    </linearGradient>
+    <linearGradient id="bookGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6366f1"/>
+      <stop offset="100%" style="stop-color:#4f46e5"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1584" height="396" fill="url(#bgGradient)"/>
+
+  <!-- Decorative elements -->
+  <circle cx="1400" cy="80" r="120" fill="#6366f1" opacity="0.05"/>
+  <circle cx="200" cy="320" r="100" fill="#4f46e5" opacity="0.05"/>
+
+  <!-- Main content container -->
+  <g transform="translate(120, 100)">
+    <!-- Book Icon (larger for banner) -->
+    <g transform="translate(0, 0)">
+      <!-- Left page -->
+      <path d="M5 15 C5 9, 10 4, 20 4 L40 4 L40 92 L20 92 C10 92, 5 87, 5 81 Z"
+            fill="url(#bookGradient)" opacity="0.9"/>
+      <!-- Right page -->
+      <path d="M95 15 C95 9, 90 4, 80 4 L52 4 L52 92 L80 92 C90 92, 95 87, 95 81 Z"
+            fill="url(#bookGradient)" opacity="0.7"/>
+      <!-- Spine -->
+      <rect x="38" y="4" width="16" height="88" fill="#4338ca"/>
+      <!-- Page lines left -->
+      <line x1="15" y1="25" x2="33" y2="25" stroke="#e0e7ff" stroke-width="3" stroke-linecap="round"/>
+      <line x1="15" y1="40" x2="33" y2="40" stroke="#e0e7ff" stroke-width="3" stroke-linecap="round"/>
+      <line x1="15" y1="55" x2="28" y2="55" stroke="#e0e7ff" stroke-width="3" stroke-linecap="round"/>
+      <!-- Page lines right -->
+      <line x1="62" y1="25" x2="80" y2="25" stroke="#e0e7ff" stroke-width="3" stroke-linecap="round"/>
+      <line x1="62" y1="40" x2="80" y2="40" stroke="#e0e7ff" stroke-width="3" stroke-linecap="round"/>
+      <line x1="62" y1="55" x2="75" y2="55" stroke="#e0e7ff" stroke-width="3" stroke-linecap="round"/>
+    </g>
+
+    <!-- Text Content -->
+    <g transform="translate(130, 0)">
+      <!-- Main Title -->
+      <text x="0" y="50" font-family="system-ui, -apple-system, sans-serif" font-size="56" font-weight="700" fill="#0f172a">
+        <tspan fill="url(#bookGradient)">Solo</tspan><tspan fill="#0f172a">books</tspan>
+      </text>
+
+      <!-- Tagline -->
+      <text x="0" y="90" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="500" fill="#475569">
+        Freelance Accounting Made Simple
+      </text>
+    </g>
+  </g>
+
+  <!-- Bottom right feature highlights -->
+  <g transform="translate(900, 260)">
+    <text font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="500" fill="#64748b">
+      <tspan x="0" y="0">✓ Professional Invoicing</tspan>
+      <tspan x="0" y="35">✓ Bank Connections</tspan>
+      <tspan x="0" y="70">✓ Tax Reports</tspan>
+    </text>
+  </g>
+</svg>
