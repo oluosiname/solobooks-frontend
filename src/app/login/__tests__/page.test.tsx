@@ -23,8 +23,11 @@ describe('LoginPage', () => {
 
     vi.mocked(AuthContext.useAuth).mockReturnValue({
       login: mockLogin,
+      loginWithGoogle: vi.fn(),
+      registerWithGoogle: vi.fn(),
       register: vi.fn(),
       logout: vi.fn(),
+      deleteAccount: vi.fn(),
       clearError: mockClearError,
       error: null,
       isLoading: false,
@@ -84,8 +87,11 @@ describe('LoginPage', () => {
   it('should display error message when login fails', () => {
     vi.mocked(AuthContext.useAuth).mockReturnValue({
       login: mockLogin,
+      loginWithGoogle: vi.fn(),
+      registerWithGoogle: vi.fn(),
       register: vi.fn(),
       logout: vi.fn(),
+      deleteAccount: vi.fn(),
       clearError: mockClearError,
       error: 'Invalid email or password',
       isLoading: false,
@@ -103,8 +109,11 @@ describe('LoginPage', () => {
   it('should disable submit button while loading', () => {
     vi.mocked(AuthContext.useAuth).mockReturnValue({
       login: mockLogin,
+      loginWithGoogle: vi.fn(),
+      registerWithGoogle: vi.fn(),
       register: vi.fn(),
       logout: vi.fn(),
+      deleteAccount: vi.fn(),
       clearError: mockClearError,
       error: null,
       isLoading: true,
@@ -123,8 +132,11 @@ describe('LoginPage', () => {
   it('should show loading text while submitting', () => {
     vi.mocked(AuthContext.useAuth).mockReturnValue({
       login: mockLogin,
+      loginWithGoogle: vi.fn(),
+      registerWithGoogle: vi.fn(),
       register: vi.fn(),
       logout: vi.fn(),
+      deleteAccount: vi.fn(),
       clearError: mockClearError,
       error: null,
       isLoading: true,
@@ -177,8 +189,11 @@ describe('LoginPage', () => {
 
     vi.mocked(AuthContext.useAuth).mockReturnValue({
       login: mockLogin,
+      loginWithGoogle: vi.fn(),
+      registerWithGoogle: vi.fn(),
       register: vi.fn(),
       logout: vi.fn(),
+      deleteAccount: vi.fn(),
       clearError: mockClearError,
       error: 'Some error',
       isLoading: false,

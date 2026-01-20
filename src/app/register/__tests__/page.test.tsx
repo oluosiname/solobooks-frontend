@@ -23,8 +23,11 @@ describe('RegisterPage', () => {
 
     vi.mocked(AuthContext.useAuth).mockReturnValue({
       login: vi.fn(),
+      loginWithGoogle: vi.fn(),
+      registerWithGoogle: vi.fn(),
       register: mockRegister,
       logout: vi.fn(),
+      deleteAccount: vi.fn(),
       clearError: mockClearError,
       error: null,
       isLoading: false,
@@ -185,8 +188,11 @@ describe('RegisterPage', () => {
 
       vi.mocked(AuthContext.useAuth).mockReturnValue({
         login: vi.fn(),
+        loginWithGoogle: vi.fn(),
+        registerWithGoogle: vi.fn(),
         register: mockRegister,
         logout: vi.fn(),
+        deleteAccount: vi.fn(),
         clearError: mockClearError,
         error: 'Email already exists',
         isLoading: false,
@@ -218,8 +224,11 @@ describe('RegisterPage', () => {
 
       vi.mocked(AuthContext.useAuth).mockReturnValue({
         login: vi.fn(),
+        loginWithGoogle: vi.fn(),
+        registerWithGoogle: vi.fn(),
         register: mockRegister,
         logout: vi.fn(),
+        deleteAccount: vi.fn(),
         clearError: mockClearError,
         error: null,
         isLoading: true,
