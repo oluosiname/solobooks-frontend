@@ -897,6 +897,39 @@
           "elster": "Elster integration"
         }
       }
+    },
+    "forgotPassword": {
+      "title": "Reset your password",
+      "subtitle": "Enter your email and we'll send you a reset link",
+      "email": "Email address",
+      "sendLink": "Send reset link",
+      "sending": "Sending...",
+      "backToLogin": "Back to login",
+      "emailSent": "Reset link sent to your email",
+      "error": "Failed to send reset link. Please try again.",
+      "checkEmail": "Check your email",
+      "checkEmailMessage": "We've sent a password reset link to"
+    },
+    "resetPassword": {
+      "title": "Create new password",
+      "subtitle": "Enter your new password below",
+      "newPassword": "New password",
+      "confirmPassword": "Confirm password",
+      "resetButton": "Reset password",
+      "resetting": "Resetting...",
+      "success": "Password reset successful",
+      "successMessage": "Your password has been reset successfully",
+      "goToLogin": "Go to login",
+      "redirecting": "Redirecting to login...",
+      "missingToken": "This password reset link is invalid or missing.",
+      "invalidToken": "This password reset link is invalid.",
+      "expiredToken": "This password reset link has expired. Please request a new one.",
+      "invalidLink": "Invalid reset link",
+      "invalidLinkMessage": "This password reset link is invalid or has expired.",
+      "requestNewLink": "Request new link",
+      "passwordMismatch": "Passwords do not match",
+      "passwordTooShort": "Password must be at least 8 characters",
+      "error": "Failed to reset password. Please try again."
     }
   },
   "errors": {

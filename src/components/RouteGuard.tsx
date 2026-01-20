@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 
-const PUBLIC_ROUTES = ["/login", "/register", "/forgot-password", "/account-deleted"];
+const PUBLIC_ROUTES = ["/login", "/register", "/forgot-password", "/reset-password", "/account-deleted"];
 
 interface RouteGuardProps {
   children: React.ReactNode;
