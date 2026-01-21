@@ -12,9 +12,12 @@ import {
   Lock,
   FileText,
   CreditCard,
+  Menu,
+  ChevronRight,
 } from "lucide-react";
 import { AppShell } from "@/components/layout";
 import { cn } from "@/lib/utils";
+import { Sheet, SheetHeader, SheetContent } from "@/components/ui/sheet";
 import { api as newApi } from "@/services/api";
 import type { InvoiceSettingsInput, Profile, ApiError } from "@/types";
 import { showToast } from "@/lib/toast";
@@ -32,6 +35,7 @@ import {
 export default function SettingsPage() {
   const t = useTranslations();
   const [activeTab, setActiveTab] = useState("profile");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const queryClient = useQueryClient();
 
   const settingsTabs = [
@@ -217,11 +221,66 @@ export default function SettingsPage() {
     }
   };
 
+  const handleTabSelect = (tabId: string) => {
+    setActiveTab(tabId);
+    setMobileMenuOpen(false);
+  };
+
+  const activeTabLabel = settingsTabs.find((tab) => tab.id === activeTab)?.label;
+  const ActiveTabIcon = settingsTabs.find((tab) => tab.id === activeTab)?.icon;
+
   return (
     <AppShell title={t("settings.title")}>
+      {/* Mobile Menu Button */}
+      <div className="mb-4 md:hidden">
+        <button
+          onClick={() => setMobileMenuOpen(true)}
+          className="flex w-full items-center justify-between rounded-lg border border-slate-200 bg-white px-4 py-3 text-left shadow-sm"
+        >
+          <div className="flex items-center gap-3">
+            {ActiveTabIcon && <ActiveTabIcon className="h-5 w-5 text-indigo-600" />}
+            <span className="font-medium text-slate-900">{activeTabLabel}</span>
+          </div>
+          <Menu className="h-5 w-5 text-slate-400" />
+        </button>
+      </div>
+
+      {/* Mobile Sheet/Drawer */}
+      <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen} side="left">
+        <SheetHeader onClose={() => setMobileMenuOpen(false)}>
+          {t("settings.title")}
+        </SheetHeader>
+        <SheetContent>
+          <nav className="space-y-1">
+            {settingsTabs.map((tab) => {
+              const Icon = tab.icon;
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => handleTabSelect(tab.id)}
+                  className={cn(
+                    "flex w-full items-center justify-between rounded-lg px-4 py-3 text-sm font-medium transition-colors",
+                    isActive
+                      ? "bg-indigo-50 text-indigo-700"
+                      : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                  )}
+                >
+                  <div className="flex items-center gap-3">
+                    <Icon className="h-5 w-5" />
+                    {tab.label}
+                  </div>
+                  <ChevronRight className={cn("h-4 w-4", isActive ? "text-indigo-500" : "text-slate-300")} />
+                </button>
+              );
+            })}
+          </nav>
+        </SheetContent>
+      </Sheet>
+
       <div className="flex gap-6">
-        {/* Sidebar Tabs */}
-        <div className="w-64 flex-shrink-0">
+        {/* Sidebar Tabs - Hidden on mobile */}
+        <div className="hidden w-64 shrink-0 md:block">
           <nav className="space-y-1">
             {settingsTabs.map((tab) => {
               const Icon = tab.icon;

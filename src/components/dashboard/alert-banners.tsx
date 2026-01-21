@@ -11,6 +11,7 @@ import {
 import { styles, buttonStyles } from "@/lib/styles";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
+import { EmailUnconfirmedBanner } from "./email-unconfirmed-banner";
 
 interface AlertBannersProps {
   uncheckedCount: number;
@@ -21,6 +22,9 @@ export function AlertBanners({ uncheckedCount }: AlertBannersProps) {
 
   return (
     <div className="space-y-4 animate-slide-up stagger-1">
+      {/* Email Unconfirmed Banner - Highest Priority */}
+      <EmailUnconfirmedBanner />
+
       {/* Year in Taxes Banner */}
       <div className="flex items-center justify-between rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 p-5 text-white shadow-lg">
         <div className="flex items-center gap-4">
