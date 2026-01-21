@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
@@ -70,6 +70,7 @@ export default function NewInvoicePage() {
     language: "en",
     invoiceDate: "",
     dueDate: "",
+    vatRate: 19,
   });
 
   // Set default currency when currencies are loaded
@@ -128,7 +129,64 @@ export default function NewInvoicePage() {
     (sum, item) => sum + item.unitPrice * item.quantity,
     0
   );
-  const total = subtotal;
+
+  // VAT preview state
+  const [vatPreview, setVatPreview] = useState<{
+    subtotal: number;
+    vatRate: number;
+    vatAmount: number;
+    total: number;
+    reverseCharge: boolean;
+    note: string | null;
+  } | null>(null);
+
+  const [isCalculatingVat, setIsCalculatingVat] = useState(false);
+
+  // Get selected client data
+  const selectedClient = useMemo(
+    () => clients?.find((c) => c.id === formData.clientId),
+    [clients, formData.clientId]
+  );
+
+  // Debounced VAT calculation
+  useEffect(() => {
+    // Don't calculate if missing required data
+    const clientCountry = selectedClient?.address?.country;
+    if (!clientCountry || subtotal === 0) {
+      setVatPreview(null);
+      return;
+    }
+
+    // Debounce the API call
+    const timer = setTimeout(async () => {
+      setIsCalculatingVat(true);
+      try {
+        const result = await api.calculateVatPreview({
+          subtotal,
+          vatRate: formData.vatRate,
+          clientCountry,
+        });
+        setVatPreview(result);
+      } catch (error) {
+        console.error('Failed to calculate VAT preview:', error);
+        // Fallback to simple calculation
+        setVatPreview({
+          subtotal,
+          vatRate: formData.vatRate,
+          vatAmount: subtotal * (formData.vatRate / 100),
+          total: subtotal * (1 + formData.vatRate / 100),
+          reverseCharge: false,
+          note: null,
+        });
+      } finally {
+        setIsCalculatingVat(false);
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [selectedClient?.address?.country, subtotal, formData.vatRate]);
+
+  const total = vatPreview?.total || subtotal;
 
   const handleSave = () => {
     if (!formData.clientId || !formData.category) {
@@ -174,6 +232,7 @@ export default function NewInvoicePage() {
       language: formData.language,
       invoiceDate: formData.invoiceDate,
       dueDate: formData.dueDate,
+      vatRate: vatPreview?.vatRate || formData.vatRate,
       lineItems: lineItems.map((item) => ({
         id: item.id,
         description: item.description,
@@ -240,14 +299,24 @@ export default function NewInvoicePage() {
           <div className={cn(styles.card)}>
             <div className={styles.cardContent}>
               <h3 className="text-lg font-semibold text-slate-900">Summary</h3>
-              <div className="mt-6 space-y-4">
+              <div className="mt-6 space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-slate-600">Subtotal</span>
                   <span className="font-medium text-slate-900">
                     €{subtotal.toFixed(2)}
                   </span>
                 </div>
-                <div className="flex items-center justify-between border-t border-slate-200 pt-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-600">VAT ({vatPreview?.vatRate || 0}%)</span>
+                  <span className="font-medium text-slate-900">
+                    {isCalculatingVat ? (
+                      <span className="text-slate-400">{t("invoices.new.calculatingVat")}</span>
+                    ) : (
+                      `€${(vatPreview?.vatAmount || 0).toFixed(2)}`
+                    )}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between border-t border-slate-200 pt-3">
                   <span className="font-semibold text-slate-900">
                     {t("invoices.new.total")}
                   </span>
@@ -255,6 +324,16 @@ export default function NewInvoicePage() {
                     €{total.toFixed(2)}
                   </span>
                 </div>
+                {vatPreview?.note && (
+                  <div className="mt-4 rounded-lg bg-blue-50 p-3 border border-blue-200">
+                    <div className="flex items-start gap-2">
+                      <svg className="h-5 w-5 text-blue-600 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <p className="text-sm text-blue-800">{vatPreview.note}</p>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -307,6 +386,9 @@ export default function NewInvoicePage() {
                     ))}
                   </select>
                 </div>
+              </div>
+
+              <div className="mt-6 grid gap-6 md:grid-cols-2">
                 <div>
                   <label className="block text-sm font-medium text-slate-700">
                     {t("invoices.new.currency")}
@@ -342,6 +424,8 @@ export default function NewInvoicePage() {
                     <option value="fr">French</option>
                   </select>
                 </div>
+              </div>
+              <div className="mt-6 grid gap-6 md:grid-cols-2">
                 <div>
                   <label className="block text-sm font-medium text-slate-700">
                     {t("invoices.new.invoiceDate")}
@@ -367,6 +451,53 @@ export default function NewInvoicePage() {
                       setFormData({ ...formData, dueDate: e.target.value })
                     }
                   />
+                </div>
+              </div>
+
+              <div className="mt-6">
+                <label className="block text-sm font-medium text-slate-700 mb-3">
+                  {t("invoices.new.vatRate")} *
+                </label>
+                <div className="flex gap-4">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="vatRate"
+                      value="19"
+                      checked={formData.vatRate === 19}
+                      onChange={(e) =>
+                        setFormData({ ...formData, vatRate: parseInt(e.target.value) })
+                      }
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500"
+                    />
+                    <span className="text-sm text-slate-700">{t("invoices.new.vatStandard")}</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="vatRate"
+                      value="7"
+                      checked={formData.vatRate === 7}
+                      onChange={(e) =>
+                        setFormData({ ...formData, vatRate: parseInt(e.target.value) })
+                      }
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500"
+                    />
+                    <span className="text-sm text-slate-700">{t("invoices.new.vatReduced")}</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="vatRate"
+                      value="0"
+                      checked={formData.vatRate === 0}
+                      onChange={(e) =>
+                        setFormData({ ...formData, vatRate: parseInt(e.target.value) })
+                      }
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500"
+                    />
+                    <span className="text-sm text-slate-700">{t("invoices.new.vatExempt")}</span>
+                  </label>
                 </div>
               </div>
             </div>
@@ -501,14 +632,24 @@ export default function NewInvoicePage() {
           <div className={cn(styles.card, "sticky top-6")}>
             <div className={styles.cardContent}>
               <h3 className="text-lg font-semibold text-slate-900">Summary</h3>
-              <div className="mt-6 space-y-4">
+              <div className="mt-6 space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-slate-600">Subtotal</span>
                   <span className="font-medium text-slate-900">
                     €{subtotal.toFixed(2)}
                   </span>
                 </div>
-                <div className="flex items-center justify-between border-t border-slate-200 pt-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-600">VAT ({vatPreview?.vatRate || 0}%)</span>
+                  <span className="font-medium text-slate-900">
+                    {isCalculatingVat ? (
+                      <span className="text-slate-400">{t("invoices.new.calculatingVat")}</span>
+                    ) : (
+                      `€${(vatPreview?.vatAmount || 0).toFixed(2)}`
+                    )}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between border-t border-slate-200 pt-3">
                   <span className="font-semibold text-slate-900">
                     {t("invoices.new.total")}
                   </span>
@@ -516,6 +657,16 @@ export default function NewInvoicePage() {
                     €{total.toFixed(2)}
                   </span>
                 </div>
+                {vatPreview?.note && (
+                  <div className="mt-4 rounded-lg bg-blue-50 p-3 border border-blue-200">
+                    <div className="flex items-start gap-2">
+                      <svg className="h-5 w-5 text-blue-600 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <p className="text-sm text-blue-800">{vatPreview.note}</p>
+                    </div>
+                  </div>
+                )}
               </div>
               <div className="mt-6 space-y-3">
                 <button

@@ -34,7 +34,11 @@ import {
   InvoiceCreationRequirements,
 } from "@/types";
 import humps from "humps";
-import { InvoiceData, InvoiceCreationRequirementsResponse } from "@/lib/invoices-api";
+import {
+  InvoiceData,
+  InvoiceCreationRequirementsResponse,
+  VatPreviewResponse,
+} from "@/lib/invoices-api";
 
 export function camelize<T>(input: unknown): T {
   return humps.camelizeKeys(input) as T;
@@ -184,4 +188,17 @@ export function transformInvoiceCreationRequirements(
   data: InvoiceCreationRequirementsResponse
 ): InvoiceCreationRequirements {
   return camelize<InvoiceCreationRequirements>(data);
+}
+
+export interface VatPreview {
+  subtotal: number;
+  vatRate: number;
+  vatAmount: number;
+  total: number;
+  reverseCharge: boolean;
+  note: string | null;
+}
+
+export function transformVatPreviewData(data: VatPreviewResponse): VatPreview {
+  return camelize<VatPreview>(data);
 }
