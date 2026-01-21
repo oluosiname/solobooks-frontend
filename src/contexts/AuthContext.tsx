@@ -9,6 +9,7 @@ export interface AuthUser {
   id: string;
   email: string;
   confirmed: boolean;
+  confirmationSentAt?: string;
   createdAt: string;
   updatedAt: string;
   locale: string;
@@ -64,6 +65,8 @@ interface AuthContextType {
   ) => Promise<void>;
   logout: () => Promise<void>;
   deleteAccount: () => Promise<{ success: boolean; deletedAt?: string }>;
+  confirmEmail: (token: string) => Promise<void>;
+  resendConfirmation: () => Promise<void>;
   error: string | null;
   clearError: () => void;
 }
@@ -416,6 +419,38 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const confirmEmail = async (token: string) => {
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      const response = await authApi.confirmEmail(token);
+      await handleAuthResponse(response);
+
+      // User's confirmed status will be updated via fetchUserData in handleAuthResponse
+    } catch (err) {
+      const apiError = err as ApiError;
+      setError(apiError.error?.message || "Failed to confirm email. Please try again.");
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const resendConfirmation = async () => {
+    if (!user?.email) {
+      throw new Error("No user email available");
+    }
+
+    try {
+      await authApi.resendConfirmation(user.email);
+      // Success handled by caller (show toast)
+    } catch (err) {
+      const apiError = err as ApiError;
+      throw new Error(apiError.error?.message || "Failed to resend confirmation email.");
+    }
+  };
+
   const value: AuthContextType = {
     user,
     token,
@@ -428,6 +463,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     registerWithGoogle,
     logout,
     deleteAccount,
+    confirmEmail,
+    resendConfirmation,
     error,
     clearError,
   };

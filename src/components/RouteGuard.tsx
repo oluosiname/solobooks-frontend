@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 
-const PUBLIC_ROUTES = ["/login", "/register", "/forgot-password", "/reset-password", "/account-deleted"];
+const PUBLIC_ROUTES = ["/login", "/register", "/forgot-password", "/reset-password", "/account-deleted", "/confirm"];
 
 interface RouteGuardProps {
   children: React.ReactNode;
@@ -22,6 +22,7 @@ export function RouteGuard({ children }: RouteGuardProps) {
     }
 
     const isPublicRoute = PUBLIC_ROUTES.includes(pathname);
+    const isAuthRoute = pathname === "/login" || pathname === "/register";
 
     // If not authenticated and trying to access protected route, redirect to login
     if (!isAuthenticated && !isPublicRoute) {
@@ -29,8 +30,9 @@ export function RouteGuard({ children }: RouteGuardProps) {
       return;
     }
 
-    // If authenticated and trying to access public route (login/register), redirect to home
-    if (isAuthenticated && isPublicRoute) {
+    // If authenticated and trying to access auth routes (login/register), redirect to home
+    // Note: /confirm is allowed for authenticated users (they may need to resend)
+    if (isAuthenticated && isAuthRoute) {
       router.push("/");
       return;
     }

@@ -43,6 +43,7 @@ export interface MeResponse {
     id: string;
     email: string;
     confirmed: boolean;
+    confirmation_sent_at?: string;
     created_at: string;
     updated_at: string;
     locale: string;
@@ -65,6 +66,14 @@ export interface MeResponse {
       >;
     };
   };
+}
+
+export interface ConfirmEmailRequest {
+  confirmation_token: string;
+}
+
+export interface ResendConfirmationRequest {
+  email: string;
 }
 
 class AuthApiClient {
@@ -255,6 +264,28 @@ class AuthApiClient {
         ...(plan && { plan }),
         ...(language && { language }),
       }),
+    });
+  }
+
+  /**
+   * Confirm email address with token
+   * POST /api/v1/auth/confirmation
+   */
+  async confirmEmail(token: string): Promise<AuthResponse> {
+    return this.request<AuthResponse>("/api/v1/auth/confirmation", {
+      method: "POST",
+      body: JSON.stringify({ confirmation_token: token }),
+    });
+  }
+
+  /**
+   * Resend confirmation email
+   * POST /api/v1/auth/confirmation
+   */
+  async resendConfirmation(email: string): Promise<{ message: string }> {
+    return this.request<{ message: string }>("/api/v1/auth/confirmation", {
+      method: "POST",
+      body: JSON.stringify({ email }),
     });
   }
 }

@@ -930,6 +930,26 @@
       "passwordMismatch": "Passwords do not match",
       "passwordTooShort": "Password must be at least 8 characters",
       "error": "Failed to reset password. Please try again."
+    },
+    "confirmation": {
+      "title": "Confirm Your Email",
+      "confirming": "Confirming your email address...",
+      "success": "Email Confirmed!",
+      "successMessage": "Your email has been successfully confirmed.",
+      "redirecting": "Redirecting to your dashboard...",
+      "error": "Confirmation Failed",
+      "expired": "This confirmation link has expired or is invalid.",
+      "resend": "Resend Confirmation Email",
+      "resending": "Sending...",
+      "resendSuccess": "Confirmation email sent! Check your inbox.",
+      "missingToken": "Missing confirmation token. Please use the link from your email."
+    },
+    "emailUnconfirmed": {
+      "title": "Please confirm your email address",
+      "message": "We sent a confirmation email to {email}. Click the link in the email to confirm your account.",
+      "resend": "Resend confirmation email",
+      "resendSuccess": "Confirmation email sent! Check your inbox.",
+      "checkSpam": "Check your spam folder if you don't see it in your inbox."
     }
   },
   "errors": {
