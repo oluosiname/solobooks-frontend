@@ -129,6 +129,15 @@
     "tabs": {
       "all": "Alle"
     },
+    "sort": {
+      "newestFirst": "Neueste zuerst",
+      "oldestFirst": "Älteste zuerst",
+      "dueDateUrgent": "Fälligkeit",
+      "amountHighest": "Betrag absteigend",
+      "amountLowest": "Betrag aufsteigend",
+      "clientAZ": "Kunde A-Z",
+      "invoiceNumber": "Rechnungsnummer"
+    },
     "actions": {
       "markAsSent": "Als gesendet markieren",
       "markAsPaid": "Als bezahlt markieren",
