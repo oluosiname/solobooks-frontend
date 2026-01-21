@@ -224,8 +224,8 @@ export function PrivacySettings({
         </div>
       </div>
 
-      {/* Your Data Rights */}
-      <div className={cn(styles.card)}>
+      {/* Your Data Rights - TODO: implement portability, access, rectification */}
+      {false && <div className={cn(styles.card)}>
         <div className={styles.cardContent}>
           <h3 className="text-lg font-semibold text-slate-900">
             {t("settings.privacy.dataRights.title")}
@@ -301,6 +301,26 @@ export function PrivacySettings({
                 {t("settings.privacy.dataRights.erasure.button")}
               </button>
             </div>
+          </div>
+        </div>
+      </div>}
+
+      {/* Delete Account */}
+      <div className={cn(styles.card)}>
+        <div className={styles.cardContent}>
+          <h3 className="text-lg font-semibold text-slate-900">
+            {t("settings.privacy.dataRights.erasure.title")}
+          </h3>
+          <p className="mt-1 text-sm text-slate-500">
+            {t("settings.privacy.dataRights.erasure.description")}
+          </p>
+          <div className="mt-6">
+            <button
+              onClick={() => setDeleteDialogOpen(true)}
+              className="rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-100"
+            >
+              {t("settings.privacy.dataRights.erasure.button")}
+            </button>
           </div>
         </div>
       </div>
@@ -441,8 +461,8 @@ export function PrivacySettings({
         </div>
       </div>
 
-      {/* Legal Documents */}
-      <div className={cn(styles.card)}>
+      {/* Legal Documents - TODO: implement document viewing/downloading */}
+      {false && <div className={cn(styles.card)}>
         <div className={styles.cardContent}>
           <h3 className="text-lg font-semibold text-slate-900">
             {t("settings.privacy.legalDocuments.title")}
@@ -513,7 +533,7 @@ export function PrivacySettings({
             ))}
           </div>
         </div>
-      </div>
+      </div>}
 
       {/* Data Protection Officer */}
       <div className={cn(styles.card)}>
@@ -553,8 +573,8 @@ export function PrivacySettings({
         </div>
       </div>
 
-      {/* Data Breach Notification */}
-      <div className={cn(styles.card)}>
+      {/* Data Breach Notification - TODO: implement save functionality */}
+      {false && <div className={cn(styles.card)}>
         <div className={styles.cardContent}>
           <h3 className="text-lg font-semibold text-slate-900">
             {t("settings.privacy.breachNotification.title")}
@@ -619,9 +639,10 @@ export function PrivacySettings({
             </button>
           </div>
         </div>
-      </div>
+      </div>}
 
-      {/* Privacy Audit Log */}
+      {/* Privacy Audit Log - TODO: implement audit log functionality */}
+      {false &&
       <div className={cn(styles.card)}>
         <div className={styles.cardContent}>
           <h3 className="text-lg font-semibold text-slate-900">
@@ -663,7 +684,7 @@ export function PrivacySettings({
             </button>
           </div>
         </div>
-      </div>
+      </div>}
 
       {/* Delete Account Dialog */}
       <DeleteAccountDialog
