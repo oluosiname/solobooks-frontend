@@ -162,7 +162,7 @@ export default function SettingsPage() {
   // Invoice settings form state
   const [invoiceFormData, setInvoiceFormData] = useState<InvoiceSettingsInput>({
     prefix: "",
-    currencyId: 1,
+    currencyId: 0, // Will be set when currencies load
     language: "en",
     accountHolder: "",
     accountNumber: "",
@@ -174,6 +174,27 @@ export default function SettingsPage() {
     routingNumber: "",
     defaultNote: "",
   });
+
+  // Set default currency when currencies are loaded
+  useEffect(() => {
+    if (currencies && currencies.length > 0 && invoiceFormData.currencyId === 0 && !invoiceSettings) {
+      // Find EUR currency or use the first available
+      const eurCurrency = currencies.find((c) => c.code === "EUR");
+      if (eurCurrency) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setInvoiceFormData((prev) => ({
+          ...prev,
+          currencyId: eurCurrency.id,
+        }));
+      } else if (currencies[0]) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setInvoiceFormData((prev) => ({
+          ...prev,
+          currencyId: currencies[0].id,
+        }));
+      }
+    }
+  }, [currencies, invoiceFormData.currencyId, invoiceSettings]);
 
   // Update form when settings are loaded
   useEffect(() => {
@@ -214,6 +235,16 @@ export default function SettingsPage() {
   });
 
   const handleInvoiceSettingsSave = async () => {
+    // Validate required fields
+    if (!invoiceFormData.currencyId || invoiceFormData.currencyId === 0) {
+      showToast.error("Please select a currency");
+      return;
+    }
+    if (!invoiceFormData.prefix.trim()) {
+      showToast.error("Please enter an invoice prefix");
+      return;
+    }
+
     try {
       await saveInvoiceSettingsMutation.mutateAsync(invoiceFormData);
     } catch {

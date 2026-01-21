@@ -105,6 +105,21 @@ export interface InvoiceCreationRequirementsResponse {
   };
 }
 
+export interface VatPreviewRequest {
+  subtotal: number;
+  vat_rate: number;
+  client_country: string;
+}
+
+export interface VatPreviewResponse {
+  subtotal: number;
+  vat_rate: number;
+  vat_amount: number;
+  total: number;
+  reverse_charge: boolean;
+  note: string | null;
+}
+
 // ============================================
 // API Client
 // ============================================
@@ -172,6 +187,14 @@ class InvoicesApiClient extends BaseApiClient {
     }
 
     return response.blob();
+  }
+
+  /**
+   * Calculate VAT preview
+   * POST /api/v1/invoices/vat-preview
+   */
+  async calculateVatPreview(data: VatPreviewRequest): Promise<VatPreviewResponse> {
+    return this.post<VatPreviewResponse>("/api/v1/invoices/vat-preview", data);
   }
 }
 

@@ -92,6 +92,8 @@ import {
   transformInvoiceCategoryData,
   transformInvoiceData,
   transformPnlData,
+  transformVatPreviewData,
+  type VatPreview,
 } from "./api-transformer";
 
 
@@ -216,6 +218,7 @@ export async function createInvoice(data: {
   language: string;
   invoiceDate: string;
   dueDate: string;
+  vatRate?: number;
   lineItems: Array<{
     id: string;
     description: string;
@@ -232,7 +235,7 @@ export async function createInvoice(data: {
       date: data.invoiceDate,
       due_date: data.dueDate,
       language: data.language,
-      vat_rate: 19, // Default VAT rate
+      vat_rate: data.vatRate || 19, // Use provided VAT rate or default to 19
       vat_included: true,
       vat_technique: "standard",
       line_items: data.lineItems.map((item) => ({
@@ -273,6 +276,20 @@ export async function fetchInvoiceCreationRequirements(): Promise<InvoiceCreatio
       },
     };
   }
+}
+
+export async function calculateVatPreview(data: {
+  subtotal: number;
+  vatRate: number;
+  clientCountry: string;
+}): Promise<VatPreview> {
+  const response = await invoicesApi.calculateVatPreview({
+    subtotal: data.subtotal,
+    vat_rate: data.vatRate,
+    client_country: data.clientCountry,
+  });
+
+  return transformVatPreviewData(response);
 }
 
 export async function sendInvoice(id: string): Promise<Invoice> {
@@ -727,6 +744,7 @@ export const api = {
   updateInvoice,
   deleteInvoice,
   fetchInvoiceCreationRequirements,
+  calculateVatPreview,
   sendInvoice,
   payInvoice,
   downloadInvoicePdf,
