@@ -86,6 +86,9 @@ export interface InvoiceResponse {
   data: InvoiceData;
 }
 
+export type InvoiceSortField = "date" | "due_date" | "total_amount" | "client_name" | "invoice_number" | "created_at";
+export type SortOrder = "asc" | "desc";
+
 export interface InvoicesQueryParams {
   page?: number;
   per_page?: number;
@@ -94,6 +97,8 @@ export interface InvoicesQueryParams {
   start_date?: string;
   end_date?: string;
   query?: string;
+  sort_by?: InvoiceSortField;
+  order?: SortOrder;
   [key: string]: string | number | boolean | undefined;
 }
 

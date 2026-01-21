@@ -129,6 +129,15 @@
     "tabs": {
       "all": "All"
     },
+    "sort": {
+      "newestFirst": "Newest First",
+      "oldestFirst": "Oldest First",
+      "dueDateUrgent": "Due Date",
+      "amountHighest": "Amount High-Low",
+      "amountLowest": "Amount Low-High",
+      "clientAZ": "Client A-Z",
+      "invoiceNumber": "Invoice Number"
+    },
     "actions": {
       "markAsSent": "Mark as Sent",
       "markAsPaid": "Mark as Paid",

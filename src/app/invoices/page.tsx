@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
-import { Plus, MoreVertical, ChevronLeft, ChevronRight, Send, CreditCard, Download } from 'lucide-react';
+import { Plus, MoreVertical, ChevronLeft, ChevronRight, Send, CreditCard, Download, ArrowUpDown, Check } from 'lucide-react';
 import Link from 'next/link';
 import { AppShell } from '@/components/layout';
 import { SearchInput, Tabs, Badge } from '@/components/ui';
@@ -13,6 +13,13 @@ import { formatCurrency, formatDate, cn } from '@/lib/utils';
 import { styles, buttonStyles } from '@/lib/styles';
 import { showToast } from '@/lib/toast';
 import type { InvoiceStatus, ApiError } from '@/types';
+import type { InvoiceSortField, SortOrder } from '@/lib/invoices-api';
+
+type SortOption = {
+  label: string;
+  sortBy: InvoiceSortField;
+  order: SortOrder;
+};
 
 export default function InvoicesPage() {
   const t = useTranslations();
@@ -23,19 +30,39 @@ export default function InvoicesPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
+  const [sortBy, setSortBy] = useState<InvoiceSortField>('date');
+  const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
+  const [sortDropdownOpen, setSortDropdownOpen] = useState(false);
   const itemsPerPage = 10;
+
+  const sortOptions: SortOption[] = [
+    { label: t('invoices.sort.newestFirst'), sortBy: 'date', order: 'desc' },
+    { label: t('invoices.sort.oldestFirst'), sortBy: 'date', order: 'asc' },
+    { label: t('invoices.sort.dueDateUrgent'), sortBy: 'due_date', order: 'asc' },
+    { label: t('invoices.sort.amountHighest'), sortBy: 'total_amount', order: 'desc' },
+    { label: t('invoices.sort.amountLowest'), sortBy: 'total_amount', order: 'asc' },
+    { label: t('invoices.sort.clientAZ'), sortBy: 'client_name', order: 'asc' },
+    { label: t('invoices.sort.invoiceNumber'), sortBy: 'invoice_number', order: 'desc' },
+  ];
+
+  const currentSortLabel = sortOptions.find(
+    (opt) => opt.sortBy === sortBy && opt.order === sortOrder
+  )?.label || sortOptions[0].label;
 
   const queryClient = useQueryClient();
 
-  // Close dropdown when clicking outside
+  // Close dropdowns when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      // Only close if clicking outside any dropdown
       const target = event.target as Element;
       const isInsideDropdown = target.closest('[data-dropdown]');
+      const isInsideSortDropdown = target.closest('[data-sort-dropdown]');
 
       if (!isInsideDropdown) {
         setOpenDropdownId(null);
+      }
+      if (!isInsideSortDropdown) {
+        setSortDropdownOpen(false);
       }
     }
 
@@ -46,13 +73,15 @@ export default function InvoicesPage() {
   }, []);
 
   const { data: invoicesData, isLoading } = useQuery({
-    queryKey: ['invoices', activeTab, searchQuery, currentPage, clientId],
+    queryKey: ['invoices', activeTab, searchQuery, currentPage, clientId, sortBy, sortOrder],
     queryFn: () => fetchInvoices({
       status: activeTab === 'all' ? undefined : activeTab as InvoiceStatus,
       query: searchQuery || undefined,
       client_id: clientId || undefined,
       page: currentPage,
       per_page: itemsPerPage,
+      sort_by: sortBy,
+      order: sortOrder,
     }),
   });
 
@@ -139,13 +168,59 @@ export default function InvoicesPage() {
           </Link>
         </div>
 
-        {/* Search */}
-        <SearchInput
-          placeholder={t('invoices.searchPlaceholder')}
-          value={searchQuery}
-          onChange={setSearchQuery}
-          className="max-w-md"
-        />
+        {/* Search and Sort */}
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          <SearchInput
+            placeholder={t('invoices.searchPlaceholder')}
+            value={searchQuery}
+            onChange={setSearchQuery}
+            className="max-w-md"
+          />
+          <div data-sort-dropdown className="relative">
+            <button
+              onClick={() => setSortDropdownOpen(!sortDropdownOpen)}
+              className={cn(
+                styles.input,
+                'flex items-center justify-between gap-2 sm:w-56 cursor-pointer'
+              )}
+            >
+              <span className="flex items-center gap-2">
+                <ArrowUpDown className="h-4 w-4 text-slate-400" />
+                <span className="text-slate-700">{currentSortLabel}</span>
+              </span>
+              <svg className={cn("h-4 w-4 text-slate-400 transition-transform", sortDropdownOpen && "rotate-180")} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            {sortDropdownOpen && (
+              <div className="absolute left-0 z-20 mt-1 w-full min-w-55 rounded-lg border border-slate-200 bg-white py-1 shadow-lg">
+                {sortOptions.map((option) => {
+                  const isSelected = option.sortBy === sortBy && option.order === sortOrder;
+                  return (
+                    <button
+                      key={`${option.sortBy}-${option.order}`}
+                      onClick={() => {
+                        setSortBy(option.sortBy);
+                        setSortOrder(option.order);
+                        setSortDropdownOpen(false);
+                        setCurrentPage(1);
+                      }}
+                      className={cn(
+                        'flex w-full items-center justify-between px-3 py-2 text-sm transition-colors',
+                        isSelected
+                          ? 'bg-indigo-50 text-indigo-700'
+                          : 'text-slate-700 hover:bg-slate-50'
+                      )}
+                    >
+                      {option.label}
+                      {isSelected && <Check className="h-4 w-4" />}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
 
         {/* Table */}
         <div className={cn(styles.card, 'overflow-hidden animate-slide-up')}>
