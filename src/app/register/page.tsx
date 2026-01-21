@@ -49,7 +49,7 @@ const plans = [
 
 export default function RegisterPage() {
   const t = useTranslations();
-  const { register, registerWithGoogle, error, clearError, isLoading } = useAuth();
+  const { register, registerWithGoogle, error, clearError, isLoading, isAuthenticated } = useAuth();
   const searchParams = useSearchParams();
 
   // Initialize selectedPlan from URL parameter
@@ -87,11 +87,14 @@ export default function RegisterPage() {
       if (currentLocale !== langParam) {
         // Set locale cookie for immediate language switching
         document.cookie = `locale=${langParam}; path=/; max-age=31536000; SameSite=Lax`;
-        // Force page reload to apply new language
-        window.location.reload();
+        // Only reload if not authenticated - if authenticated, RouteGuard will redirect
+        // and reloading would cause an infinite loop
+        if (!isAuthenticated) {
+          window.location.reload();
+        }
       }
     }
-  }, [searchParams]);
+  }, [searchParams, isAuthenticated]);
 
   const handlePlanSelect = (planId: string) => {
     setSelectedPlan(planId);

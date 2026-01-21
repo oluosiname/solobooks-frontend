@@ -13,7 +13,7 @@ import { Locale, locales } from "@/i18n/config";
 
 export default function LoginPage() {
   const t = useTranslations();
-  const { login, loginWithGoogle, error, clearError, isLoading } = useAuth();
+  const { login, loginWithGoogle, error, clearError, isLoading, isAuthenticated } = useAuth();
   const searchParams = useSearchParams();
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
@@ -33,11 +33,14 @@ export default function LoginPage() {
       if (currentLocale !== langParam) {
         // Set locale cookie for immediate language switching
         document.cookie = `locale=${langParam}; path=/; max-age=31536000; SameSite=Lax`;
-        // Force page reload to apply new language
-        window.location.reload();
+        // Only reload if not authenticated - if authenticated, RouteGuard will redirect
+        // and reloading would cause an infinite loop
+        if (!isAuthenticated) {
+          window.location.reload();
+        }
       }
     }
-  }, [searchParams]);
+  }, [searchParams, isAuthenticated]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
