@@ -10,8 +10,7 @@ export interface RegisterRequest {
   email: string;
   password: string;
   password_confirmation: string;
-  first_name?: string;
-  last_name?: string;
+  full_name?: string;
   language?: string;
   plan?: string;
 }
@@ -129,8 +128,7 @@ class AuthApiClient {
           email: data.email,
           password: data.password,
           password_confirmation: data.password_confirmation,
-          first_name: data.first_name,
-          last_name: data.last_name,
+          full_name: data.full_name,
           language: data.language,
           plan: data.plan || "pro",
         },

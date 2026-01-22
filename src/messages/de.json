@@ -882,8 +882,7 @@
     "register": {
       "title": "Kostenlos starten",
       "subtitle": "Erstellen Sie Ihr Solobooks-Konto in Sekunden",
-      "firstName": "Vorname",
-      "lastName": "Nachname",
+      "fullName": "Vollständiger Name",
       "email": "E-Mail",
       "password": "Passwort",
       "passwordPlaceholder": "Erstellen Sie ein sicheres Passwort",

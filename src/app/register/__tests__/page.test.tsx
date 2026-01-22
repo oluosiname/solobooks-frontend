@@ -115,8 +115,7 @@ describe('RegisterPage', () => {
     });
 
     it('should render registration form', () => {
-      expect(screen.getByLabelText('auth.register.firstName')).toBeInTheDocument();
-      expect(screen.getByLabelText('auth.register.lastName')).toBeInTheDocument();
+      expect(screen.getByLabelText('auth.register.fullName')).toBeInTheDocument();
       expect(screen.getByLabelText('auth.register.email')).toBeInTheDocument();
       expect(screen.getByLabelText('auth.register.password')).toBeInTheDocument();
     });
@@ -165,8 +164,7 @@ describe('RegisterPage', () => {
       mockRegister.mockResolvedValueOnce(undefined);
 
       // Fill in the form
-      await user.type(screen.getByLabelText('auth.register.firstName'), 'John');
-      await user.type(screen.getByLabelText('auth.register.lastName'), 'Doe');
+      await user.type(screen.getByLabelText('auth.register.fullName'), 'John Doe');
       await user.type(screen.getByLabelText('auth.register.email'), 'john@example.com');
       await user.type(screen.getByLabelText('auth.register.password'), 'password123');
 
@@ -184,8 +182,7 @@ describe('RegisterPage', () => {
           'john@example.com',
           'password123',
           'pro',
-          'John',
-          'Doe',
+          'John Doe',
           undefined
         );
       }, { timeout: 3000 });
@@ -331,8 +328,7 @@ describe('RegisterPage', () => {
       });
 
       // Fill form and submit
-      await user.type(screen.getByLabelText('auth.register.firstName'), 'Test');
-      await user.type(screen.getByLabelText('auth.register.lastName'), 'User');
+      await user.type(screen.getByLabelText('auth.register.fullName'), 'Test User');
       await user.type(screen.getByLabelText('auth.register.email'), 'test@test.com');
       await user.type(screen.getByLabelText('auth.register.password'), 'pass123');
       await user.click(screen.getByRole('checkbox'));
@@ -346,8 +342,7 @@ describe('RegisterPage', () => {
           'test@test.com',
           'pass123',
           'pro',
-          'Test',
-          'User',
+          'Test User',
           undefined
         );
       }, { timeout: 3000 });
