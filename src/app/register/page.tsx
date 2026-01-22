@@ -60,15 +60,30 @@ export default function RegisterPage() {
   });
 
   // Initialize step - skip to details if a valid plan is provided in URL
+  // Also check sessionStorage to persist step across remounts (e.g., on error)
   const [step, setStep] = useState<"plan" | "details">(() => {
+    // Check sessionStorage first to preserve step on remount
+    if (typeof window !== "undefined") {
+      const storedStep = sessionStorage.getItem("register_step");
+      if (storedStep === "details" || storedStep === "plan") {
+        return storedStep as "plan" | "details";
+      }
+    }
+    
     const planParam = searchParams.get("plan");
     const validPlans = ["starter", "plus", "pro"];
     return planParam && validPlans.includes(planParam) ? "details" : "plan";
   });
+  
+  // Persist step to sessionStorage whenever it changes
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("register_step", step);
+    }
+  }, [step]);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
+    fullName: "",
     email: "",
     password: "",
     agreeToTerms: false,
@@ -109,7 +124,7 @@ export default function RegisterPage() {
     const language = langParam && locales.includes(langParam as Locale) ? langParam : undefined;
 
     try {
-      await register(formData.email, formData.password, selectedPlan, formData.firstName, formData.lastName, language);
+      await register(formData.email, formData.password, selectedPlan, formData.fullName, language);
       // Redirect is handled by the auth context
     } catch {
       // Error is handled by the auth context
@@ -284,36 +299,20 @@ export default function RegisterPage() {
               </div>
             </div>
 
-            {/* Name Fields */}
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="firstName">{t("auth.register.firstName")}</Label>
-                <Input
-                  id="firstName"
-                  type="text"
-                  value={formData.firstName}
-                  onChange={(e) =>
-                    setFormData({ ...formData, firstName: e.target.value })
-                  }
-                  placeholder="John"
-                  className="mt-1.5"
-                  required
-                />
-              </div>
-              <div>
-                <Label htmlFor="lastName">{t("auth.register.lastName")}</Label>
-                <Input
-                  id="lastName"
-                  type="text"
-                  value={formData.lastName}
-                  onChange={(e) =>
-                    setFormData({ ...formData, lastName: e.target.value })
-                  }
-                  placeholder="Doe"
-                  className="mt-1.5"
-                  required
-                />
-              </div>
+            {/* Full Name Field */}
+            <div>
+              <Label htmlFor="fullName">{t("auth.register.fullName")}</Label>
+              <Input
+                id="fullName"
+                type="text"
+                value={formData.fullName}
+                onChange={(e) =>
+                  setFormData({ ...formData, fullName: e.target.value })
+                }
+                placeholder="John Doe"
+                className="mt-1.5"
+                required
+              />
             </div>
 
             {/* Email */}

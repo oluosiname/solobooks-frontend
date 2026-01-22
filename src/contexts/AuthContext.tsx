@@ -49,8 +49,7 @@ interface AuthContextType {
     email: string,
     password: string,
     plan: string,
-    firstName?: string,
-    lastName?: string,
+    fullName?: string,
     language?: string,
   ) => Promise<void>;
   loginWithGoogle: (
@@ -290,8 +289,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     email: string,
     password: string,
     plan: string,
-    firstName?: string,
-    lastName?: string,
+    fullName?: string,
     language?: string,
   ) => {
     try {
@@ -302,8 +300,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         email,
         password,
         password_confirmation: password,
-        first_name: firstName,
-        last_name: lastName,
+        full_name: fullName,
         language,
         plan,
       });
@@ -314,9 +311,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       router.push("/");
     } catch (err) {
       const apiError = err as ApiError;
-      setError(
-        apiError.error?.message || "Failed to register. Please try again.",
-      );
+      
+      // Extract detailed validation errors if available
+      let errorMessage = apiError.error?.message || "Failed to register. Please try again.";
+      
+      if (apiError.error?.details) {
+        const details = apiError.error.details as Record<string, string[]>;
+        const detailMessages = Object.entries(details)
+          .flatMap(([field, messages]) => 
+            messages.map(msg => {
+              // Capitalize field name and format message
+              const fieldName = field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, " ");
+              return `${fieldName} ${msg}`;
+            })
+          );
+        
+        if (detailMessages.length > 0) {
+          // Use detailed messages if available, otherwise fall back to general message
+          errorMessage = detailMessages.join(". ");
+        }
+      }
+      
+      setError(errorMessage);
       throw err;
     } finally {
       setIsLoading(false);
