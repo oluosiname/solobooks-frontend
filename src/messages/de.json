@@ -497,6 +497,24 @@
     "planChangeNotAllowed": "Diese Tarifänderung ist nicht erlaubt",
     "planChangeFailed": "Tarifänderung fehlgeschlagen. Bitte versuchen Sie es erneut.",
     "viewPricing": "Preise anzeigen",
+    "invoices": {
+      "title": "Rechnungen",
+      "description": "Zeigen Sie Ihre Abonnement-Rechnungen und Zahlungshistorie an",
+      "noInvoices": "Keine Rechnungen für dieses Jahr gefunden",
+      "date": "Datum",
+      "description": "Beschreibung",
+      "status": "Status",
+      "amount": "Betrag",
+      "invoice": "Rechnung",
+      "view": "Anzeigen",
+      "statusLabels": {
+        "draft": "Entwurf",
+        "open": "Offen",
+        "paid": "Bezahlt",
+        "void": "Ungültig",
+        "uncollectible": "Nicht einziehbar"
+      }
+    },
     "plans": {
       "free": {
         "name": "Kostenlos",

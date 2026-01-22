@@ -439,6 +439,24 @@ export interface ElsterCertificate {
   expiringSoon: boolean;
 }
 
+// Stripe Invoice types
+export type StripeInvoiceStatus = "draft" | "open" | "paid" | "void" | "uncollectible";
+
+export interface StripeInvoice {
+  id: string;
+  date: string;
+  status: StripeInvoiceStatus;
+  amountDue: number;
+  amountPaid: number;
+  currency: string;
+  hostedInvoiceUrl: string;
+  description: string;
+}
+
+export interface StripeInvoicesResponse {
+  data: StripeInvoice[];
+}
+
 // Google OAuth types
 export interface GoogleAuthRequest {
   id_token: string; // Google ID token (JWT)
