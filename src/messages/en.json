@@ -496,6 +496,24 @@
     "planChangeNotAllowed": "This plan change is not allowed",
     "planChangeFailed": "Failed to change plan. Please try again.",
     "viewPricing": "View Pricing",
+    "invoices": {
+      "title": "Invoices",
+      "description": "View your subscription invoices and payment history",
+      "noInvoices": "No invoices found for this year",
+      "date": "Date",
+      "description": "Description",
+      "status": "Status",
+      "amount": "Amount",
+      "invoice": "Invoice",
+      "view": "View",
+      "statusLabels": {
+        "draft": "Draft",
+        "open": "Open",
+        "paid": "Paid",
+        "void": "Void",
+        "uncollectible": "Uncollectible"
+      }
+    },
     "plans": {
       "free": {
         "name": "Free",

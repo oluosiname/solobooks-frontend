@@ -32,6 +32,7 @@ import {
   PnlData,
   PnlReportResponse,
   InvoiceCreationRequirements,
+  StripeInvoice,
 } from "@/types";
 import humps from "humps";
 import {
@@ -39,6 +40,7 @@ import {
   InvoiceCreationRequirementsResponse,
   VatPreviewResponse,
 } from "@/lib/invoices-api";
+import type { StripeInvoiceData } from "@/lib/stripe-invoices-api";
 
 export function camelize<T>(input: unknown): T {
   return humps.camelizeKeys(input) as T;
@@ -201,4 +203,8 @@ export interface VatPreview {
 
 export function transformVatPreviewData(data: VatPreviewResponse): VatPreview {
   return camelize<VatPreview>(data);
+}
+
+export function transformStripeInvoiceData(data: StripeInvoiceData): StripeInvoice {
+  return camelize<StripeInvoice>(data);
 }

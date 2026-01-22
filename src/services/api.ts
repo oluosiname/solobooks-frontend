@@ -41,6 +41,7 @@ import { invoicesApi, InvoicesQueryParams } from "@/lib/invoices-api";
 import { paymentMethodApi } from "@/lib/payment-method-api";
 import { bankConnectionsApi } from "@/lib/bank-connections-api";
 import { vatReportsApi } from "@/lib/vat-reports-api";
+import { stripeInvoicesApi } from "@/lib/stripe-invoices-api";
 
 import type {
   Profile,
@@ -68,6 +69,7 @@ import type {
   VatStatusInput,
   Plan,
   VatReportPreview,
+  StripeInvoice,
 } from "@/types";
 
 import {
@@ -93,6 +95,7 @@ import {
   transformInvoiceData,
   transformPnlData,
   transformVatPreviewData,
+  transformStripeInvoiceData,
   type VatPreview,
 } from "./api-transformer";
 
@@ -721,6 +724,15 @@ export async function updateVatStatus(
 }
 
 // ============================================
+// Stripe Invoices API
+// ============================================
+
+export async function fetchStripeInvoices(year?: number): Promise<StripeInvoice[]> {
+  const response = await stripeInvoicesApi.listStripeInvoices(year);
+  return response.data.map(transformStripeInvoiceData);
+}
+
+// ============================================
 // Export all API functions
 // ============================================
 
@@ -810,6 +822,9 @@ export const api = {
   // PNL Reports
   fetchPnlData,
   downloadPnlPdf,
+
+  // Stripe Invoices
+  fetchStripeInvoices,
 };
 
 // Helper functions to process PNL data for different chart types
