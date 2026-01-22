@@ -1,10 +1,12 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { AppShell } from "@/components/layout";
 import { PricingContent } from "@/components/pricing/PricingContent";
-import type { PricingData } from "@/types/pricing";
 
 export default function PricingPage() {
+  const t = useTranslations();
+  
   // TODO: Replace with API call when ready
   // const { data: pricingData, isLoading } = useQuery({
   //   queryKey: ["pricing"],
@@ -12,7 +14,7 @@ export default function PricingPage() {
   // });
 
   return (
-    <AppShell>
+    <AppShell title={t("pricing.title")}>
       <div className="container mx-auto px-4 py-8 max-w-7xl">
         <PricingContent showTrialInfo={true} />
       </div>
