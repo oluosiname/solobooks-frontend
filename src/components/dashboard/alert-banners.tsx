@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import {
-  FileSpreadsheet,
+  // FileSpreadsheet,
   AlertCircle,
   Plus,
   Receipt,
@@ -26,7 +26,7 @@ export function AlertBanners({ uncheckedCount }: AlertBannersProps) {
       <EmailUnconfirmedBanner />
 
       {/* Year in Taxes Banner */}
-      <div className="flex items-center justify-between rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 p-5 text-white shadow-lg">
+      {/* <div className="flex items-center justify-between rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 p-5 text-white shadow-lg">
         <div className="flex items-center gap-4">
           <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/20 backdrop-blur-sm">
             <FileSpreadsheet className="h-6 w-6" />
@@ -45,26 +45,28 @@ export function AlertBanners({ uncheckedCount }: AlertBannersProps) {
         >
           View Year Report
         </Link>
-      </div>
+      </div> */}
 
       {/* Unchecked Transactions Alert */}
       {uncheckedCount > 0 && (
-        <div className={cn(styles.alert, styles.alertWarning)}>
-          <AlertCircle className="h-5 w-5 text-amber-600" />
-          <div className="flex-1">
-            <p className="font-medium text-amber-900">
-              {t.rich("dashboard.uncheckedTransactions.title", {
-                count: uncheckedCount,
-                bold: (chunks) => <span className="font-semibold">{chunks}</span>
-              })}
-            </p>
-            <p className="text-sm text-amber-700">
-              {t("dashboard.uncheckedTransactions.description")}
-            </p>
+        <div className={cn(styles.alert, styles.alertWarning, "flex-col sm:flex-row")}>
+          <div className="flex items-start gap-3 flex-1">
+            <AlertCircle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+            <div className="flex-1 min-w-0">
+              <p className="font-medium text-amber-900">
+                {t.rich("dashboard.uncheckedTransactions.title", {
+                  count: uncheckedCount,
+                  bold: (chunks) => <span className="font-semibold">{chunks}</span>
+                })}
+              </p>
+              <p className="text-sm text-amber-700">
+                {t("dashboard.uncheckedTransactions.description")}
+              </p>
+            </div>
           </div>
           <Link
             href="/transactions/synced"
-            className="rounded-lg border border-amber-300 bg-white px-4 py-2 text-sm font-medium text-amber-700 transition-colors hover:bg-amber-50"
+            className="rounded-lg border border-amber-300 bg-white px-4 py-2 text-sm font-medium text-amber-700 transition-colors hover:bg-amber-50 whitespace-nowrap sm:ml-auto mt-4 sm:mt-0"
           >
             {t("dashboard.uncheckedTransactions.viewPending")}
           </Link>
@@ -72,7 +74,7 @@ export function AlertBanners({ uncheckedCount }: AlertBannersProps) {
       )}
 
       {/* Quick Actions */}
-      <div className="flex gap-3">
+      <div className="flex flex-col sm:flex-row gap-3">
         <Link href="/invoices/new" className={buttonStyles("primary")}>
           <Plus className="h-4 w-4" />
           New Invoice
@@ -86,7 +88,8 @@ export function AlertBanners({ uncheckedCount }: AlertBannersProps) {
         </Link>
         <Link href="/taxes" className={buttonStyles("secondary")}>
           <Calendar className="h-4 w-4" />
-          VAT Q4 Due Jan 31
+          <span className="hidden sm:inline">VAT Q4 Due Jan 31</span>
+          <span className="sm:hidden">VAT Q4</span>
         </Link>
       </div>
     </div>
