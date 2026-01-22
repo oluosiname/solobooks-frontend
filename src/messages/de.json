@@ -496,6 +496,7 @@
     "planChangedSuccessfully": "Tarif erfolgreich geändert",
     "planChangeNotAllowed": "Diese Tarifänderung ist nicht erlaubt",
     "planChangeFailed": "Tarifänderung fehlgeschlagen. Bitte versuchen Sie es erneut.",
+    "viewPricing": "Preise anzeigen",
     "plans": {
       "free": {
         "name": "Kostenlos",
@@ -991,5 +992,21 @@
     },
     "returnHome": "Zur Startseite zurückkehren",
     "questions": "Fragen? Kontaktieren Sie uns unter"
+  },
+  "pricing": {
+    "title": "Wählen Sie Ihren Tarif",
+    "subtitle": "Wählen Sie den perfekten Tarif für Ihre Freelancer-Bedürfnisse. Alle Tarife beinhalten eine 14-tägige Pro-Testversion.",
+    "popular": "Beliebtester",
+    "features": "Funktionen",
+    "limitations": "Einschränkungen",
+    "selectPlan": "{plan} auswählen",
+    "trial": {
+      "title": "14-Tage Pro-Testversion",
+      "description": "Testen Sie alle Pro-Funktionen 14 Tage lang kostenlos. Keine Kreditkarte erforderlich."
+    },
+    "featureComparison": {
+      "title": "Funktionsvergleich",
+      "feature": "Funktion"
+    }
   }
 }

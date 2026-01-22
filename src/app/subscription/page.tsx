@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
-import { CreditCard, Check, Sparkles } from "lucide-react";
+import Link from "next/link";
+import { CreditCard, Check, Sparkles, ExternalLink } from "lucide-react";
 import { AppShell } from "@/components/layout";
 import { Button, Card } from "@/components/atoms";
 import { AlertBanner } from "@/components/organisms";
@@ -116,14 +117,22 @@ export default function SubscriptionPage() {
     <AppShell title={t("subscription.title")}>
       <div className="space-y-6">
         {/* Header */}
-        <div>
-          <h2 className="text-xl font-semibold text-slate-900">
-            {t("subscription.title")}
-          </h2>
-          <p className="text-sm text-slate-500">
-            {t("subscription.currentPlan")}:{" "}
-            <span className="font-medium capitalize">{currentPlan}</span>
-          </p>
+        <div className="flex items-start justify-between">
+          <div>
+            <h2 className="text-xl font-semibold text-slate-900">
+              {t("subscription.title")}
+            </h2>
+            <p className="text-sm text-slate-500">
+              {t("subscription.currentPlan")}:{" "}
+              <span className="font-medium capitalize">{currentPlan}</span>
+            </p>
+          </div>
+          <Link href="/pricing">
+            <Button variant="secondary" size="sm">
+              {t("subscription.viewPricing")}
+              <ExternalLink className="ml-2 h-4 w-4" />
+            </Button>
+          </Link>
         </div>
 
         {/* Payment Method */}
