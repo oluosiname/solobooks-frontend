@@ -495,6 +495,7 @@
     "planChangedSuccessfully": "Plan changed successfully",
     "planChangeNotAllowed": "This plan change is not allowed",
     "planChangeFailed": "Failed to change plan. Please try again.",
+    "viewPricing": "View Pricing",
     "plans": {
       "free": {
         "name": "Free",
@@ -989,5 +990,21 @@
     },
     "returnHome": "Return to Homepage",
     "questions": "Questions? Contact us at"
+  },
+  "pricing": {
+    "title": "Choose Your Plan",
+    "subtitle": "Select the perfect plan for your freelancing needs. All plans include a 14-day Pro trial.",
+    "popular": "Most Popular",
+    "features": "Features",
+    "limitations": "Limitations",
+    "selectPlan": "Select {plan}",
+    "trial": {
+      "title": "14-Day Pro Trial",
+      "description": "Try all Pro features free for 14 days. No credit card required."
+    },
+    "featureComparison": {
+      "title": "Feature Comparison",
+      "feature": "Feature"
+    }
   }
 }

@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
-import { CreditCard, Plus, Edit } from "lucide-react";
+import Link from "next/link";
+import { CreditCard, Plus, Edit, ExternalLink } from "lucide-react";
 import { Button, Card } from "@/components/atoms";
 import { api } from "@/services/api";
 import { showToast } from "@/lib/toast";
@@ -27,13 +28,21 @@ export function PaymentSettings() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-xl font-semibold text-slate-900">
-          {t("settings.tabs.payment")}
-        </h2>
-        <p className="text-sm text-slate-500">
-          Manage your payment method for subscriptions and billing
-        </p>
+      <div className="flex items-start justify-between">
+        <div>
+          <h2 className="text-xl font-semibold text-slate-900">
+            {t("settings.tabs.payment")}
+          </h2>
+          <p className="text-sm text-slate-500">
+            Manage your payment method for subscriptions and billing
+          </p>
+        </div>
+        <Link href="/pricing">
+          <Button variant="secondary" size="sm">
+            {t("subscription.viewPricing")}
+            <ExternalLink className="ml-2 h-4 w-4" />
+          </Button>
+        </Link>
       </div>
 
       <Card className="p-6">
