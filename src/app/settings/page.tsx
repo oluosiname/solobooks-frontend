@@ -73,13 +73,9 @@ export default function SettingsPage() {
 
   // Local state for notifications settings
   const [notifications, setNotifications] = useState({
-    invoiceCreated: true,
-    paymentReceived: true,
     invoiceOverdue: true,
-    monthlySummary: true,
-    newClient: false,
-    vatSubmitted: false,
-    taxYearEnd: false,
+    vatReminders: true,
+    deliveryMethods: ["email", "in_app"] as string[],
   });
 
   // Local state for privacy settings
@@ -101,13 +97,9 @@ export default function SettingsPage() {
     if (unifiedSettings) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setNotifications({
-        invoiceCreated: unifiedSettings.notificationPreferences.invoiceCreated,
-        paymentReceived: unifiedSettings.notificationPreferences.paymentReceived,
-        invoiceOverdue: unifiedSettings.notificationPreferences.invoiceOverdue,
-        monthlySummary: unifiedSettings.notificationPreferences.monthlySummary,
-        newClient: false, // Not in unified settings
-        vatSubmitted: false, // Not in unified settings
-        taxYearEnd: false, // Not in unified settings
+        invoiceOverdue: unifiedSettings.notificationPreferences.invoiceOverdue ?? true,
+        vatReminders: unifiedSettings.notificationPreferences.vatReminders ?? true,
+        deliveryMethods: unifiedSettings.notificationPreferences.deliveryMethods ?? ["email", "in_app"],
       });
     }
   }, [unifiedSettings]);

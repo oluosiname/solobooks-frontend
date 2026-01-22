@@ -19,10 +19,9 @@ export interface Currency {
 }
 
 export interface NotificationPreferences {
-  invoice_created: boolean;
-  payment_received: boolean;
   invoice_overdue: boolean;
-  monthly_summary: boolean;
+  vat_reminders: boolean;
+  delivery_methods: string[];
 }
 export interface PrivacyPreferences {
   analytics: boolean;

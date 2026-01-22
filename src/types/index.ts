@@ -354,10 +354,9 @@ export interface Settings {
   language: string;
   currency: Currency;
   notificationPreferences: {
-    invoiceCreated: boolean;
-    paymentReceived: boolean;
     invoiceOverdue: boolean;
-    monthlySummary: boolean;
+    vatReminders: boolean;
+    deliveryMethods: string[];
   };
   privacyPreferences: {
     analytics: boolean;

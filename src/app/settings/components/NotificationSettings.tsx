@@ -8,16 +8,13 @@ import { api } from "@/services/api";
 import { showToast } from "@/lib/toast";
 import type { Settings } from "@/types";
 import type { SettingsData as ApiSettingsData } from "@/lib/settings-api";
+import humps from "humps";
 
 interface NotificationSettingsProps {
   notifications: {
-    invoiceCreated: boolean;
-    paymentReceived: boolean;
     invoiceOverdue: boolean;
-    monthlySummary: boolean;
-    newClient: boolean;
-    vatSubmitted: boolean;
-    taxYearEnd: boolean;
+    vatReminders: boolean;
+    deliveryMethods: string[];
   };
   onNotificationsChange?: (changes: Partial<NotificationSettingsProps['notifications']>) => void;
   unifiedSettings?: Settings;
@@ -44,53 +41,33 @@ export function NotificationSettings({
 
   const handleSave = () => {
     if (unifiedSettings) {
+      const notificationPreferences = {
+        invoiceOverdue: notifications.invoiceOverdue,
+        vatReminders: notifications.vatReminders,
+        deliveryMethods: notifications.deliveryMethods,
+      };
       updateNotificationsMutation.mutate({
-        notification_preferences: {
-          invoice_created: notifications.invoiceCreated,
-          payment_received: notifications.paymentReceived,
-          invoice_overdue: notifications.invoiceOverdue,
-          monthly_summary: notifications.monthlySummary,
-        },
+        notification_preferences: humps.decamelizeKeys(notificationPreferences) as ApiSettingsData['notification_preferences'],
       });
     }
+  };
+
+  const handleDeliveryMethodChange = (method: string, checked: boolean) => {
+    const currentMethods = notifications.deliveryMethods || [];
+    const newMethods = checked
+      ? [...currentMethods, method]
+      : currentMethods.filter((m) => m !== method);
+    onNotificationsChange?.({ deliveryMethods: newMethods });
   };
 
   return (
     <div className={cn(styles.card)}>
       <div className={styles.cardContent}>
-        {/* Email Notifications */}
+        {/* Notification Preferences */}
         <h3 className="text-lg font-semibold text-slate-900">
-          {t("settings.notifications.email.title")}
+          {t("settings.notifications.title")}
         </h3>
         <div className="mt-6 space-y-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="font-medium text-slate-900">
-                {t("settings.notifications.email.invoiceSent")}
-              </p>
-              <p className="text-sm text-slate-500">
-                {t("settings.notifications.email.invoiceSentDesc")}
-              </p>
-            </div>
-            <Toggle
-              enabled={notifications.invoiceCreated}
-              onChange={() => onNotificationsChange?.({ invoiceCreated: !notifications.invoiceCreated })}
-            />
-          </div>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="font-medium text-slate-900">
-                {t("settings.notifications.email.invoicePaid")}
-              </p>
-              <p className="text-sm text-slate-500">
-                {t("settings.notifications.email.invoicePaidDesc")}
-              </p>
-            </div>
-            <Toggle
-              enabled={notifications.paymentReceived}
-              onChange={() => onNotificationsChange?.({ paymentReceived: !notifications.paymentReceived })}
-            />
-          </div>
           <div className="flex items-center justify-between">
             <div>
               <p className="font-medium text-slate-900">
@@ -108,68 +85,54 @@ export function NotificationSettings({
           <div className="flex items-center justify-between">
             <div>
               <p className="font-medium text-slate-900">
-                {t("settings.notifications.email.newClient")}
+                {t("settings.notifications.vatReminders.title")}
               </p>
               <p className="text-sm text-slate-500">
-                {t("settings.notifications.email.newClientDesc")}
+                {t("settings.notifications.vatReminders.declarationDueDesc")}
               </p>
             </div>
             <Toggle
-              enabled={notifications.newClient}
-              onChange={() => onNotificationsChange?.({ newClient: !notifications.newClient })}
+              enabled={notifications.vatReminders}
+              onChange={() => onNotificationsChange?.({ vatReminders: !notifications.vatReminders })}
             />
           </div>
         </div>
 
-        {/* VAT & Tax Reminders */}
+        {/* Delivery Methods */}
         <div className="mt-8 border-t border-slate-200 pt-8">
-          <h3 className="text-lg font-semibold text-slate-900">
-            {t("settings.notifications.vatReminders.title")}
+          <h3 className="text-lg font-semibold text-slate-900 mb-4">
+            Delivery Methods
           </h3>
-          <div className="mt-6 space-y-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-medium text-slate-900">
-                  {t("settings.notifications.vatReminders.declarationDue")}
-                </p>
-                <p className="text-sm text-slate-500">
-                  {t("settings.notifications.vatReminders.declarationDueDesc")}
-                </p>
-              </div>
-              <Toggle
-                enabled={notifications.monthlySummary}
-                onChange={() => onNotificationsChange?.({ monthlySummary: !notifications.monthlySummary })}
+          <div className="mt-6 space-y-4">
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="delivery-email"
+                checked={notifications.deliveryMethods?.includes("email") || false}
+                onChange={(e) => handleDeliveryMethodChange("email", e.target.checked)}
+                className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
               />
+              <label
+                htmlFor="delivery-email"
+                className="ml-3 text-sm font-medium text-slate-900"
+              >
+                Email
+              </label>
             </div>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-medium text-slate-900">
-                  {t(
-                    "settings.notifications.vatReminders.declarationSubmitted"
-                  )}
-                </p>
-                <p className="text-sm text-slate-500">
-                  {t("settings.notifications.vatReminders.declarationSubmittedDesc")}
-                </p>
-              </div>
-              <Toggle
-                enabled={notifications.vatSubmitted}
-                onChange={() => onNotificationsChange?.({ vatSubmitted: !notifications.vatSubmitted })}
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="delivery-in-app"
+                checked={notifications.deliveryMethods?.includes("in_app") || false}
+                onChange={(e) => handleDeliveryMethodChange("in_app", e.target.checked)}
+                className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
               />
-            </div>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-medium text-slate-900">
-                  {t("settings.notifications.vatReminders.taxYearEnd")}
-                </p>
-                <p className="text-sm text-slate-500">
-                  {t("settings.notifications.vatReminders.taxYearEndDesc")}
-                </p>
-              </div>
-              <Toggle
-                enabled={notifications.taxYearEnd}
-                onChange={() => onNotificationsChange?.({ taxYearEnd: !notifications.taxYearEnd })}
-              />
+              <label
+                htmlFor="delivery-in-app"
+                className="ml-3 text-sm font-medium text-slate-900"
+              >
+                In-App
+              </label>
             </div>
           </div>
         </div>
