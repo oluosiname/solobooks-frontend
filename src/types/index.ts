@@ -371,6 +371,23 @@ export interface Settings {
   updatedAt: string;
 }
 
+// Notification types
+export type NotificationType = "invoice_overdue" | "vat_reminders" | "payment_received" | "invoice_created";
+
+export interface Notification {
+  id: string;
+  type: NotificationType;
+  title: string;
+  message: string;
+  createdAt: string;
+  read: boolean;
+  link?: string;
+  status?: string;
+  sentAt?: string;
+  readAt?: string | null;
+  updatedAt?: string;
+}
+
 // VAT Status types
 export type DeclarationPeriod = "monthly" | "quarterly" | "yearly";
 
