@@ -42,6 +42,7 @@ import { paymentMethodApi } from "@/lib/payment-method-api";
 import { bankConnectionsApi } from "@/lib/bank-connections-api";
 import { vatReportsApi } from "@/lib/vat-reports-api";
 import { stripeInvoicesApi } from "@/lib/stripe-invoices-api";
+import { helpApi } from "@/lib/help-api";
 
 import type {
   Profile,
@@ -70,6 +71,7 @@ import type {
   Plan,
   VatReportPreview,
   StripeInvoice,
+  HelpItem,
 } from "@/types";
 
 import {
@@ -96,6 +98,7 @@ import {
   transformPnlData,
   transformVatPreviewData,
   transformStripeInvoiceData,
+  transformHelpItemData,
   type VatPreview,
 } from "./api-transformer";
 
@@ -733,6 +736,37 @@ export async function fetchStripeInvoices(year?: number): Promise<StripeInvoice[
 }
 
 // ============================================
+// Help API
+// ============================================
+
+export async function getHelpForUser(locale?: string): Promise<HelpItem[]> {
+  const response = await helpApi.getHelpForUser(locale);
+  return response.data.map(transformHelpItemData);
+}
+
+export async function getHelpItem(key: string): Promise<HelpItem> {
+  const response = await helpApi.getHelpItem(key);
+  return transformHelpItemData(response.data);
+}
+
+export async function getHelpByCategory(category: string): Promise<HelpItem[]> {
+  const response = await helpApi.getHelpByCategory(category);
+  return response.data.map(transformHelpItemData);
+}
+
+export async function dismissHelp(key: string): Promise<void> {
+  await helpApi.dismissHelp(key);
+}
+
+// ============================================
+// Dashboard Prompt Cards
+// ============================================
+
+export async function dismissPromptCard(key: string): Promise<void> {
+  await dashboardApi.dismissPromptCard(key);
+}
+
+// ============================================
 // Export all API functions
 // ============================================
 
@@ -778,6 +812,13 @@ export const api = {
 
   // Dashboard
   fetchDashboardStats,
+  dismissPromptCard,
+
+  // Help
+  getHelpForUser,
+  getHelpItem,
+  getHelpByCategory,
+  dismissHelp,
 
   // Bank Connections
   fetchBanks,

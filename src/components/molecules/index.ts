@@ -5,3 +5,5 @@ export { TextareaField, type TextareaFieldProps } from "./TextareaField";
 export { SearchInput, type SearchInputProps } from "./SearchInput";
 export { FileUpload, type FileUploadProps } from "./FileUpload";
 export { Tabs, type TabsProps, type Tab } from "./Tabs";
+export { HelpTooltip, type HelpTooltipProps } from "./HelpTooltip";
+export { DashboardPromptCard, type DashboardPromptCardProps } from "./DashboardPromptCard";

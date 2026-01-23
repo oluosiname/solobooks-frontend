@@ -1023,5 +1023,20 @@
       "title": "Feature Comparison",
       "feature": "Feature"
     }
+  },
+  "help": {
+    "gotIt": "Got it",
+    "skipAll": "Skip all",
+    "close": "Close",
+    "dismiss": "Dismiss"
+  },
+  "promptCards": {
+    "completeProfile": "Complete Profile",
+    "connectBank": "Connect Bank",
+    "createInvoice": "Create Invoice",
+    "addPaymentMethod": "Add Payment Method",
+    "upgradeNow": "Upgrade Now",
+    "viewInvoices": "View Invoices",
+    "viewVatReports": "View VAT Reports"
   }
 }

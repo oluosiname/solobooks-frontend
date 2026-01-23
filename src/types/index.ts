@@ -273,6 +273,7 @@ export interface DashboardStats {
   newClientsThisMonth: number;
   clientGrowthPercent: number;
   profitMargin: number;
+  promptCards?: import("./help").PromptCard[];
 }
 
 export interface RevenueExpenseData {
@@ -488,3 +489,6 @@ export interface GoogleAuthResponse {
     token_type: string;
   };
 }
+
+// Help System types
+export * from "./help";

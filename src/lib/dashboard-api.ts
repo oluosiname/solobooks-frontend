@@ -21,6 +21,15 @@ export interface DashboardStatsData {
   new_clients_this_month: number;
   client_growth_percent: number;
   profit_margin: number;
+  prompt_cards?: Array<{
+    key: string;
+    title: string;
+    description: string;
+    icon: string;
+    action_url: string;
+    dismissible: boolean;
+    priority: number;
+  }>;
 }
 
 export interface DashboardStatsResponse {
@@ -38,6 +47,16 @@ class DashboardApiClient extends BaseApiClient {
    */
   async getDashboardStats(): Promise<DashboardStatsResponse> {
     return this.get<DashboardStatsResponse>("/api/v1/dashboard/stats");
+  }
+
+  /**
+   * Dismiss a prompt card for current user
+   * POST /api/v1/dashboard/prompt_cards/:key/dismiss
+   */
+  async dismissPromptCard(key: string): Promise<{ data: { success: boolean } }> {
+    return this.post<{ data: { success: boolean } }>(
+      `/api/v1/dashboard/prompt_cards/${key}/dismiss`
+    );
   }
 }
 
