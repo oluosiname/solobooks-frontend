@@ -8,6 +8,7 @@ import type { SubscriptionData } from "@/lib/subscription-api";
 import type { PaymentMethodData } from "@/lib/payment-method-api";
 import type { BankConnectionData, BankData } from "@/lib/bank-connections-api";
 import { SettingsData as ApiSettingsData } from "@/lib/settings-api";
+import { NotificationData as ApiNotificationData } from "@/lib/notifications-api";
 import { DashboardStatsData } from "@/lib/dashboard-api";
 import { FinancialCategoryData } from "@/lib/financial-categories-api";
 import { InvoiceCategoryData } from "@/lib/invoice-categories-api";
@@ -33,6 +34,7 @@ import {
   PnlReportResponse,
   InvoiceCreationRequirements,
   StripeInvoice,
+  Notification,
 } from "@/types";
 import humps from "humps";
 import {
@@ -207,4 +209,21 @@ export function transformVatPreviewData(data: VatPreviewResponse): VatPreview {
 
 export function transformStripeInvoiceData(data: StripeInvoiceData): StripeInvoice {
   return camelize<StripeInvoice>(data);
+}
+
+export function transformNotificationData(data: ApiNotificationData): Notification {
+  const base = camelize<Omit<Notification, "title" | "read" | "type">>(data);
+  return {
+    ...base,
+    id: data.id,
+    type: data.notification_type as Notification["type"],
+    title: data.heading,
+    read: data.read_at !== null,
+    createdAt: data.created_at,
+    link: data.link,
+    status: data.status,
+    sentAt: data.sent_at,
+    readAt: data.read_at,
+    updatedAt: data.updated_at,
+  };
 }

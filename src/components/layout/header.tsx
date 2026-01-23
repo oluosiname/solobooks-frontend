@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Bell, HelpCircle, Globe, Menu } from "lucide-react";
+import { HelpCircle, Globe, Menu } from "lucide-react";
+import { NotificationBell } from "./NotificationBell";
 import { useTranslations } from "next-intl";
 import { api } from "@/services/api";
 import { showToast } from "@/lib/toast";
@@ -70,10 +71,7 @@ export function Header({ title, onMenuClick, showMenuButton = false }: HeaderPro
       </div>
       <div className="flex items-center gap-2 sm:gap-4">
         {/* Notification Bell */}
-        <button className="relative flex h-10 w-10 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-700">
-          <Bell className="h-5 w-5" />
-          <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-red-500" />
-        </button>
+        <NotificationBell />
 
         {/* Help */}
         <button className="flex h-10 w-10 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-700">
