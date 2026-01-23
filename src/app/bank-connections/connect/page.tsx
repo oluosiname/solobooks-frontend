@@ -53,7 +53,7 @@ export default function AddBankConnectionPage() {
       }
 
       // Navigate back to bank connections page - callback will be handled by /bank_connections/callback
-      router.push("/bank_connections");
+      router.push("/bank-connections/connect");
 
       showToast.success(
         "Bank authentication window opened. Complete authentication in the new window."
@@ -66,7 +66,7 @@ export default function AddBankConnectionPage() {
   };
 
   const handleBack = () => {
-    router.push("/bank_connections");
+    router.push("/bank-connections");
   };
 
   return (
