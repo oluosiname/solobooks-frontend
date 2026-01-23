@@ -410,7 +410,7 @@
       "neverInitiateTransactions": "Niemals Transaktionen oder Überweisungen initiieren",
       "neverShareData": "Niemals Ihre Finanzdaten mit Dritten teilen",
       "neverModifySettings": "Niemals Ihre Kontoeinstellungen oder Präferenzen ändern",
-      "termsDisclaimer": "Mit dem Fortfahren stimmen Sie unseren {terms} und {privacy} zu. Wir speichern Ihre Bankzugangsdaten nicht."
+      "termsDisclaimer": "Mit dem Fortfahren stimmen Sie unseren <terms>Nutzungsbedingungen</terms> und <privacy>Datenschutzerklärung</privacy> zu. Wir speichern Ihre Bankzugangsdaten nicht."
     },
     "callback": {
       "successToast": "Bankverbindung erfolgreich!",

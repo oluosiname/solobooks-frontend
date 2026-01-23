@@ -409,7 +409,7 @@
       "neverInitiateTransactions": "Never initiate any transactions or transfers",
       "neverShareData": "Never share your financial data with third parties",
       "neverModifySettings": "Never modify your account settings or preferences",
-      "termsDisclaimer": "By proceeding, you agree to our {terms} and {privacy}. We do not store your banking credentials."
+      "termsDisclaimer": "By proceeding, you agree to our <terms>Terms of Service</terms> and <privacy>Privacy Policy</privacy>. We do not store your banking credentials."
     },
     "callback": {
       "successToast": "Bank connection successful!",
