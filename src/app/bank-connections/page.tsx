@@ -156,7 +156,7 @@ export default function BankConnectionsPage() {
                     <RefreshCw className="h-4 w-4 text-slate-400" />
                     <span>
                       {t("bankConnections.lastSync", {
-                        time: formatRelativeTime(bank.lastSynced),
+                        time: formatRelativeTime(bank.lastSyncAt),
                       })}
                     </span>
                   </div>
@@ -201,8 +201,8 @@ export default function BankConnectionsPage() {
                     variant="secondary"
                     onClick={() => handleSync(bank.id)}
                     isLoading={syncingId === bank.id}
-                    disabled={isLastSyncWithin24Hours(bank.lastSynced)}
-                    title={isLastSyncWithin24Hours(bank.lastSynced) ? t("bankConnections.syncDisabledTooltip") : undefined}
+                    disabled={isLastSyncWithin24Hours(bank.lastSyncAt)}
+                    title={isLastSyncWithin24Hours(bank.lastSyncAt) ? t("bankConnections.syncDisabledTooltip") : undefined}
                   >
                     <RefreshCw
                       className={cn(

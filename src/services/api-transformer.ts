@@ -74,7 +74,8 @@ export function transformCurrencyData(data: CurrencyData): Currency {
 }
 
 export function transformVatStatusData(data: VatStatusData): VatStatus {
-  return camelize<VatStatus>(data);
+  const transformed = camelize<VatStatus>(data);
+  return transformed;
 }
 
 export function transformVatReportData(data: VatReportData): VatReport {

@@ -328,7 +328,7 @@ export function VatSettings() {
               >
                 <option value="monthly">Monthly</option>
                 <option value="quarterly">Quarterly</option>
-                <option value="yearly">Yearly</option>
+                <option value="annually">Yearly</option>
               </select>
               {errors.declaration_period && (
                 <p className="mt-1.5 text-sm text-red-600">
