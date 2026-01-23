@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
@@ -19,6 +19,7 @@ export default function BankConnectionCallbackPage() {
     "loading"
   );
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const hasProcessedCallback = useRef(false);
 
   const completeConnectionMutation = useMutation({
     mutationFn: () => api.completeBankConnection(),
@@ -41,6 +42,12 @@ export default function BankConnectionCallbackPage() {
   });
 
   useEffect(() => {
+    // Prevent multiple calls
+    if (hasProcessedCallback.current) {
+      return;
+    }
+    hasProcessedCallback.current = true;
+
     const handleCallback = async () => {
       // Get parameters from URL
       const error = searchParams.get("error");
@@ -62,7 +69,8 @@ export default function BankConnectionCallbackPage() {
     };
 
     handleCallback();
-  }, [searchParams, completeConnectionMutation, t]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleRetry = () => {
     router.push("/bank-connections/connect");
