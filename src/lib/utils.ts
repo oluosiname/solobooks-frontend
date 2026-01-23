@@ -39,13 +39,13 @@ export function formatRelativeTime(
   dateString: string | null | undefined
 ): string {
   if (!dateString) {
-    return "—";
+    return "Never";
   }
 
   const date = new Date(dateString);
   // Check if the date is valid
   if (isNaN(date.getTime())) {
-    return "—";
+    return "Never";
   }
 
   const now = new Date();
@@ -122,7 +122,7 @@ export function getDateRangeForPeriod(year: string, period: string): { startDate
   const yearNum = parseInt(year);
 
   switch (period) {
-    case 'yearly':
+    case 'annually':
       return {
         startDate: `${yearNum}-01-01`,
         endDate: `${yearNum}-12-31`
@@ -145,7 +145,7 @@ export function getDateRangeForPeriod(year: string, period: string): { startDate
       };
 
     default:
-      // Default to yearly
+      // Default to annually
       return {
         startDate: `${yearNum}-01-01`,
         endDate: `${yearNum}-12-31`
@@ -157,7 +157,7 @@ export function generatePeriodLabel(year: string, period: string): string {
   const yearNum = parseInt(year);
 
   switch (period) {
-    case 'yearly':
+    case 'annually':
       return `${yearNum} Annual`;
     case 'quarterly':
       return `${yearNum} Quarterly`;

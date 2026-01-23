@@ -168,7 +168,7 @@ export interface BankConnection {
   bankName: string;
   accountNumber: string;
   institutionId: string;
-  lastSynced: string;
+  lastSyncAt: string | null;
   expiresAt: string;
   createdAt: string;
   updatedAt: string;
@@ -389,7 +389,7 @@ export interface Notification {
 }
 
 // VAT Status types
-export type DeclarationPeriod = "monthly" | "quarterly" | "yearly";
+export type DeclarationPeriod = "monthly" | "quarterly" | "annually";
 
 export interface VatStatus {
   id: number;
