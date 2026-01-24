@@ -13,6 +13,28 @@ export function formatCurrency(amount: number, currency = "EUR"): string {
   }).format(amount);
 }
 
+/**
+ * Get file extension from Content-Type header
+ */
+export function getFileExtensionFromContentType(contentType: string): string {
+  const contentTypeMap: Record<string, string> = {
+    "text/csv": "csv",
+    "application/csv": "csv",
+    "application/vnd.ms-excel": "csv",
+    "application/zip": "zip",
+    "application/x-zip-compressed": "zip",
+    "application/pdf": "pdf",
+    "application/json": "json",
+    "text/xml": "xml",
+    "application/xml": "xml",
+  };
+
+  // Extract base content type (remove charset, etc.)
+  const baseType = contentType.split(";")[0].trim().toLowerCase();
+  
+  return contentTypeMap[baseType] || "bin";
+}
+
 export function formatDate(dateString: string | null | undefined): string {
   if (!dateString) {
     return "—"; // Return em dash for null/undefined dates

@@ -38,7 +38,7 @@
     "clients": "Kunden",
     "transactions": "Transaktionen",
     "navBankConnections": "Bankverbindungen",
-    "reports": "Berichte",
+    "reports": "Bericht und Exporte",
     "taxes": "Steuern",
     "subscription": "Abonnement",
     "settings": "Einstellungen",
@@ -462,7 +462,25 @@
     "dataNotAvailable": "Berichtsdaten nicht verfügbar",
     "dataNotAvailableDescription": "Einige Berichtsdaten sind noch nicht vom Backend verfügbar. Diese Funktionen werden in einem zukünftigen Update implementiert.",
     "downloadError": "Fehler beim Herunterladen des PDFs",
-    "downloading": "Wird heruntergeladen..."
+    "downloading": "Wird heruntergeladen...",
+    "accountingExports": {
+      "title": "Buchhaltungsexporte",
+      "description": "Exportieren Sie Ihre Buchhaltungsdaten in Standardformaten für externe Software",
+      "datev": {
+        "title": "DATEV-Export",
+        "description": "Exportieren Sie alle Buchhaltungsdaten im DATEV-Format für deutsche Buchhaltungssoftware",
+        "includes": "Enthält: Rechnungen, Einnahmen und Ausgaben",
+        "button": "DATEV-Export anfordern",
+        "requesting": "Wird angefordert...",
+        "requestSuccess": "DATEV-Export-Anfrage erfolgreich erstellt. Sie werden benachrichtigt, wenn es bereit ist.",
+        "requestError": "DATEV-Export-Anfrage konnte nicht erstellt werden",
+        "downloadSuccess": "DATEV-Export erfolgreich heruntergeladen",
+        "downloadError": "DATEV-Export konnte nicht heruntergeladen werden",
+        "downloadTitle": "DATEV-Export herunterladen",
+        "completed": "Abgeschlossen",
+        "created": "Erstellt"
+      }
+    }
   },
   "taxes": {
     "title": "Steuern",

@@ -830,7 +830,7 @@ export async function getLatestDataExport(exportType: ExportType): Promise<{
   };
 }
 
-export async function downloadDataExport(id: string): Promise<Blob> {
+export async function downloadDataExport(id: string): Promise<{ blob: Blob; contentType: string }> {
   return dataExportsApi.downloadDataExport(id);
 }
 

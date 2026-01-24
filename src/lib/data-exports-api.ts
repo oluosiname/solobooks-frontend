@@ -61,7 +61,7 @@ class DataExportsApiClient extends BaseApiClient {
    * Download data export file
    * GET /api/v1/data_exports/{id}/download
    */
-  async downloadDataExport(id: string): Promise<Blob> {
+  async downloadDataExport(id: string): Promise<{ blob: Blob; contentType: string }> {
     const url = `${this.baseUrl}/api/v1/data_exports/${id}/download`;
     const token = this.getAuthToken();
 
@@ -76,7 +76,10 @@ class DataExportsApiClient extends BaseApiClient {
       throw new Error(`Failed to download export: ${response.statusText}`);
     }
 
-    return response.blob();
+    const blob = await response.blob();
+    const contentType = response.headers.get("content-type") || "application/octet-stream";
+
+    return { blob, contentType };
   }
 }
 

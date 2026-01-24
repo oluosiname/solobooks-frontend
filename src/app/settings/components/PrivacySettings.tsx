@@ -8,7 +8,7 @@ import {
   AlertTriangle,
   FileText,
 } from "lucide-react";
-import { cn, formatDateTime } from "@/lib/utils";
+import { cn, formatDateTime, getFileExtensionFromContentType } from "@/lib/utils";
 import { styles, buttonStyles } from "@/lib/styles";
 import { Toggle } from "@/components/atoms";
 import { api } from "@/services/api";
@@ -96,15 +96,16 @@ export function PrivacySettings({
 
   const downloadExportMutation = useMutation({
     mutationFn: async (exportId: string) => {
-      const blob = await api.downloadDataExport(exportId);
-      return blob;
+      return api.downloadDataExport(exportId);
     },
-    onSuccess: (blob) => {
+    onSuccess: ({ blob, contentType }) => {
+      // Determine file extension from content type
+      const extension = getFileExtensionFromContentType(contentType);
       // Create download link
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `gdpr-export-${latestExport?.uuid || "data"}.zip`;
+      a.download = `gdpr-export-${latestExport?.uuid || "data"}.${extension}`;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);

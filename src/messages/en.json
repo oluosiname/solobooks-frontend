@@ -38,7 +38,7 @@
     "clients": "Clients",
     "transactions": "Transactions",
     "navBankConnections": "Bank Connections",
-    "reports": "Reports",
+    "reports": "Report and Exports",
     "taxes": "Taxes",
     "subscription": "Subscription",
     "settings": "Settings",
@@ -461,7 +461,25 @@
     "dataNotAvailable": "Reports data not available",
     "dataNotAvailableDescription": "Some report data is not yet available from the backend. These features will be implemented in a future update.",
     "downloadError": "Failed to download PDF",
-    "downloading": "Downloading..."
+    "downloading": "Downloading...",
+    "accountingExports": {
+      "title": "Accounting Exports",
+      "description": "Export your accounting data in standard formats for external software",
+      "datev": {
+        "title": "DATEV Export",
+        "description": "Export all accounting data in DATEV format for German accounting software",
+        "includes": "Includes: Invoices, Income, and Expenses",
+        "button": "Request DATEV Export",
+        "requesting": "Requesting...",
+        "requestSuccess": "DATEV export request created successfully. You will be notified when it's ready.",
+        "requestError": "Failed to create DATEV export request",
+        "downloadSuccess": "DATEV export downloaded successfully",
+        "downloadError": "Failed to download DATEV export",
+        "downloadTitle": "Download DATEV export",
+        "completed": "Completed",
+        "created": "Created"
+      }
+    }
   },
   "taxes": {
     "title": "Taxes",
