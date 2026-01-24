@@ -90,9 +90,14 @@ export function GroupedTransactionsTable({
       vatRate: transaction.vatRate.toString(),
       customerLocation: transaction.customerLocation,
       customerVatNumber: transaction.customerVatNumber || "",
-      categoryId: transaction.category?.id?.toString() || "",
       syncedTransactionId: transaction.id.toString(),
     });
+
+   
+    const category = transaction.financialCategory ?? transaction.category;
+    if (category?.id) {
+      params.set("categoryId", category.id.toString());
+    }
 
     // Navigate to the appropriate new transaction page with prefilled data
     router.push(`/transactions/${newRoute}?${params.toString()}`);
@@ -140,7 +145,7 @@ export function GroupedTransactionsTable({
                             {transaction.description}
                           </p>
                           <p className="text-sm text-slate-500">
-                            {transaction.category?.name || "Unknown"}
+                            {(transaction.financialCategory ?? transaction.category)?.translatedName || "Unknown"}
                           </p>
                         </div>
                       </td>

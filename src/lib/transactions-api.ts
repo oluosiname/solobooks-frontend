@@ -85,6 +85,12 @@ export interface SyncedTransactionData {
   description: string;
   status: "pending" | "approved" | "discarded";
   bank_connection: BankConnectionSummary;
+  financial_category: {
+    id: number;
+    name: string;
+    category_type: "income" | "expense";
+    translated_name: string;
+  } | null;
   created_at: string;
   updated_at: string;
 }

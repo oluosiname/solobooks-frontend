@@ -112,7 +112,8 @@ export interface Transaction {
   source: string;
   receiptUrl: string | null;
   transactionType: "Expense" | "Income";
-  category: TransactionCategory;
+  category?: TransactionCategory; // For normal transactions
+  financialCategory?: TransactionCategory | null; // For synced transactions (camelized from financial_category)
   createdAt: string;
   updatedAt: string;
 }
