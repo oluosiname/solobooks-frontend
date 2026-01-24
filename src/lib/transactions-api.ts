@@ -182,6 +182,19 @@ class TransactionsApiClient extends BaseApiClient {
   }
 
   /**
+   * Bulk discard synced transactions
+   * POST /api/v1/synced_transactions/bulk_discard
+   */
+  async bulkDiscardSyncedTransactions(
+    ids: (string | number)[]
+  ): Promise<{ message: string }> {
+    return this.post<{ message: string }>(
+      "/api/v1/synced_transactions/bulk_discard",
+      { ids }
+    );
+  }
+
+  /**
    * Create a transaction
    * POST /api/v1/transactions
    */

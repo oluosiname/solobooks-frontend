@@ -363,6 +363,16 @@ export async function discardSyncedTransaction(
 }
 
 /**
+ * Bulk discard synced transactions
+ * POST /api/v1/synced_transactions/bulk_discard
+ */
+export async function bulkDiscardSyncedTransactions(
+  ids: (string | number)[]
+): Promise<{ message: string }> {
+  return await transactionsApi.bulkDiscardSyncedTransactions(ids);
+}
+
+/**
  * Fetch a single transaction
  * GET /api/v1/transactions/{id}
  */
@@ -766,6 +776,7 @@ export const api = {
   fetchTransaction,
   fetchUncheckedTransactions,
   discardSyncedTransaction,
+  bulkDiscardSyncedTransactions,
   createTransaction,
   updateTransaction,
   deleteTransaction,
