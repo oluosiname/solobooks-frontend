@@ -2,6 +2,7 @@ import { ClientData } from "@/lib/clients-api";
 import { InvoiceSettingData, CurrencyData } from "@/lib/invoice-settings-api";
 import { VatStatusData } from "@/lib/vat-status-api";
 import { VatReportData, VatReportPreviewData } from "@/lib/vat-reports-api";
+import { ZmdoReportData, ZmdoReportPreviewData } from "@/lib/zmdo-reports-api";
 import { ProfileData } from "@/lib/profile-api";
 import { TransactionData, SyncedTransactionData } from "@/lib/transactions-api";
 import type { SubscriptionData } from "@/lib/subscription-api";
@@ -20,6 +21,8 @@ import {
   VatStatus,
   VatReport,
   VatReportPreview,
+  ZmdoReport,
+  ZmdoReportPreview,
   Profile,
   Transaction,
   Subscription,
@@ -220,4 +223,14 @@ export function transformNotificationData(data: ApiNotificationData): Notificati
     readAt: data.read_at,
     updatedAt: data.updated_at,
   };
+}
+
+export function transformZmdoReportData(data: ZmdoReportData): ZmdoReport {
+  return camelize<ZmdoReport>(data);
+}
+
+export function transformZmdoReportPreviewData(
+  data: ZmdoReportPreviewData
+): ZmdoReportPreview {
+  return camelize<ZmdoReportPreview>(data);
 }
