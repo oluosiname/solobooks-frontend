@@ -509,7 +509,8 @@
     "errors": {
       "submitFailed": "Failed to submit report",
       "testSubmitFailed": "Failed to test submit report",
-      "previewFailed": "Failed to load report preview"
+      "previewFailed": "Failed to load report preview",
+      "upgradeRequired": "VAT submission is available on Pro and above. Please upgrade to submit or test reports."
     },
     "zmdo": {
       "title": "EC Sales List (Zusammenfassende Meldung)",

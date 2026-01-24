@@ -12,6 +12,26 @@ interface ProfileSettingsProps {
   isSaving: boolean;
 }
 
+// German states (Bundesländer) with 2-letter abbreviations
+const GERMAN_STATES: SelectOption[] = [
+  { value: "BW", label: "Baden-Württemberg" },
+  { value: "BY", label: "Bayern" },
+  { value: "BE", label: "Berlin" },
+  { value: "BB", label: "Brandenburg" },
+  { value: "HB", label: "Bremen" },
+  { value: "HH", label: "Hamburg" },
+  { value: "HE", label: "Hessen" },
+  { value: "MV", label: "Mecklenburg-Vorpommern" },
+  { value: "NI", label: "Niedersachsen" },
+  { value: "NW", label: "Nordrhein-Westfalen" },
+  { value: "RP", label: "Rheinland-Pfalz" },
+  { value: "SL", label: "Saarland" },
+  { value: "SN", label: "Sachsen" },
+  { value: "ST", label: "Sachsen-Anhalt" },
+  { value: "SH", label: "Schleswig-Holstein" },
+  { value: "TH", label: "Thüringen" },
+];
+
 export function ProfileSettings({
   profile,
   onSave,
@@ -20,14 +40,14 @@ export function ProfileSettings({
   const t = useTranslations();
 
   const countryOptions: SelectOption[] = [
-    { value: "Germany", label: t("countries.germany") },
-    { value: "Austria", label: t("countries.austria") },
-    { value: "Switzerland", label: t("countries.switzerland") },
-    { value: "United Kingdom", label: t("countries.unitedKingdom") },
-    { value: "France", label: t("countries.france") },
-    { value: "Netherlands", label: t("countries.netherlands") },
-    { value: "Belgium", label: t("countries.belgium") },
-    { value: "Other", label: t("countries.other") },
+    { value: "DE", label: t("countries.germany") },
+    { value: "AT", label: t("countries.austria") },
+    { value: "CH", label: t("countries.switzerland") },
+    { value: "GB", label: t("countries.unitedKingdom") },
+    { value: "FR", label: t("countries.france") },
+    { value: "NL", label: t("countries.netherlands") },
+    { value: "BE", label: t("countries.belgium") },
+    { value: "OTHER", label: t("countries.other") },
   ];
 
   const [formData, setFormData] = useState({
@@ -185,20 +205,55 @@ export function ProfileSettings({
               </div>
               <div>
                 <label className="block text-sm font-medium text-slate-700">
-                  {t("clients.form.state")}
+                  {t("clients.form.country")}
                 </label>
-                <input
-                  type="text"
+                <select
                   className={cn(styles.input, "mt-1.5")}
-                  value={formData.address.state}
+                  value={formData.address.country}
                   onChange={(e) =>
                     setFormData({
                       ...formData,
-                      address: { ...formData.address, state: e.target.value },
+                      address: {
+                        ...formData.address,
+                        country: e.target.value,
+                        // Clear state if country is not DE
+                        state: e.target.value === "DE" ? formData.address.state : "",
+                      },
                     })
                   }
-                />
+                >
+                  <option value="">{t("common.select")}</option>
+                  {countryOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
               </div>
+              {formData.address.country === "DE" && (
+                <div>
+                  <label className="block text-sm font-medium text-slate-700">
+                    {t("clients.form.state")}
+                  </label>
+                  <select
+                    className={cn(styles.input, "mt-1.5")}
+                    value={formData.address.state}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        address: { ...formData.address, state: e.target.value },
+                      })
+                    }
+                  >
+                    <option value="">{t("common.select")}</option>
+                    {GERMAN_STATES.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
               <div>
                 <label className="block text-sm font-medium text-slate-700">
                   {t("clients.form.postalCode")}
@@ -214,28 +269,6 @@ export function ProfileSettings({
                     })
                   }
                 />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700">
-                  {t("clients.form.country")}
-                </label>
-                <select
-                  className={cn(styles.input, "mt-1.5")}
-                  value={formData.address.country}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      address: { ...formData.address, country: e.target.value },
-                    })
-                  }
-                >
-                  <option value="">{t("common.select")}</option>
-                  {countryOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
               </div>
             </div>
           </div>

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
 import {
   FileText,
   Eye,
@@ -11,28 +12,77 @@ import {
   FileCode,
   Download,
   Globe,
+  Lock,
 } from "lucide-react";
 import { AppShell } from "@/components/layout";
 import { Button, Card, Badge } from "@/components/atoms";
 import { Tabs } from "@/components/molecules";
 import { VatReportPreviewModal } from "@/components/vat-report-preview-modal";
+import { PdfPreviewModal } from "@/components/pdf-preview-modal";
 import { api } from "@/services/api";
 import { showToast } from "@/lib/toast";
-import type { VatReportPreview, ZmdoReportPreview } from "@/types";
+import type { VatReportPreview, ZmdoReportPreview, ApiError } from "@/types";
 import { ZmdoReportPreviewModal } from "@/components/zm-report-preview-modal";
+import { useAuth } from "@/contexts/AuthContext";
+import { entitledToVatSubmission } from "@/lib/entitlements";
 
 export default function TaxesPage() {
   const t = useTranslations();
   const queryClient = useQueryClient();
+  const router = useRouter();
+  const { user } = useAuth();
   
   // VAT Reports state
   const [vatActiveTab, setVatActiveTab] = useState("upcoming");
   const [vatPreviewModalOpen, setVatPreviewModalOpen] = useState(false);
+  const [vatPdfModalOpen, setVatPdfModalOpen] = useState(false);
+  const [vatPdfData, setVatPdfData] = useState<string | null>(null);
 
   
   // ZMDO Reports state
   const [zmdoActiveTab, setZmdoActiveTab] = useState("draft");
   const [zmdoPreviewModalOpen, setZmdoPreviewModalOpen] = useState(false);
+  const [zmdoPdfModalOpen, setZmdoPdfModalOpen] = useState(false);
+  const [zmdoPdfData, setZmdoPdfData] = useState<string | null>(null);
+
+  // Check if user is entitled to VAT submission
+  const canSubmitVat = entitledToVatSubmission(user);
+
+  const handleUpgrade = () => {
+    router.push("/subscription");
+  };
+
+  const handleTestSubmitVat = (reportId: string) => {
+    if (!canSubmitVat) {
+      handleUpgrade();
+      return;
+    }
+    testSubmitVatReportMutation.mutate(reportId);
+  };
+
+  const handleSubmitVat = (reportId: string) => {
+    if (!canSubmitVat) {
+      handleUpgrade();
+      return;
+    }
+    submitVatReportMutation.mutate(reportId);
+  };
+
+  const handleTestSubmitZmdo = (reportId: string) => {
+    if (!canSubmitVat) {
+      handleUpgrade();
+      return;
+    }
+    testSubmitZmdoReportMutation.mutate(reportId);
+  };
+
+  const handleSubmitZmdo = (reportId: string) => {
+    if (!canSubmitVat) {
+      handleUpgrade();
+      return;
+    }
+    submitZmdoReportMutation.mutate(reportId);
+  };
 
   const vatTabs = [
     { id: "upcoming", label: t("taxes.tabs.upcoming") },
@@ -43,6 +93,21 @@ export default function TaxesPage() {
     { id: "draft", label: t("taxes.tabs.draft") },
     { id: "submitted", label: t("taxes.tabs.submitted") },
   ];
+
+  // Helper function to extract error message from API errors
+  const getErrorMessage = (error: unknown, fallbackKey: string): string => {
+    const apiError = error as ApiError;
+    // Try to get the actual backend error message
+    if (apiError?.error?.message) {
+      return apiError.error.message;
+    }
+    // Fallback to generic error message
+    if (apiError?.message) {
+      return apiError.message;
+    }
+    // Last resort: use translation key
+    return t(fallbackKey);
+  };
 
   // VAT Reports Query
   const {
@@ -90,15 +155,7 @@ export default function TaxesPage() {
       queryClient.invalidateQueries({ queryKey: ["vat-reports"] });
     },
     onError: (error: unknown) => {
-      const message =
-        (
-          error as {
-            response?: { data?: { error?: { message?: string } } };
-            message?: string;
-          }
-        )?.response?.data?.error?.message ||
-        (error as Error)?.message ||
-        t("taxes.errors.submitFailed");
+      const message = getErrorMessage(error, "taxes.errors.submitFailed");
       showToast.error(message);
     },
   });
@@ -108,20 +165,12 @@ export default function TaxesPage() {
     onSuccess: (data) => {
       showToast.success(data.message);
       if (data.pdfData) {
-        const pdfDataUrl = `data:application/pdf;base64,${data.pdfData}`;
-        window.open(pdfDataUrl, "_blank");
+        setVatPdfData(data.pdfData);
+        setVatPdfModalOpen(true);
       }
     },
     onError: (error: unknown) => {
-      const message =
-        (
-          error as {
-            response?: { data?: { error?: { message?: string } } };
-            message?: string;
-          }
-        )?.response?.data?.error?.message ||
-        (error as Error)?.message ||
-        t("taxes.errors.testSubmitFailed");
+      const message = getErrorMessage(error, "taxes.errors.testSubmitFailed");
       showToast.error(message);
     },
   });
@@ -132,15 +181,7 @@ export default function TaxesPage() {
       setVatPreviewModalOpen(true);
     },
     onError: (error: unknown) => {
-      const message =
-        (
-          error as {
-            response?: { data?: { error?: { message?: string } } };
-            message?: string;
-          }
-        )?.response?.data?.error?.message ||
-        (error as Error)?.message ||
-        t("taxes.errors.previewFailed");
+      const message = getErrorMessage(error, "taxes.errors.previewFailed");
       showToast.error(message);
     },
   });
@@ -157,15 +198,7 @@ export default function TaxesPage() {
       queryClient.invalidateQueries({ queryKey: ["zmdo-reports"] });
     },
     onError: (error: unknown) => {
-      const message =
-        (
-          error as {
-            response?: { data?: { error?: { message?: string } } };
-            message?: string;
-          }
-        )?.response?.data?.error?.message ||
-        (error as Error)?.message ||
-        t("taxes.errors.submitFailed");
+      const message = getErrorMessage(error, "taxes.errors.submitFailed");
       showToast.error(message);
     },
   });
@@ -175,20 +208,12 @@ export default function TaxesPage() {
     onSuccess: (data) => {
       showToast.success(data.message);
       if (data.pdfData) {
-        const pdfDataUrl = `data:application/pdf;base64,${data.pdfData}`;
-        window.open(pdfDataUrl, "_blank");
+        setZmdoPdfData(data.pdfData);
+        setZmdoPdfModalOpen(true);
       }
     },
     onError: (error: unknown) => {
-      const message =
-        (
-          error as {
-            response?: { data?: { error?: { message?: string } } };
-            message?: string;
-          }
-        )?.response?.data?.error?.message ||
-        (error as Error)?.message ||
-        t("taxes.errors.testSubmitFailed");
+      const message = getErrorMessage(error, "taxes.errors.testSubmitFailed");
       showToast.error(message);
     },
   });
@@ -199,15 +224,7 @@ export default function TaxesPage() {
       setZmdoPreviewModalOpen(true);
     },
     onError: (error: unknown) => {
-      const message =
-        (
-          error as {
-            response?: { data?: { error?: { message?: string } } };
-            message?: string;
-          }
-        )?.response?.data?.error?.message ||
-        (error as Error)?.message ||
-        t("taxes.errors.previewFailed");
+      const message = getErrorMessage(error, "taxes.errors.previewFailed");
       showToast.error(message);
     },
   });
@@ -395,10 +412,9 @@ export default function TaxesPage() {
                         <>
                           <Button
                             variant="secondary"
-                            onClick={() =>
-                              testSubmitVatReportMutation.mutate(report.id)
-                            }
+                            onClick={() => handleTestSubmitVat(report.id)}
                             disabled={testSubmitVatReportMutation.isPending}
+                            title={!canSubmitVat ? t("taxes.errors.upgradeRequired") : undefined}
                           >
                             {testSubmitVatReportMutation.isPending ? (
                               <>
@@ -407,7 +423,11 @@ export default function TaxesPage() {
                               </>
                             ) : (
                               <>
-                                <TestTube className="h-4 w-4" />
+                                {!canSubmitVat ? (
+                                  <Lock className="h-4 w-4 mr-2" />
+                                ) : (
+                                  <TestTube className="h-4 w-4" />
+                                )}
                                 {t("taxes.actions.testReport")}
                               </>
                             )}
@@ -415,10 +435,9 @@ export default function TaxesPage() {
 
                           <Button
                             variant="primary"
-                            onClick={() =>
-                              submitVatReportMutation.mutate(report.id)
-                            }
+                            onClick={() => handleSubmitVat(report.id)}
                             disabled={submitVatReportMutation.isPending}
+                            title={!canSubmitVat ? t("taxes.errors.upgradeRequired") : undefined}
                           >
                             {submitVatReportMutation.isPending ? (
                               <>
@@ -427,7 +446,11 @@ export default function TaxesPage() {
                               </>
                             ) : (
                               <>
-                                <Send className="h-4 w-4" />
+                                {!canSubmitVat ? (
+                                  <Lock className="h-4 w-4 mr-2" />
+                                ) : (
+                                  <Send className="h-4 w-4" />
+                                )}
                                 {t("taxes.submitToFinanzamt")}
                               </>
                             )}
@@ -593,10 +616,9 @@ export default function TaxesPage() {
                           <>
                             <Button
                               variant="secondary"
-                              onClick={() =>
-                                testSubmitZmdoReportMutation.mutate(report.id)
-                              }
+                              onClick={() => handleTestSubmitZmdo(report.id)}
                               disabled={testSubmitZmdoReportMutation.isPending}
+                              title={!canSubmitVat ? t("taxes.errors.upgradeRequired") : undefined}
                             >
                               {testSubmitZmdoReportMutation.isPending ? (
                                 <>
@@ -605,7 +627,11 @@ export default function TaxesPage() {
                                 </>
                               ) : (
                                 <>
-                                  <TestTube className="h-4 w-4" />
+                                  {!canSubmitVat ? (
+                                    <Lock className="h-4 w-4 mr-2" />
+                                  ) : (
+                                    <TestTube className="h-4 w-4" />
+                                  )}
                                   {t("taxes.actions.testReport")}
                                 </>
                               )}
@@ -613,10 +639,9 @@ export default function TaxesPage() {
 
                             <Button
                               variant="primary"
-                              onClick={() =>
-                                submitZmdoReportMutation.mutate(report.id)
-                              }
+                              onClick={() => handleSubmitZmdo(report.id)}
                               disabled={submitZmdoReportMutation.isPending}
+                              title={!canSubmitVat ? t("taxes.errors.upgradeRequired") : undefined}
                             >
                               {submitZmdoReportMutation.isPending ? (
                                 <>
@@ -625,7 +650,11 @@ export default function TaxesPage() {
                                 </>
                               ) : (
                                 <>
-                                  <Send className="h-4 w-4" />
+                                  {!canSubmitVat ? (
+                                    <Lock className="h-4 w-4 mr-2" />
+                                  ) : (
+                                    <Send className="h-4 w-4" />
+                                  )}
                                   {t("taxes.submitToFinanzamt")}
                                 </>
                               )}
@@ -673,6 +702,22 @@ export default function TaxesPage() {
         onOpenChange={setZmdoPreviewModalOpen}
         previewData={previewZmdoReportMutation.data || null}
         isLoading={previewZmdoReportMutation.isPending}
+      />
+      {/* VAT PDF Preview Modal */}
+      <PdfPreviewModal
+        open={vatPdfModalOpen}
+        onOpenChange={setVatPdfModalOpen}
+        pdfData={vatPdfData}
+        title="VAT Report PDF Preview"
+        subtitle="Test submission PDF preview"
+      />
+      {/* ZMDO PDF Preview Modal */}
+      <PdfPreviewModal
+        open={zmdoPdfModalOpen}
+        onOpenChange={setZmdoPdfModalOpen}
+        pdfData={zmdoPdfData}
+        title="ZMDO Report PDF Preview"
+        subtitle="Test submission PDF preview"
       />
     </AppShell>
   );
