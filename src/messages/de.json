@@ -510,7 +510,8 @@
     "errors": {
       "submitFailed": "Übermittlung fehlgeschlagen",
       "testSubmitFailed": "Testübermittlung fehlgeschlagen",
-      "previewFailed": "Vorschau konnte nicht geladen werden"
+      "previewFailed": "Vorschau konnte nicht geladen werden",
+      "upgradeRequired": "Die Übermittlung von USt-Meldungen ist im Pro-Tarif und höher verfügbar. Bitte upgraden Sie, um Meldungen zu übermitteln oder zu testen."
     },
     "zmdo": {
       "title": "Zusammenfassende Meldung (ZM)",
