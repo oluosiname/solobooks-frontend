@@ -15,3 +15,4 @@ export {
   type CardFooterProps,
 } from "./Card";
 export { Toggle, type ToggleProps } from "./Toggle";
+export { Checkbox, type CheckboxProps } from "./Checkbox";
