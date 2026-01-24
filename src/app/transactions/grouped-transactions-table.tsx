@@ -143,27 +143,34 @@ export function GroupedTransactionsTable({
   const handleEdit = (transaction: Transaction) => {
     // Determine if it's income or expense based on transactionType field
     const isIncome = transaction.transactionType === "Income";
-    const newRoute = isIncome ? "new-income" : "new-expense";
+    
+    if (isPendingView) {
+      // For synced transactions (pending approval), navigate to new route with params
+      const newRoute = isIncome ? "new-income" : "new-expense";
+      
+      // Create URL search parameters with transaction data to prefill the form
+      const params = new URLSearchParams({
+        description: transaction.description,
+        date: transaction.date,
+        amount: transaction.amount.toString(),
+        vatRate: transaction.vatRate.toString(),
+        customerLocation: transaction.customerLocation,
+        customerVatNumber: transaction.customerVatNumber || "",
+        syncedTransactionId: transaction.id.toString(),
+      });
 
-    // Create URL search parameters with transaction data to prefill the form
-    const params = new URLSearchParams({
-      description: transaction.description,
-      date: transaction.date,
-      amount: transaction.amount.toString(),
-      vatRate: transaction.vatRate.toString(),
-      customerLocation: transaction.customerLocation,
-      customerVatNumber: transaction.customerVatNumber || "",
-      syncedTransactionId: transaction.id.toString(),
-    });
+      const category = transaction.financialCategory ?? transaction.category;
+      if (category?.id) {
+        params.set("categoryId", category.id.toString());
+      }
 
-   
-    const category = transaction.financialCategory ?? transaction.category;
-    if (category?.id) {
-      params.set("categoryId", category.id.toString());
+      // Navigate to the appropriate new transaction page with prefilled data
+      router.push(`/transactions/${newRoute}?${params.toString()}`);
+    } else {
+      // For existing transactions, navigate to edit route with ID
+      const editRoute = isIncome ? "edit-income" : "edit-expense";
+      router.push(`/transactions/${editRoute}?id=${transaction.id}`);
     }
-
-    // Navigate to the appropriate new transaction page with prefilled data
-    router.push(`/transactions/${newRoute}?${params.toString()}`);
   };
 
   return (
