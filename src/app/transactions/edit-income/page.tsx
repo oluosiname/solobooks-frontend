@@ -60,7 +60,7 @@ export default function EditIncomePage() {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setFormData({
         transactionType: transactionData.transactionType || "Income",
-        categoryId: transactionData.category?.id.toString() || "",
+        categoryId: (transactionData.financialCategory ?? transactionData.category)?.id.toString() || "",
         date: transactionData.date || new Date().toISOString().split("T")[0],
         amount: Math.abs(transactionData.amount).toString(),
         description: transactionData.description || "",

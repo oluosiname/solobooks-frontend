@@ -11,7 +11,7 @@ import { BaseApiClient } from "./base-api";
 // ============================================
 
 export interface VatReportData {
-  id: number;
+  id: string;
   status: "draft" | "submitted" | "accepted" | "rejected" | "error";
   start_date: string;
   end_date: string;
@@ -73,7 +73,7 @@ class VatReportsApiClient extends BaseApiClient {
    * Submit VAT report to tax authority
    * POST /api/v1/vat_reports/{id}/submit
    */
-  async submitVatReport(id: number): Promise<{
+  async submitVatReport(id: string): Promise<{
     data: {
       success: boolean;
       message: string;
@@ -93,7 +93,7 @@ class VatReportsApiClient extends BaseApiClient {
    * Test submit VAT report
    * POST /api/v1/vat_reports/{id}/test_submit
    */
-  async testSubmitVatReport(id: number): Promise<{
+  async testSubmitVatReport(id: string): Promise<{
     data: {
       success: boolean;
       message: string;
@@ -113,7 +113,7 @@ class VatReportsApiClient extends BaseApiClient {
    * Preview VAT report financial data
    * GET /api/v1/vat_reports/{id}/preview
    */
-  async previewVatReport(id: number): Promise<VatReportPreviewResponse> {
+  async previewVatReport(id: string): Promise<VatReportPreviewResponse> {
     return this.get<VatReportPreviewResponse>(
       `/api/v1/vat_reports/${id}/preview`
     );

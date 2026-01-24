@@ -1,5 +1,7 @@
 // Core business types for Solobooks
 
+import { ZmdoReportPreviewTransactionData } from "@/lib/zmdo-reports-api";
+
 // API Error types
 export interface ApiErrorDetails {
   [field: string]: string[];
@@ -112,7 +114,8 @@ export interface Transaction {
   source: string;
   receiptUrl: string | null;
   transactionType: "Expense" | "Income";
-  category: TransactionCategory;
+  category?: TransactionCategory; // For normal transactions
+  financialCategory?: TransactionCategory | null; // For synced transactions (camelized from financial_category)
   createdAt: string;
   updatedAt: string;
 }
@@ -183,7 +186,7 @@ export type VatReportStatus =
   | "error";
 
 export interface VatReport {
-  id: number;
+  id: string;
   status: VatReportStatus;
   startDate: string;
   endDate: string;
@@ -222,6 +225,56 @@ export interface VatReportsResponse {
     upcoming: VatReport[];
     submitted: VatReport[];
   };
+}
+
+// ZMDO (Zusammenfassende Meldung / EC Sales List) Report types
+export type ZmdoReportStatus =
+  | "draft"
+  | "submitted"
+  | "accepted"
+  | "rejected"
+  | "error";
+
+export interface ZmdoReport {
+  id: string;
+  status: ZmdoReportStatus;
+  quarter: number;
+  year: number;
+  startDate: string;
+  endDate: string;
+  periodLabel: string;
+  submittedAt: string | null;
+  errorMessage: string | null;
+  canSubmit: boolean;
+  submittable: boolean;
+  pdfAttached: boolean;
+  pdfUrl: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ZmdoReportPreview {
+  report: ZmdoReport;
+  transactionData: ZmdoReportPreviewTransaction;
+  totalAmount: number;
+}
+
+export interface ZmdoReportsResponse {
+  data: {
+    draft: ZmdoReport[];
+    submitted: ZmdoReport[];
+  };
+}
+
+export interface ZmdoReportPreviewTransaction {
+  totalTransactions: number;
+  totalAmount: number;
+  germanyAmount: number;
+  euAmount: number;
+  withVatNumberCount: number;
+  withVatNumberAmount: number;
+  withoutVatNumberCount: number;
+  withoutVatNumberAmount: number;
 }
 
 export interface Plan {

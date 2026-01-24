@@ -246,6 +246,14 @@
     "discardSuccess": "Transaction discarded successfully",
     "discardError": "Failed to discard transaction",
     "discarding": "Discarding...",
+    "bulkDiscardTitle": "Discard Selected Transactions",
+    "bulkDiscardConfirm": "Are you sure you want to discard {count} transaction(s)? This action cannot be undone.",
+    "bulkDiscardSuccess": "{count} transaction(s) discarded successfully",
+    "bulkDiscardError": "Failed to discard transactions. Please try again.",
+    "clearSelection": "Clear selection",
+    "selectedCount": "{count} selected",
+    "transactionCount": "{count} transactions",
+    "discardSelected": "Discard {count} transaction(s)",
     "newExpense": "New Expense",
     "newIncome": "New Income",
     "addExpense": "Add Expense",
@@ -457,15 +465,67 @@
   },
   "taxes": {
     "title": "Taxes",
+    "management": {
+      "title": "Tax Management",
+      "description": "Manage and submit your tax reports"
+    },
     "vatReports": "VAT Reports",
+    "vatReportsDescription": "Monthly/Quarterly VAT declarations and submissions",
+    "vatReportsNotAvailable": "VAT reports not available",
+    "vatReportsFutureUpdate": "This feature will be implemented in a future update",
+    "vatReportsNoReports": "No VAT reports found",
     "newReport": "New Report",
-    "submitToElster": "Submit to Elster",
+    "submitToFinanzamt": "Submit to Finanzamt",
+    "tabs": {
+      "upcoming": "Upcoming",
+      "submitted": "Submitted",
+      "draft": "Draft"
+    },
     "status": {
       "draft": "Draft",
       "submitted": "Submitted",
       "accepted": "Accepted",
       "rejected": "Rejected",
       "error": "Error"
+    },
+    "badge": {
+      "overdue": "Overdue",
+      "dueSoon": "Due Soon",
+      "dueInDays": "Due in {days} days"
+    },
+    "actions": {
+      "details": "Details",
+      "testReport": "Test Report",
+      "testing": "Testing...",
+      "submitting": "Submitting..."
+    },
+    "due": "Due",
+    "error": "Error",
+    "year": "Year",
+    "quarter": "Quarter",
+    "elsterPeriod": "Elster Period",
+    "xmlAttached": "XML Attached",
+    "pdfAttached": "PDF Attached",
+    "errors": {
+      "submitFailed": "Failed to submit report",
+      "testSubmitFailed": "Failed to test submit report",
+      "previewFailed": "Failed to load report preview"
+    },
+    "zmdo": {
+      "title": "EC Sales List (Zusammenfassende Meldung)",
+      "description": "Quarterly reports for intra-EU B2B transactions",
+      "notAvailable": "EC Sales List reports not available",
+      "futureUpdate": "This feature will be implemented in a future update",
+      "noReports": "No EC Sales List reports found",
+      "previewLoaded": "Preview loaded successfully",
+      "previewTitle": "ZMDO Preview",
+      "close": "Close",
+      "overallSummary": "Overall Summary",
+      "overallSummaryHint": "Summary of the report for the selected period.",
+      "amountSplit": "Amount Split",
+      "amountSplitHint": "Distribution of reported transactions by region.",
+      "vatBreakdown": "VAT Breakdown",
+      "vatBreakdownHint": "Distribution of transactions with and without a valid VAT number."
     },
     "columns": {
       "period": "Period",

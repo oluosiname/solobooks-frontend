@@ -85,6 +85,12 @@ export interface SyncedTransactionData {
   description: string;
   status: "pending" | "approved" | "discarded";
   bank_connection: BankConnectionSummary;
+  financial_category: {
+    id: number;
+    name: string;
+    category_type: "income" | "expense";
+    translated_name: string;
+  } | null;
   created_at: string;
   updated_at: string;
 }
@@ -172,6 +178,19 @@ class TransactionsApiClient extends BaseApiClient {
   ): Promise<{ message: string }> {
     return this.patch<{ message: string }>(
       `/api/v1/synced_transactions/${id}/discard`
+    );
+  }
+
+  /**
+   * Bulk discard synced transactions
+   * POST /api/v1/synced_transactions/bulk_discard
+   */
+  async bulkDiscardSyncedTransactions(
+    ids: (string | number)[]
+  ): Promise<{ message: string }> {
+    return this.post<{ message: string }>(
+      "/api/v1/synced_transactions/bulk_discard",
+      { ids }
     );
   }
 

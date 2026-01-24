@@ -24,7 +24,7 @@ export function RecentTransactions({ transactions }: RecentTransactionsProps) {
             <div className="min-w-0 flex-1">
               <p className="truncate font-medium text-slate-900">{transaction.description}</p>
               <p className="text-sm text-slate-500">
-                {transaction.category?.translatedName || 'Uncategorized'} • {formatDate(transaction.date)}
+                {(transaction.financialCategory ?? transaction.category)?.translatedName || 'Uncategorized'} • {formatDate(transaction.date)}
               </p>
             </div>
             <div className="ml-4 text-right">
