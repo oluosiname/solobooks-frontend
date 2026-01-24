@@ -1,15 +1,14 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Check,
   Download,
   Eye,
-  Edit,
   AlertTriangle,
   FileText,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, formatDateTime } from "@/lib/utils";
 import { styles, buttonStyles } from "@/lib/styles";
 import { Toggle } from "@/components/atoms";
 import { api } from "@/services/api";
@@ -77,6 +76,51 @@ export function PrivacySettings({
     },
     // Note: onSuccess not needed - redirect happens in AuthContext
   });
+
+  const createDataExportMutation = useMutation({
+    mutationFn: (exportType: "gdpr" | "datev") => api.createDataExport(exportType),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["latestDataExport", "gdpr"] });
+      showToast.success("Data export request created successfully. You will be notified when it's ready.");
+    },
+    onError: (error: unknown) => {
+      showToast.apiError(error, "Failed to create data export request");
+    },
+  });
+
+  // Fetch latest GDPR export
+  const { data: latestExport } = useQuery({
+    queryKey: ["latestDataExport", "gdpr"],
+    queryFn: () => api.getLatestDataExport("gdpr"),
+  });
+
+  const downloadExportMutation = useMutation({
+    mutationFn: async (exportId: string) => {
+      const blob = await api.downloadDataExport(exportId);
+      return blob;
+    },
+    onSuccess: (blob) => {
+      // Create download link
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `gdpr-export-${latestExport?.uuid || "data"}.zip`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      showToast.success("Export downloaded successfully");
+    },
+    onError: (error: unknown) => {
+      showToast.apiError(error, "Failed to download export");
+    },
+  });
+
+  const handleDownloadExport = () => {
+    if (latestExport?.uuid) {
+      downloadExportMutation.mutate(latestExport.uuid);
+    }
+  };
 
   const handleConsentSave = () => {
     if (unifiedSettings) {
@@ -224,8 +268,8 @@ export function PrivacySettings({
         </div>
       </div>
 
-      {/* Your Data Rights - TODO: implement portability, access, rectification */}
-      {false && <div className={cn(styles.card)}>
+      {/* Your Data Rights */}
+      <div className={cn(styles.card)}>
         <div className={styles.cardContent}>
           <h3 className="text-lg font-semibold text-slate-900">
             {t("settings.privacy.dataRights.title")}
@@ -246,41 +290,36 @@ export function PrivacySettings({
                   </p>
                 </div>
               </div>
-              <button className={buttonStyles("secondary")}>
-                {t("settings.privacy.dataRights.portability.button")}
-              </button>
-            </div>
-            <div className="flex items-center justify-between rounded-lg border border-slate-200 p-4">
               <div className="flex items-center gap-3">
-                <Eye className="h-5 w-5 text-slate-400" />
-                <div>
-                  <p className="font-medium text-slate-900">
-                    {t("settings.privacy.dataRights.access.title")}
-                  </p>
-                  <p className="text-sm text-slate-500">
-                    {t("settings.privacy.dataRights.access.description")}
-                  </p>
-                </div>
+                {latestExport?.status === "completed" && (
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-slate-500">
+                      {latestExport.completedAt
+                        ? `Completed ${formatDateTime(latestExport.completedAt)}`
+                        : latestExport.createdAt
+                        ? `Created ${formatDateTime(latestExport.createdAt)}`
+                        : ""}
+                    </span>
+                    <button
+                      onClick={handleDownloadExport}
+                      disabled={downloadExportMutation.isPending}
+                      className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                      title="Download export"
+                    >
+                      <Download className="h-4 w-4" />
+                    </button>
+                  </div>
+                )}
+                <button
+                  className={buttonStyles("secondary")}
+                  onClick={() => createDataExportMutation.mutate("gdpr")}
+                  disabled={createDataExportMutation.isPending}
+                >
+                  {createDataExportMutation.isPending
+                    ? "Requesting..."
+                    : t("settings.privacy.dataRights.portability.button")}
+                </button>
               </div>
-              <button className={buttonStyles("secondary")}>
-                {t("settings.privacy.dataRights.access.button")}
-              </button>
-            </div>
-            <div className="flex items-center justify-between rounded-lg border border-slate-200 p-4">
-              <div className="flex items-center gap-3">
-                <Edit className="h-5 w-5 text-slate-400" />
-                <div>
-                  <p className="font-medium text-slate-900">
-                    {t("settings.privacy.dataRights.rectification.title")}
-                  </p>
-                  <p className="text-sm text-slate-500">
-                    {t("settings.privacy.dataRights.rectification.description")}
-                  </p>
-                </div>
-              </div>
-              <button className={buttonStyles("secondary")}>
-                {t("settings.privacy.dataRights.rectification.button")}
-              </button>
             </div>
             <div className="flex items-center justify-between rounded-lg border border-red-100 bg-red-50 p-4">
               <div className="flex items-center gap-3">
@@ -301,26 +340,6 @@ export function PrivacySettings({
                 {t("settings.privacy.dataRights.erasure.button")}
               </button>
             </div>
-          </div>
-        </div>
-      </div>}
-
-      {/* Delete Account */}
-      <div className={cn(styles.card)}>
-        <div className={styles.cardContent}>
-          <h3 className="text-lg font-semibold text-slate-900">
-            {t("settings.privacy.dataRights.erasure.title")}
-          </h3>
-          <p className="mt-1 text-sm text-slate-500">
-            {t("settings.privacy.dataRights.erasure.description")}
-          </p>
-          <div className="mt-6 flex justify-end">
-            <button
-              onClick={() => setDeleteDialogOpen(true)}
-              className="rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-100"
-            >
-              {t("settings.privacy.dataRights.erasure.button")}
-            </button>
           </div>
         </div>
       </div>

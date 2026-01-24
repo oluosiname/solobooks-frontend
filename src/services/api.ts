@@ -43,6 +43,8 @@ import { bankConnectionsApi } from "@/lib/bank-connections-api";
 import { vatReportsApi } from "@/lib/vat-reports-api";
 import { zmdoReportsApi } from "@/lib/zmdo-reports-api";
 import { stripeInvoicesApi } from "@/lib/stripe-invoices-api";
+import { dataExportsApi } from "@/lib/data-exports-api";
+import type { ExportType } from "@/lib/data-exports-api";
 
 import type {
   Profile,
@@ -786,6 +788,53 @@ export async function fetchStripeInvoices(year?: number): Promise<StripeInvoice[
 }
 
 // ============================================
+// Data Exports API
+// ============================================
+
+export async function createDataExport(exportType: ExportType): Promise<{
+  uuid: string;
+  exportType: string;
+  status: string;
+  createdAt: string;
+}> {
+  const response = await dataExportsApi.createDataExport(exportType);
+  return {
+    uuid: response.data.uuid,
+    exportType: response.data.export_type,
+    status: response.data.status,
+    createdAt: response.data.created_at,
+  };
+}
+
+export async function getLatestDataExport(exportType: ExportType): Promise<{
+  uuid: string;
+  exportType: string;
+  status: string;
+  createdAt: string;
+  completedAt?: string;
+  expiresAt?: string;
+  downloadUrl?: string;
+} | null> {
+  const response = await dataExportsApi.getLatestDataExport(exportType);
+  if (!response.data) {
+    return null;
+  }
+  return {
+    uuid: response.data.uuid,
+    exportType: response.data.export_type,
+    status: response.data.status,
+    createdAt: response.data.created_at,
+    completedAt: response.data.completed_at,
+    expiresAt: response.data.expires_at,
+    downloadUrl: response.data.download_url,
+  };
+}
+
+export async function downloadDataExport(id: string): Promise<Blob> {
+  return dataExportsApi.downloadDataExport(id);
+}
+
+// ============================================
 // Export all API functions
 // ============================================
 
@@ -885,6 +934,11 @@ export const api = {
 
   // Stripe Invoices
   fetchStripeInvoices,
+
+  // Data Exports
+  createDataExport,
+  getLatestDataExport,
+  downloadDataExport,
 };
 
 // Helper functions to process PNL data for different chart types
