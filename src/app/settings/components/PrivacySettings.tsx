@@ -314,7 +314,7 @@ export function PrivacySettings({
           <p className="mt-1 text-sm text-slate-500">
             {t("settings.privacy.dataRights.erasure.description")}
           </p>
-          <div className="mt-6">
+          <div className="mt-6 flex justify-end">
             <button
               onClick={() => setDeleteDialogOpen(true)}
               className="rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-100"
