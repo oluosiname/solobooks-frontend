@@ -5,32 +5,13 @@ import { cn } from "@/lib/utils";
 import { styles, buttonStyles } from "@/lib/styles";
 import { type SelectOption } from "@/components/atoms";
 import type { Profile } from "@/types";
+import { GERMAN_STATES } from "@/lib/constants";
 
 interface ProfileSettingsProps {
   profile?: Profile;
   onSave: (data: Partial<Profile>) => void;
   isSaving: boolean;
 }
-
-// German states (Bundesländer) with 2-letter abbreviations
-const GERMAN_STATES: SelectOption[] = [
-  { value: "BW", label: "Baden-Württemberg" },
-  { value: "BY", label: "Bayern" },
-  { value: "BE", label: "Berlin" },
-  { value: "BB", label: "Brandenburg" },
-  { value: "HB", label: "Bremen" },
-  { value: "HH", label: "Hamburg" },
-  { value: "HE", label: "Hessen" },
-  { value: "MV", label: "Mecklenburg-Vorpommern" },
-  { value: "NI", label: "Niedersachsen" },
-  { value: "NW", label: "Nordrhein-Westfalen" },
-  { value: "RP", label: "Rheinland-Pfalz" },
-  { value: "SL", label: "Saarland" },
-  { value: "SN", label: "Sachsen" },
-  { value: "ST", label: "Sachsen-Anhalt" },
-  { value: "SH", label: "Schleswig-Holstein" },
-  { value: "TH", label: "Thüringen" },
-];
 
 export function ProfileSettings({
   profile,
@@ -254,7 +235,7 @@ export function ProfileSettings({
                   </select>
                 </div>
               )}
-              <div>
+              <div className={formData.address.country === "DE" ? "" : "md:col-span-2"}>
                 <label className="block text-sm font-medium text-slate-700">
                   {t("clients.form.postalCode")}
                 </label>
