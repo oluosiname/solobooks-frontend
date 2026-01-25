@@ -38,7 +38,6 @@ export function ContextualHelp({
     }),
     enabled: enabled,
     staleTime: 60 * 60 * 1000, // 1 hour
-    cacheTime: 60 * 60 * 1000,
   });
 
   // Wait for target element to appear in DOM
@@ -139,7 +138,7 @@ export function ContextualHelp({
         });
       }
     },
-    [queryClient]
+    [queryClient, locale, pageKey]
   );
 
   // Handle skip all

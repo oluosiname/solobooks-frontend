@@ -3,7 +3,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { DashboardPromptCard } from "@/components/molecules/DashboardPromptCard";
 import { api } from "@/services/api";
-import type { PromptCard } from "@/types/help";
 
 export function DashboardPromptCards() {
   const queryClient = useQueryClient();

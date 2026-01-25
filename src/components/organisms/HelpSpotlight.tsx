@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef } from "react";
 import { X, Check } from "lucide-react";
 import { Button } from "@/components/atoms";
 import type { HelpItem, HelpPosition } from "@/types/help";
@@ -80,7 +80,10 @@ export function HelpSpotlight({
       adjustedPosition = "bottom";
     }
 
-    setTooltipPosition(adjustedPosition);
+    // Use requestAnimationFrame to avoid setState in effect
+    requestAnimationFrame(() => {
+      setTooltipPosition(adjustedPosition);
+    });
   }, [position, helpItem.position]);
 
   // Handle keyboard navigation
@@ -97,36 +100,37 @@ export function HelpSpotlight({
 
   // Focus trap
   useEffect(() => {
-    if (tooltipRef.current) {
-      const focusableElements = tooltipRef.current.querySelectorAll(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-      );
-      const firstElement = focusableElements[0] as HTMLElement;
-      const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+    const tooltip = tooltipRef.current;
+    if (!tooltip) return;
 
-      const handleTab = (e: KeyboardEvent) => {
-        if (e.key !== "Tab") return;
+    const focusableElements = tooltip.querySelectorAll(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    const firstElement = focusableElements[0] as HTMLElement;
+    const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
 
-        if (e.shiftKey) {
-          if (document.activeElement === firstElement) {
-            e.preventDefault();
-            lastElement?.focus();
-          }
-        } else {
-          if (document.activeElement === lastElement) {
-            e.preventDefault();
-            firstElement?.focus();
-          }
+    const handleTab = (e: KeyboardEvent) => {
+      if (e.key !== "Tab") return;
+
+      if (e.shiftKey) {
+        if (document.activeElement === firstElement) {
+          e.preventDefault();
+          lastElement?.focus();
         }
-      };
+      } else {
+        if (document.activeElement === lastElement) {
+          e.preventDefault();
+          firstElement?.focus();
+        }
+      }
+    };
 
-      firstElement?.focus();
-      tooltipRef.current.addEventListener("keydown", handleTab);
+    firstElement?.focus();
+    tooltip.addEventListener("keydown", handleTab);
 
-      return () => {
-        tooltipRef.current?.removeEventListener("keydown", handleTab);
-      };
-    }
+    return () => {
+      tooltip.removeEventListener("keydown", handleTab);
+    };
   }, []);
 
   if (!position || !targetElement) return null;
