@@ -8,6 +8,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { RouteGuard } from "@/components/RouteGuard";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { GoogleOAuthWrapper } from "./providers/google-oauth-provider";
+import { ContextualHelp } from "@/components/organisms/ContextualHelp";
 
 interface ProvidersProps {
   children: ReactNode;
@@ -34,7 +35,9 @@ export function Providers({ children, locale, messages }: ProvidersProps) {
         <ErrorBoundary>
           <GoogleOAuthWrapper>
             <AuthProvider>
+              <ContextualHelp>
               <RouteGuard>{children}</RouteGuard>
+              </ContextualHelp>
               <Toaster
                 position="top-right"
                 toastOptions={{

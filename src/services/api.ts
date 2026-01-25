@@ -43,6 +43,7 @@ import { bankConnectionsApi } from "@/lib/bank-connections-api";
 import { vatReportsApi } from "@/lib/vat-reports-api";
 import { zmdoReportsApi } from "@/lib/zmdo-reports-api";
 import { stripeInvoicesApi } from "@/lib/stripe-invoices-api";
+import { helpApi } from "@/lib/help-api";
 import { dataExportsApi } from "@/lib/data-exports-api";
 import type { ExportType } from "@/lib/data-exports-api";
 
@@ -75,6 +76,7 @@ import type {
   Plan,
   VatReportPreview,
   StripeInvoice,
+  HelpItem,
 } from "@/types";
 
 import {
@@ -103,6 +105,7 @@ import {
   transformPnlData,
   transformVatPreviewData,
   transformStripeInvoiceData,
+  transformHelpItemData,
   type VatPreview,
 } from "./api-transformer";
 
@@ -788,6 +791,48 @@ export async function fetchStripeInvoices(year?: number): Promise<StripeInvoice[
 }
 
 // ============================================
+// Help API
+// ============================================
+
+/**
+ * Get help items for current user
+ * GET /api/v1/help?category=dashboard&locale=en
+ * Backend handles filtering (auto_show, locale, category, dismissed items)
+ */
+export async function getHelpForUser(options?: {
+  category?: string;
+  locale?: string;
+}): Promise<HelpItem[]> {
+  const response = await helpApi.getHelpForUser(options);
+  return response.data.map(transformHelpItemData);
+}
+
+/**
+ * Get specific help item by key
+ * GET /api/v1/help/:key
+ */
+export async function getHelpItem(key: string): Promise<HelpItem> {
+  const response = await helpApi.getHelpItem(key);
+  return transformHelpItemData(response.data);
+}
+
+/**
+ * Dismiss a help item for current user
+ * POST /api/v1/help/:key/dismiss
+ */
+export async function dismissHelp(key: string): Promise<void> {
+  await helpApi.dismissHelp(key);
+}
+
+// ============================================
+// Dashboard Prompt Cards
+// ============================================
+
+export async function dismissPromptCard(key: string): Promise<void> {
+  await dashboardApi.dismissPromptCard(key);
+}
+
+// ============================================
 // Data Exports API
 // ============================================
 
@@ -881,6 +926,12 @@ export const api = {
 
   // Dashboard
   fetchDashboardStats,
+  dismissPromptCard,
+
+  // Help
+  getHelpForUser,
+  getHelpItem,
+  dismissHelp,
 
   // Bank Connections
   fetchBanks,

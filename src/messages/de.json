@@ -1127,5 +1127,20 @@
       "title": "Funktionsvergleich",
       "feature": "Funktion"
     }
+  },
+  "help": {
+    "gotIt": "Verstanden",
+    "skipAll": "Alle überspringen",
+    "close": "Schließen",
+    "dismiss": "Ausblenden"
+  },
+  "promptCards": {
+    "completeProfile": "Profil vervollständigen",
+    "connectBank": "Bank verbinden",
+    "createInvoice": "Rechnung erstellen",
+    "addPaymentMethod": "Zahlungsmethode hinzufügen",
+    "upgradeNow": "Jetzt upgraden",
+    "viewInvoices": "Rechnungen anzeigen",
+    "viewVatReports": "Umsatzsteuer-Berichte anzeigen"
   }
 }

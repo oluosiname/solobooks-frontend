@@ -6,6 +6,7 @@ import { DollarSign, Clock, Users, TrendingUp } from "lucide-react";
 import { AppShell } from "@/components/layout";
 import { StatCard } from "@/components/ui";
 import { AlertBanners, RecentTransactions } from "@/components/dashboard";
+import { DashboardPromptCards } from "@/components/organisms/DashboardPromptCards";
 import { api } from "@/services/api";
 import { formatCurrency } from "@/lib/utils";
 
@@ -34,6 +35,9 @@ export default function DashboardPage() {
       <div className="space-y-6">
         {/* Alert Banners */}
         <AlertBanners uncheckedCount={uncheckedTransactions?.length || 0} />
+
+        {/* Prompt Cards */}
+        <DashboardPromptCards />
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">

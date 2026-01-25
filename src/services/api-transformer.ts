@@ -13,6 +13,8 @@ import { NotificationData as ApiNotificationData } from "@/lib/notifications-api
 import { DashboardStatsData } from "@/lib/dashboard-api";
 import { FinancialCategoryData } from "@/lib/financial-categories-api";
 import { InvoiceCategoryData } from "@/lib/invoice-categories-api";
+import { HelpItemData } from "@/lib/help-api";
+import type { HelpItem } from "@/types";
 import {
   Client,
   Invoice,
@@ -223,6 +225,10 @@ export function transformNotificationData(data: ApiNotificationData): Notificati
     readAt: data.read_at,
     updatedAt: data.updated_at,
   };
+}
+
+export function transformHelpItemData(data: HelpItemData): HelpItem {
+  return camelize<HelpItem>(data);
 }
 
 export function transformZmdoReportData(data: ZmdoReportData): ZmdoReport {
