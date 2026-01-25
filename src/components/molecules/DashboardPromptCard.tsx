@@ -81,7 +81,7 @@ export function DashboardPromptCard({
             {card.title}
           </h3>
           <p className="text-sm text-slate-600 mb-3">{card.description}</p>
-          <Button onClick={handleAction} size="sm" variant="default">
+          <Button onClick={handleAction} size="sm" variant="primary">
             {getActionLabel(card.key)}
           </Button>
         </div>

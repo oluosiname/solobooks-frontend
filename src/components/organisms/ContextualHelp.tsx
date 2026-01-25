@@ -29,9 +29,13 @@ export function ContextualHelp({
   const [processedKeys, setProcessedKeys] = useState<Set<string>>(new Set());
 
   // Fetch help items for user
+  // Backend handles filtering: auto_show=true, locale, category, dismissed items
   const { data: helpItems = [], isLoading } = useQuery({
-    queryKey: ["help-for-user", locale],
-    queryFn: () => api.getHelpForUser(locale),
+    queryKey: ["help-for-user", locale, pageKey],
+    queryFn: () => api.getHelpForUser({ 
+      category: pageKey,  // Pass category to backend for filtering
+      locale 
+    }),
     enabled: enabled,
     staleTime: 60 * 60 * 1000, // 1 hour
     cacheTime: 60 * 60 * 1000,
@@ -72,14 +76,14 @@ export function ContextualHelp({
   useEffect(() => {
     if (!enabled || isLoading || helpItems.length === 0) return;
 
-    // Filter by page if specified
-    const relevantHelpItems = pageKey
-      ? helpItems.filter((item) => item.category === pageKey)
-      : helpItems;
-
-    // Filter to only auto-show items
-    const autoShowItems = relevantHelpItems.filter(
-      (item) => item.autoShow && !processedKeys.has(item.key)
+    // Backend already filtered by:
+    // - auto_show=true
+    // - locale
+    // - category (if pageKey provided)
+    // - excluded dismissed items
+    // So we just need to filter out already processed items
+    const autoShowItems = helpItems.filter(
+      (item) => !processedKeys.has(item.key)
     );
 
     // Process items sequentially
@@ -122,7 +126,9 @@ export function ContextualHelp({
           return next;
         });
         // Invalidate cache to get updated dismissed list
-        queryClient.invalidateQueries({ queryKey: ["help-for-user"] });
+        queryClient.invalidateQueries({ 
+          queryKey: ["help-for-user", locale, pageKey] 
+        });
       } catch (error) {
         console.error("Failed to dismiss help:", error);
         // Still remove from UI even if API call fails

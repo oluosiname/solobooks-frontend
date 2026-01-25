@@ -32,10 +32,6 @@ export interface HelpItemApiResponse {
   data: HelpItemData;
 }
 
-export interface HelpByCategoryApiResponse {
-  data: HelpItemData[];
-}
-
 export interface DismissHelpResponse {
   data: {
     success: boolean;
@@ -49,12 +45,26 @@ export interface DismissHelpResponse {
 
 class HelpApiClient extends BaseApiClient {
   /**
-   * Get help items that should auto-show for current user
-   * GET /api/v1/help/for_user
+   * Get help items for current user
+   * GET /api/v1/help?category=dashboard&locale=en
+   * Backend filters by:
+   * - auto_show=true
+   * - matching locale
+   * - category (if provided)
+   * - excludes dismissed items (user.options['dismissed_help_keys'])
    */
-  async getHelpForUser(locale?: string): Promise<HelpForUserApiResponse> {
-    const params = locale ? { locale } : undefined;
-    return this.get<HelpForUserApiResponse>("/api/v1/help/for_user", params);
+  async getHelpForUser(options?: {
+    category?: string;
+    locale?: string;
+  }): Promise<HelpForUserApiResponse> {
+    const params: Record<string, string> = {};
+    if (options?.category) {
+      params.category = options.category;
+    }
+    if (options?.locale) {
+      params.locale = options.locale;
+    }
+    return this.get<HelpForUserApiResponse>("/api/v1/help", params);
   }
 
   /**
@@ -63,18 +73,6 @@ class HelpApiClient extends BaseApiClient {
    */
   async getHelpItem(key: string): Promise<HelpItemApiResponse> {
     return this.get<HelpItemApiResponse>(`/api/v1/help/${key}`);
-  }
-
-  /**
-   * Get help items by category
-   * GET /api/v1/help/by_category/:category
-   */
-  async getHelpByCategory(
-    category: string
-  ): Promise<HelpByCategoryApiResponse> {
-    return this.get<HelpByCategoryApiResponse>(
-      `/api/v1/help/by_category/${category}`
-    );
   }
 
   /**

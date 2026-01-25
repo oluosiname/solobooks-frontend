@@ -794,21 +794,32 @@ export async function fetchStripeInvoices(year?: number): Promise<StripeInvoice[
 // Help API
 // ============================================
 
-export async function getHelpForUser(locale?: string): Promise<HelpItem[]> {
-  const response = await helpApi.getHelpForUser(locale);
+/**
+ * Get help items for current user
+ * GET /api/v1/help?category=dashboard&locale=en
+ * Backend handles filtering (auto_show, locale, category, dismissed items)
+ */
+export async function getHelpForUser(options?: {
+  category?: string;
+  locale?: string;
+}): Promise<HelpItem[]> {
+  const response = await helpApi.getHelpForUser(options);
   return response.data.map(transformHelpItemData);
 }
 
+/**
+ * Get specific help item by key
+ * GET /api/v1/help/:key
+ */
 export async function getHelpItem(key: string): Promise<HelpItem> {
   const response = await helpApi.getHelpItem(key);
   return transformHelpItemData(response.data);
 }
 
-export async function getHelpByCategory(category: string): Promise<HelpItem[]> {
-  const response = await helpApi.getHelpByCategory(category);
-  return response.data.map(transformHelpItemData);
-}
-
+/**
+ * Dismiss a help item for current user
+ * POST /api/v1/help/:key/dismiss
+ */
 export async function dismissHelp(key: string): Promise<void> {
   await helpApi.dismissHelp(key);
 }
@@ -920,7 +931,6 @@ export const api = {
   // Help
   getHelpForUser,
   getHelpItem,
-  getHelpByCategory,
   dismissHelp,
 
   // Bank Connections

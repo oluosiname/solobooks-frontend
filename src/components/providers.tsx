@@ -36,7 +36,7 @@ export function Providers({ children, locale, messages }: ProvidersProps) {
           <GoogleOAuthWrapper>
             <AuthProvider>
               <ContextualHelp>
-                <RouteGuard>{children}</RouteGuard>
+              <RouteGuard>{children}</RouteGuard>
               </ContextualHelp>
               <Toaster
                 position="top-right"
