@@ -17,6 +17,7 @@ import { InputField, SelectField } from "@/components/molecules";
 import { PageHeader } from "@/components/organisms";
 import { api } from "@/services/api";
 import type { ApiError } from "@/types";
+import { GERMAN_STATES } from "@/lib/constants";
 
 export default function NewClientPage() {
   const router = useRouter();
@@ -34,7 +35,7 @@ export default function NewClientPage() {
     city: "",
     state: "",
     postalCode: "",
-    country: "Germany",
+    country: "DE",
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -42,7 +43,12 @@ export default function NewClientPage() {
   const [errorMessage, setErrorMessage] = useState<string>("");
 
   const handleChange = (field: string, value: string) => {
-    setFormData({ ...formData, [field]: value });
+    // Clear state if country is changed and not DE
+    if (field === "country" && value !== "DE") {
+      setFormData({ ...formData, [field]: value, state: "" });
+    } else {
+      setFormData({ ...formData, [field]: value });
+    }
     // Clear field-specific errors when user types
     if (errors[field]) {
       const newErrors = { ...errors };
@@ -108,14 +114,14 @@ export default function NewClientPage() {
   };
 
   const countryOptions: SelectOption[] = [
-    { value: "Germany", label: t("countries.germany") },
-    { value: "Austria", label: t("countries.austria") },
-    { value: "Switzerland", label: t("countries.switzerland") },
-    { value: "United Kingdom", label: t("countries.unitedKingdom") },
-    { value: "France", label: t("countries.france") },
-    { value: "Netherlands", label: t("countries.netherlands") },
-    { value: "Belgium", label: t("countries.belgium") },
-    { value: "Other", label: t("countries.other") },
+    { value: "DE", label: t("countries.germany") },
+    { value: "AT", label: t("countries.austria") },
+    { value: "CH", label: t("countries.switzerland") },
+    { value: "GB", label: t("countries.unitedKingdom") },
+    { value: "FR", label: t("countries.france") },
+    { value: "NL", label: t("countries.netherlands") },
+    { value: "BE", label: t("countries.belgium") },
+    { value: "OTHER", label: t("countries.other") },
   ];
 
   return (
@@ -229,25 +235,6 @@ export default function NewClientPage() {
                       value={formData.city}
                       onChange={(e) => handleChange("city", e.target.value)}
                     />
-                    <InputField
-                      label={t("clients.form.state")}
-                      name="state"
-                      type="text"
-                      value={formData.state}
-                      onChange={(e) => handleChange("state", e.target.value)}
-                    />
-                  </div>
-
-                  <div className="grid gap-6 md:grid-cols-2">
-                    <InputField
-                      label={t("clients.form.postalCode")}
-                      name="postalCode"
-                      type="text"
-                      value={formData.postalCode}
-                      onChange={(e) =>
-                        handleChange("postalCode", e.target.value)
-                      }
-                    />
                     <SelectField
                       label={t("clients.form.country")}
                       name="country"
@@ -255,6 +242,29 @@ export default function NewClientPage() {
                       value={formData.country}
                       onChange={(e) => handleChange("country", e.target.value)}
                     />
+                  </div>
+
+                  <div className="grid gap-6 md:grid-cols-2">
+                    {formData.country === "DE" && (
+                      <SelectField
+                        label={t("clients.form.state")}
+                        name="state"
+                        options={GERMAN_STATES}
+                        value={formData.state}
+                        onChange={(e) => handleChange("state", e.target.value)}
+                      />
+                    )}
+                    <div className={formData.country === "DE" ? "" : "md:col-span-2"}>
+                      <InputField
+                        label={t("clients.form.postalCode")}
+                        name="postalCode"
+                        type="text"
+                        value={formData.postalCode}
+                        onChange={(e) =>
+                          handleChange("postalCode", e.target.value)
+                        }
+                      />
+                    </div>
                   </div>
                 </div>
               </div>

@@ -41,8 +41,11 @@ import { invoicesApi, InvoicesQueryParams } from "@/lib/invoices-api";
 import { paymentMethodApi } from "@/lib/payment-method-api";
 import { bankConnectionsApi } from "@/lib/bank-connections-api";
 import { vatReportsApi } from "@/lib/vat-reports-api";
+import { zmdoReportsApi } from "@/lib/zmdo-reports-api";
 import { stripeInvoicesApi } from "@/lib/stripe-invoices-api";
 import { helpApi } from "@/lib/help-api";
+import { dataExportsApi } from "@/lib/data-exports-api";
+import type { ExportType } from "@/lib/data-exports-api";
 
 import type {
   Profile,
@@ -54,6 +57,8 @@ import type {
   BankConnection,
   Bank,
   VatReport,
+  ZmdoReport,
+  ZmdoReportPreview,
   Subscription,
   PaymentMethod,
   DashboardStats,
@@ -82,6 +87,8 @@ import {
   transformVatStatusData,
   transformVatReportData,
   transformVatReportPreviewData,
+  transformZmdoReportData,
+  transformZmdoReportPreviewData,
   transformProfileData,
   transformTransactionData,
   transformSubscriptionData,
@@ -366,6 +373,16 @@ export async function discardSyncedTransaction(
 }
 
 /**
+ * Bulk discard synced transactions
+ * POST /api/v1/synced_transactions/bulk_discard
+ */
+export async function bulkDiscardSyncedTransactions(
+  ids: (string | number)[]
+): Promise<{ message: string }> {
+  return await transactionsApi.bulkDiscardSyncedTransactions(ids);
+}
+
+/**
  * Fetch a single transaction
  * GET /api/v1/transactions/{id}
  */
@@ -561,7 +578,7 @@ export async function submitVatReport(id: string): Promise<{
   message: string;
   pdfUrl?: string;
 }> {
-  const response = await vatReportsApi.submitVatReport(parseInt(id));
+  const response = await vatReportsApi.submitVatReport(id);
   return camelize(response.data);
 }
 
@@ -570,13 +587,51 @@ export async function testSubmitVatReport(id: string): Promise<{
   message: string;
   pdfData?: string;
 }> {
-  const response = await vatReportsApi.testSubmitVatReport(parseInt(id));
+  const response = await vatReportsApi.testSubmitVatReport(id);
   return camelize(response.data);
 }
 
 export async function previewVatReport(id: string): Promise<VatReportPreview> {
-  const response = await vatReportsApi.previewVatReport(parseInt(id));
+  const response = await vatReportsApi.previewVatReport(id);
   return transformVatReportPreviewData(response.data);
+}
+
+// ============================================
+// ZMDO Reports API (Zusammenfassende Meldung / EC Sales List)
+// ============================================
+
+export async function fetchZmdoReports(): Promise<{
+  draft: ZmdoReport[];
+  submitted: ZmdoReport[];
+}> {
+  const response = await zmdoReportsApi.listZmdoReports();
+  return {
+    draft: response.data.draft.map(transformZmdoReportData),
+    submitted: response.data.submitted.map(transformZmdoReportData),
+  };
+}
+
+export async function submitZmdoReport(id: string): Promise<{
+  success: boolean;
+  message: string;
+  pdfUrl?: string;
+}> {
+  const response = await zmdoReportsApi.submitZmdoReport(id);
+  return camelize(response.data);
+}
+
+export async function testSubmitZmdoReport(id: string): Promise<{
+  success: boolean;
+  message: string;
+  pdfData?: string;
+}> {
+  const response = await zmdoReportsApi.testSubmitZmdoReport(id);
+  return camelize(response.data);
+}
+
+export async function previewZmdoReport(id: string): Promise<ZmdoReportPreview> {
+  const response = await zmdoReportsApi.previewZmdoReport(id);
+  return transformZmdoReportPreviewData(response.data);
 }
 
 // ============================================
@@ -767,6 +822,53 @@ export async function dismissPromptCard(key: string): Promise<void> {
 }
 
 // ============================================
+// Data Exports API
+// ============================================
+
+export async function createDataExport(exportType: ExportType): Promise<{
+  uuid: string;
+  exportType: string;
+  status: string;
+  createdAt: string;
+}> {
+  const response = await dataExportsApi.createDataExport(exportType);
+  return {
+    uuid: response.data.uuid,
+    exportType: response.data.export_type,
+    status: response.data.status,
+    createdAt: response.data.created_at,
+  };
+}
+
+export async function getLatestDataExport(exportType: ExportType): Promise<{
+  uuid: string;
+  exportType: string;
+  status: string;
+  createdAt: string;
+  completedAt?: string;
+  expiresAt?: string;
+  downloadUrl?: string;
+} | null> {
+  const response = await dataExportsApi.getLatestDataExport(exportType);
+  if (!response.data) {
+    return null;
+  }
+  return {
+    uuid: response.data.uuid,
+    exportType: response.data.export_type,
+    status: response.data.status,
+    createdAt: response.data.created_at,
+    completedAt: response.data.completed_at,
+    expiresAt: response.data.expires_at,
+    downloadUrl: response.data.download_url,
+  };
+}
+
+export async function downloadDataExport(id: string): Promise<{ blob: Blob; contentType: string }> {
+  return dataExportsApi.downloadDataExport(id);
+}
+
+// ============================================
 // Export all API functions
 // ============================================
 
@@ -800,6 +902,7 @@ export const api = {
   fetchTransaction,
   fetchUncheckedTransactions,
   discardSyncedTransaction,
+  bulkDiscardSyncedTransactions,
   createTransaction,
   updateTransaction,
   deleteTransaction,
@@ -835,6 +938,12 @@ export const api = {
   testSubmitVatReport,
   previewVatReport,
 
+  // ZMDO Reports (EC Sales List)
+  fetchZmdoReports,
+  submitZmdoReport,
+  testSubmitZmdoReport,
+  previewZmdoReport,
+
   // Subscription
   fetchPlans,
   fetchSubscription,
@@ -866,6 +975,11 @@ export const api = {
 
   // Stripe Invoices
   fetchStripeInvoices,
+
+  // Data Exports
+  createDataExport,
+  getLatestDataExport,
+  downloadDataExport,
 };
 
 // Helper functions to process PNL data for different chart types

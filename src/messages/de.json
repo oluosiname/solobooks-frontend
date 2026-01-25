@@ -38,7 +38,7 @@
     "clients": "Kunden",
     "transactions": "Transaktionen",
     "navBankConnections": "Bankverbindungen",
-    "reports": "Berichte",
+    "reports": "Bericht und Exporte",
     "taxes": "Steuern",
     "subscription": "Abonnement",
     "settings": "Einstellungen",
@@ -279,6 +279,14 @@
     "discardSuccess": "Transaktion erfolgreich verworfen",
     "discardError": "Fehler beim Verwerfen der Transaktion",
     "discarding": "Wird verworfen...",
+    "bulkDiscardTitle": "Ausgewählte Transaktionen verwerfen",
+    "bulkDiscardConfirm": "Sind Sie sicher, dass Sie {count} Transaktion(en) verwerfen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+    "bulkDiscardSuccess": "{count} Transaktion(en) erfolgreich verworfen",
+    "bulkDiscardError": "Fehler beim Verwerfen der Transaktionen. Bitte versuchen Sie es erneut.",
+    "clearSelection": "Auswahl löschen",
+    "selectedCount": "{count} ausgewählt",
+    "transactionCount": "{count} Transaktionen",
+    "discardSelected": "{count} Transaktion(en) verwerfen",
     "form": {
       "transactionInfo": "Transaktionsinformationen",
       "type": "Typ",
@@ -410,7 +418,7 @@
       "neverInitiateTransactions": "Niemals Transaktionen oder Überweisungen initiieren",
       "neverShareData": "Niemals Ihre Finanzdaten mit Dritten teilen",
       "neverModifySettings": "Niemals Ihre Kontoeinstellungen oder Präferenzen ändern",
-      "termsDisclaimer": "Mit dem Fortfahren stimmen Sie unseren {terms} und {privacy} zu. Wir speichern Ihre Bankzugangsdaten nicht."
+      "termsDisclaimer": "Mit dem Fortfahren stimmen Sie unseren <terms>Nutzungsbedingungen</terms> und <privacy>Datenschutzerklärung</privacy> zu. Wir speichern Ihre Bankzugangsdaten nicht."
     },
     "callback": {
       "successToast": "Bankverbindung erfolgreich!",
@@ -454,19 +462,90 @@
     "dataNotAvailable": "Berichtsdaten nicht verfügbar",
     "dataNotAvailableDescription": "Einige Berichtsdaten sind noch nicht vom Backend verfügbar. Diese Funktionen werden in einem zukünftigen Update implementiert.",
     "downloadError": "Fehler beim Herunterladen des PDFs",
-    "downloading": "Wird heruntergeladen..."
+    "downloading": "Wird heruntergeladen...",
+    "accountingExports": {
+      "title": "Buchhaltungsexporte",
+      "description": "Exportieren Sie Ihre Buchhaltungsdaten in Standardformaten für externe Software",
+      "datev": {
+        "title": "DATEV-Export",
+        "description": "Exportieren Sie alle Buchhaltungsdaten im DATEV-Format für deutsche Buchhaltungssoftware",
+        "includes": "Enthält: Rechnungen, Einnahmen und Ausgaben",
+        "button": "DATEV-Export anfordern",
+        "requesting": "Wird angefordert...",
+        "requestSuccess": "DATEV-Export-Anfrage erfolgreich erstellt. Sie werden benachrichtigt, wenn es bereit ist.",
+        "requestError": "DATEV-Export-Anfrage konnte nicht erstellt werden",
+        "downloadSuccess": "DATEV-Export erfolgreich heruntergeladen",
+        "downloadError": "DATEV-Export konnte nicht heruntergeladen werden",
+        "downloadTitle": "DATEV-Export herunterladen",
+        "completed": "Abgeschlossen",
+        "created": "Erstellt"
+      }
+    }
   },
   "taxes": {
     "title": "Steuern",
+    "management": {
+      "title": "Steuerverwaltung",
+      "description": "Verwalten und übermitteln Sie Ihre Steuermeldungen"
+    },
     "vatReports": "USt-Voranmeldungen",
+    "vatReportsDescription": "Monatliche/vierteljährliche USt-Voranmeldungen",
+    "vatReportsNotAvailable": "USt-Voranmeldungen nicht verfügbar",
+    "vatReportsFutureUpdate": "Diese Funktion wird in einem zukünftigen Update implementiert",
+    "vatReportsNoReports": "Keine USt-Voranmeldungen gefunden",
     "newReport": "Neue Meldung",
-    "submitToElster": "An Elster übermitteln",
+    "submitToFinanzamt": "An Finanzamt übermitteln",
+    "tabs": {
+      "upcoming": "Anstehend",
+      "submitted": "Eingereicht",
+      "draft": "Entwurf"
+    },
     "status": {
       "draft": "Entwurf",
       "submitted": "Eingereicht",
       "accepted": "Akzeptiert",
       "rejected": "Abgelehnt",
       "error": "Fehler"
+    },
+    "badge": {
+      "overdue": "Überfällig",
+      "dueSoon": "Bald fällig",
+      "dueInDays": "Fällig in {days} Tagen"
+    },
+    "actions": {
+      "details": "Details",
+      "testReport": "Testbericht",
+      "testing": "Teste...",
+      "submitting": "Wird übermittelt..."
+    },
+    "due": "Fällig",
+    "error": "Fehler",
+    "year": "Jahr",
+    "quarter": "Quartal",
+    "elsterPeriod": "Elster-Zeitraum",
+    "xmlAttached": "XML angehängt",
+    "pdfAttached": "PDF angehängt",
+    "errors": {
+      "submitFailed": "Übermittlung fehlgeschlagen",
+      "testSubmitFailed": "Testübermittlung fehlgeschlagen",
+      "previewFailed": "Vorschau konnte nicht geladen werden",
+      "upgradeRequired": "Die Übermittlung von USt-Meldungen ist im Pro-Tarif und höher verfügbar. Bitte upgraden Sie, um Meldungen zu übermitteln oder zu testen."
+    },
+    "zmdo": {
+      "title": "Zusammenfassende Meldung (ZM)",
+      "description": "Vierteljährliche Meldungen für innergemeinschaftliche B2B-Umsätze",
+      "notAvailable": "Zusammenfassende Meldungen nicht verfügbar",
+      "futureUpdate": "Diese Funktion wird in einem zukünftigen Update implementiert",
+      "noReports": "Keine Zusammenfassenden Meldungen gefunden",
+      "previewLoaded": "Vorschau erfolgreich geladen",
+      "previewTitle": "ZMDO Vorschau",
+      "close": "Schließen",
+      "overallSummary": "Gesamtübersicht",
+      "overallSummaryHint": "Zusammenfassung der Meldung für den ausgewählten Zeitraum.",
+      "amountSplit": "Betragsaufteilung",
+      "amountSplitHint": "Aufteilung der gemeldeten Umsätze nach Regionen.",
+      "vatBreakdown": "USt-IdNr.-Aufschlüsselung",
+      "vatBreakdownHint": "Aufteilung nach Umsätzen mit und ohne gültige Umsatzsteuer-Identifikationsnummer."
     },
     "columns": {
       "period": "Zeitraum",

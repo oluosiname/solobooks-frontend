@@ -7,9 +7,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { formatCurrency, formatDate, cn } from "@/lib/utils";
-import { styles } from "@/lib/styles";
+import { styles, buttonStyles } from "@/lib/styles";
 import { api } from "@/lib/api";
 import { showToast } from "@/lib/toast";
+import { Checkbox } from "@/components/atoms";
 import type { Transaction } from "@/types";
 
 interface GroupedTransactionsTableProps {
@@ -27,6 +28,10 @@ export function GroupedTransactionsTable({
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [transactionToDelete, setTransactionToDelete] =
     useState<Transaction | null>(null);
+  const [selectedTransactions, setSelectedTransactions] = useState<Set<number>>(
+    new Set()
+  );
+  const [bulkDiscardDialogOpen, setBulkDiscardDialogOpen] = useState(false);
 
   const deleteTransactionMutation = useMutation({
     mutationFn: (id: string | number) => api.deleteTransaction(id),
@@ -57,6 +62,28 @@ export function GroupedTransactionsTable({
     },
   });
 
+  const bulkDiscardMutation = useMutation({
+    mutationFn: (ids: (string | number)[]) => api.bulkDiscardSyncedTransactions(ids),
+    onSuccess: () => {
+      showToast.success(
+        t("transactions.bulkDiscardSuccess", {
+          count: selectedTransactions.size,
+        }) || `Successfully discarded ${selectedTransactions.size} transaction(s)`
+      );
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      queryClient.invalidateQueries({ queryKey: ["unchecked-transactions"] });
+      queryClient.invalidateQueries({ queryKey: ["synced-transactions"] });
+      setBulkDiscardDialogOpen(false);
+      setSelectedTransactions(new Set());
+    },
+    onError: () => {
+      showToast.error(
+        t("transactions.bulkDiscardError") ||
+          "Failed to discard transactions. Please try again."
+      );
+    },
+  });
+
   const handleDeleteClick = (transaction: Transaction) => {
     setTransactionToDelete(transaction);
     setDeleteDialogOpen(true);
@@ -77,29 +104,119 @@ export function GroupedTransactionsTable({
     setTransactionToDelete(null);
   };
 
+  const handleToggleSelect = (transactionId: number) => {
+    const newSelected = new Set(selectedTransactions);
+    if (newSelected.has(transactionId)) {
+      newSelected.delete(transactionId);
+    } else {
+      newSelected.add(transactionId);
+    }
+    setSelectedTransactions(newSelected);
+  };
+
+  const handleSelectAll = (transactions: Transaction[]) => {
+    if (selectedTransactions.size === transactions.length) {
+      setSelectedTransactions(new Set());
+    } else {
+      setSelectedTransactions(new Set(transactions.map((t) => t.id)));
+    }
+  };
+
+  const handleBulkDiscard = () => {
+    if (selectedTransactions.size === 0) return;
+    setBulkDiscardDialogOpen(true);
+  };
+
+  const handleConfirmBulkDiscard = () => {
+    if (selectedTransactions.size > 0) {
+      bulkDiscardMutation.mutate(Array.from(selectedTransactions));
+    }
+  };
+
+  const handleCancelBulkDiscard = () => {
+    setBulkDiscardDialogOpen(false);
+  };
+
+  // Get all transactions for select all functionality
+  const allTransactions = Object.values(groupedTransactions).flat();
+
   const handleEdit = (transaction: Transaction) => {
     // Determine if it's income or expense based on transactionType field
     const isIncome = transaction.transactionType === "Income";
-    const newRoute = isIncome ? "new-income" : "new-expense";
+    
+    if (isPendingView) {
+      // For synced transactions (pending approval), navigate to new route with params
+      const newRoute = isIncome ? "new-income" : "new-expense";
+      
+      // Create URL search parameters with transaction data to prefill the form
+      const params = new URLSearchParams({
+        description: transaction.description,
+        date: transaction.date,
+        amount: transaction.amount.toString(),
+        vatRate: transaction.vatRate.toString(),
+        customerLocation: transaction.customerLocation,
+        customerVatNumber: transaction.customerVatNumber || "",
+        syncedTransactionId: transaction.id.toString(),
+      });
 
-    // Create URL search parameters with transaction data to prefill the form
-    const params = new URLSearchParams({
-      description: transaction.description,
-      date: transaction.date,
-      amount: transaction.amount.toString(),
-      vatRate: transaction.vatRate.toString(),
-      customerLocation: transaction.customerLocation,
-      customerVatNumber: transaction.customerVatNumber || "",
-      categoryId: transaction.category?.id?.toString() || "",
-      syncedTransactionId: transaction.id.toString(),
-    });
+      const category = transaction.financialCategory ?? transaction.category;
+      if (category?.id) {
+        params.set("categoryId", category.id.toString());
+      }
 
-    // Navigate to the appropriate new transaction page with prefilled data
-    router.push(`/transactions/${newRoute}?${params.toString()}`);
+      // Navigate to the appropriate new transaction page with prefilled data
+      router.push(`/transactions/${newRoute}?${params.toString()}`);
+    } else {
+      // For existing transactions, navigate to edit route with ID
+      const editRoute = isIncome ? "edit-income" : "edit-expense";
+      router.push(`/transactions/${editRoute}?id=${transaction.id}`);
+    }
   };
 
   return (
     <div className="space-y-6">
+      {/* Bulk Actions Bar */}
+      {isPendingView && allTransactions.length > 0 && (
+        <div className="flex items-center justify-between rounded-lg border border-slate-200 bg-white p-4">
+          <div className="flex items-center gap-4">
+            <span className="text-sm text-slate-600">
+              {selectedTransactions.size > 0
+                ? t("transactions.selectedCount", {
+                    count: selectedTransactions.size,
+                  })
+                : t("transactions.transactionCount", {
+                    count: allTransactions.length,
+                  })}
+            </span>
+            {selectedTransactions.size > 0 && (
+              <button
+                onClick={() => setSelectedTransactions(new Set())}
+                className="text-sm text-slate-600 hover:text-slate-900"
+              >
+                {t("transactions.clearSelection")}
+              </button>
+            )}
+          </div>
+          {selectedTransactions.size > 0 && (
+            <button
+              onClick={handleBulkDiscard}
+              disabled={bulkDiscardMutation.isPending}
+              className={cn(
+                buttonStyles("danger"),
+                "flex items-center gap-2"
+              )}
+            >
+              <Trash2 className="h-4 w-4" />
+              {bulkDiscardMutation.isPending
+                ? t("transactions.discarding")
+                : t("transactions.discardSelected", {
+                    count: selectedTransactions.size,
+                  })}
+            </button>
+          )}
+        </div>
+      )}
+
       {Object.entries(groupedTransactions).map(
         ([month, monthTransactions], groupIndex) => (
           <div
@@ -114,6 +231,26 @@ export function GroupedTransactionsTable({
               <table className={styles.table}>
                 <thead>
                   <tr>
+                    {isPendingView && (
+                      <th className={cn(styles.th, "w-12")}>
+                        <div className="flex items-center justify-center">
+                          <Checkbox
+                            checked={
+                              selectedTransactions.size === monthTransactions.length &&
+                              monthTransactions.every((t) =>
+                                selectedTransactions.has(t.id)
+                              )
+                            }
+                            onChange={() => handleSelectAll(monthTransactions)}
+                            aria-label={
+                              selectedTransactions.size === monthTransactions.length
+                                ? "Deselect all"
+                                : "Select all"
+                            }
+                          />
+                        </div>
+                      </th>
+                    )}
                     <th className={styles.th}>
                       {t("transactions.columns.description")}
                     </th>
@@ -133,14 +270,32 @@ export function GroupedTransactionsTable({
                 </thead>
                 <tbody>
                   {monthTransactions.map((transaction) => (
-                    <tr key={transaction.id} className="hover:bg-slate-50">
+                    <tr
+                      key={transaction.id}
+                      className={cn(
+                        "hover:bg-slate-50",
+                        selectedTransactions.has(transaction.id) &&
+                          "bg-blue-50"
+                      )}
+                    >
+                      {isPendingView && (
+                        <td className={styles.td}>
+                          <div className="flex items-center justify-center">
+                            <Checkbox
+                              checked={selectedTransactions.has(transaction.id)}
+                              onChange={() => handleToggleSelect(transaction.id)}
+                              aria-label={`Select ${transaction.description}`}
+                            />
+                          </div>
+                        </td>
+                      )}
                       <td className={styles.td}>
                         <div>
                           <p className="font-medium text-slate-900">
                             {transaction.description}
                           </p>
                           <p className="text-sm text-slate-500">
-                            {transaction.category?.name || "Unknown"}
+                            {(transaction.financialCategory ?? transaction.category)?.translatedName || "Unknown"}
                           </p>
                         </div>
                       </td>
@@ -253,6 +408,54 @@ export function GroupedTransactionsTable({
                   : isPendingView
                   ? t("common.discard")
                   : t("common.delete")}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Bulk Discard Confirmation Dialog */}
+      {bulkDiscardDialogOpen && selectedTransactions.size > 0 && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="mx-4 w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-100">
+                <AlertTriangle className="h-5 w-5 text-red-600" />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-semibold text-slate-900">
+                  {t("transactions.bulkDiscardTitle")}
+                </h3>
+                <p className="text-sm text-slate-600">
+                  {t("transactions.bulkDiscardConfirm", {
+                    count: selectedTransactions.size,
+                  })}
+                </p>
+              </div>
+              <button
+                onClick={handleCancelBulkDiscard}
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            <div className="mt-6 flex gap-3">
+              <button
+                onClick={handleCancelBulkDiscard}
+                className="flex-1 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
+                disabled={bulkDiscardMutation.isPending}
+              >
+                {t("common.cancel")}
+              </button>
+              <button
+                onClick={handleConfirmBulkDiscard}
+                disabled={bulkDiscardMutation.isPending}
+                className="flex-1 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {bulkDiscardMutation.isPending
+                  ? t("transactions.discarding")
+                  : t("common.discard")}
               </button>
             </div>
           </div>

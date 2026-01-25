@@ -57,6 +57,7 @@ export const api = {
   },
   getUncheckedTransactions: newApi.fetchUncheckedTransactions,
   discardSyncedTransaction: newApi.discardSyncedTransaction,
+  bulkDiscardSyncedTransactions: newApi.bulkDiscardSyncedTransactions,
   deleteTransaction: newApi.deleteTransaction,
 
   // Bank Connections

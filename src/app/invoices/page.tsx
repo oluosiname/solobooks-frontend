@@ -223,8 +223,8 @@ export default function InvoicesPage() {
         </div>
 
         {/* Table */}
-        <div className={cn(styles.card, 'overflow-hidden animate-slide-up')}>
-          <div className="overflow-x-auto">
+        <div className={cn(styles.card, 'animate-slide-up')}>
+          <div className="overflow-visible">
             <table className={styles.table}>
               <thead>
                 <tr>

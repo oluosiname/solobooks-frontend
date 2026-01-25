@@ -13,6 +13,28 @@ export function formatCurrency(amount: number, currency = "EUR"): string {
   }).format(amount);
 }
 
+/**
+ * Get file extension from Content-Type header
+ */
+export function getFileExtensionFromContentType(contentType: string): string {
+  const contentTypeMap: Record<string, string> = {
+    "text/csv": "csv",
+    "application/csv": "csv",
+    "application/vnd.ms-excel": "csv",
+    "application/zip": "zip",
+    "application/x-zip-compressed": "zip",
+    "application/pdf": "pdf",
+    "application/json": "json",
+    "text/xml": "xml",
+    "application/xml": "xml",
+  };
+
+  // Extract base content type (remove charset, etc.)
+  const baseType = contentType.split(";")[0].trim().toLowerCase();
+  
+  return contentTypeMap[baseType] || "bin";
+}
+
 export function formatDate(dateString: string | null | undefined): string {
   if (!dateString) {
     return "—"; // Return em dash for null/undefined dates
@@ -35,17 +57,41 @@ export function formatDate(dateString: string | null | undefined): string {
   }
 }
 
+export function formatDateTime(dateString: string | null | undefined): string {
+  if (!dateString) {
+    return "—";
+  }
+
+  try {
+    const date = new Date(dateString);
+    // Check if the date is valid
+    if (isNaN(date.getTime())) {
+      return "—";
+    }
+
+    return new Intl.DateTimeFormat("en-GB", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+    }).format(date);
+  } catch {
+    return "—";
+  }
+}
+
 export function formatRelativeTime(
   dateString: string | null | undefined
 ): string {
   if (!dateString) {
-    return "—";
+    return "Never";
   }
 
   const date = new Date(dateString);
   // Check if the date is valid
   if (isNaN(date.getTime())) {
-    return "—";
+    return "Never";
   }
 
   const now = new Date();
@@ -122,7 +168,7 @@ export function getDateRangeForPeriod(year: string, period: string): { startDate
   const yearNum = parseInt(year);
 
   switch (period) {
-    case 'yearly':
+    case 'annually':
       return {
         startDate: `${yearNum}-01-01`,
         endDate: `${yearNum}-12-31`
@@ -145,7 +191,7 @@ export function getDateRangeForPeriod(year: string, period: string): { startDate
       };
 
     default:
-      // Default to yearly
+      // Default to annually
       return {
         startDate: `${yearNum}-01-01`,
         endDate: `${yearNum}-12-31`
@@ -157,7 +203,7 @@ export function generatePeriodLabel(year: string, period: string): string {
   const yearNum = parseInt(year);
 
   switch (period) {
-    case 'yearly':
+    case 'annually':
       return `${yearNum} Annual`;
     case 'quarterly':
       return `${yearNum} Quarterly`;

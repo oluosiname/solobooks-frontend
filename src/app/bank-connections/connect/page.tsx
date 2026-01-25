@@ -53,7 +53,7 @@ export default function AddBankConnectionPage() {
       }
 
       // Navigate back to bank connections page - callback will be handled by /bank_connections/callback
-      router.push("/bank_connections");
+      router.push("/bank-connections/connect");
 
       showToast.success(
         "Bank authentication window opened. Complete authentication in the new window."
@@ -66,7 +66,7 @@ export default function AddBankConnectionPage() {
   };
 
   const handleBack = () => {
-    router.push("/bank_connections");
+    router.push("/bank-connections");
   };
 
   return (
@@ -188,6 +188,7 @@ export default function AddBankConnectionPage() {
                               width={40}
                               height={40}
                               className="w-10 h-10 rounded-lg object-contain bg-white"
+                              unoptimized={true}
                               onError={(e) => {
                                 // Fallback to generic bank icon if logo fails to load
                                 const target = e.target as HTMLImageElement;
@@ -242,7 +243,7 @@ export default function AddBankConnectionPage() {
                 </div>
 
                 {/* Disclaimer */}
-                <p className="text-xs text-gray-500 mt-4 leading-relaxed">
+                <div className="text-xs text-gray-500 mt-4 leading-relaxed">
                   {t.rich("bankConnections.connect.termsDisclaimer", {
                     terms: (chunks) => (
                       <a href="#" className="text-blue-600 hover:underline">
@@ -255,7 +256,7 @@ export default function AddBankConnectionPage() {
                       </a>
                     ),
                   })}
-                </p>
+                </div>
               </div>
             </Card>
           </div>

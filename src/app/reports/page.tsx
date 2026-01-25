@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
-import { Download, TrendingUp, TrendingDown } from "lucide-react";
+import { Download, TrendingUp, TrendingDown, FileText } from "lucide-react";
 import {
   BarChart,
   Bar,
@@ -12,8 +12,6 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
-  AreaChart,
-  Area,
 } from "recharts";
 import { AppShell } from "@/components/layout";
 import {
@@ -23,24 +21,21 @@ import {
   CardContent,
   Input,
 } from "@/components/atoms";
-import { api, processPnlForRevenueChart, processPnlForCategoryChart, processPnlForProfitChart, downloadPnlPdf } from "@/services/api";
-import { formatCurrency, cn } from "@/lib/utils";
+import { api, processPnlForRevenueChart, downloadPnlPdf } from "@/services/api";
+import { formatCurrency, formatDateTime, getFileExtensionFromContentType, cn } from "@/lib/utils";
 import { showToast } from "@/lib/toast";
+import { buttonStyles } from "@/lib/styles";
 
 export default function ReportsPage() {
   const t = useTranslations();
+  const queryClient = useQueryClient();
   const currentYear = new Date().getFullYear();
   const [startDate, setStartDate] = useState(`${currentYear}-01-01`);
   const [endDate, setEndDate] = useState(`${currentYear}-12-31`);
   const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const plChartRef = useRef<HTMLDivElement>(null);
-  const profitChartRef = useRef<HTMLDivElement>(null);
   const [plDimensions, setPlDimensions] = useState({ width: 0, height: 350 });
-  const [profitDimensions, setProfitDimensions] = useState({
-    width: 0,
-    height: 250,
-  });
 
   useEffect(() => {
     setIsMounted(true);
@@ -50,12 +45,6 @@ export default function ReportsPage() {
         setPlDimensions({
           width: plChartRef.current.offsetWidth,
           height: 350,
-        });
-      }
-      if (profitChartRef.current) {
-        setProfitDimensions({
-          width: profitChartRef.current.offsetWidth,
-          height: 250,
         });
       }
     };
@@ -78,8 +67,6 @@ export default function ReportsPage() {
 
   // Process PNL data for different chart types
   const revenueData = pnlData ? processPnlForRevenueChart(pnlData) : null;
-  const categoryData = pnlData ? processPnlForCategoryChart(pnlData) : null;
-  const profitLossData = pnlData ? processPnlForProfitChart(pnlData) : null;
 
   // Handle PDF download
   const handleDownloadPdf = async () => {
@@ -92,6 +79,54 @@ export default function ReportsPage() {
       showToast.error(t('reports.downloadError'));
     } finally {
       setIsDownloadingPdf(false);
+    }
+  };
+
+  // Fetch latest DATEV export
+  const { data: latestDatevExport } = useQuery({
+    queryKey: ["latestDataExport", "datev"],
+    queryFn: () => api.getLatestDataExport("datev"),
+  });
+
+  // Create DATEV export mutation
+  const createDatevExportMutation = useMutation({
+    mutationFn: () => api.createDataExport("datev"),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["latestDataExport", "datev"] });
+      showToast.success(t("reports.accountingExports.datev.requestSuccess"));
+    },
+    onError: (error: unknown) => {
+      showToast.apiError(error, t("reports.accountingExports.datev.requestError"));
+    },
+  });
+
+  // Download DATEV export mutation
+  const downloadDatevMutation = useMutation({
+    mutationFn: async (exportId: string) => {
+      return api.downloadDataExport(exportId);
+    },
+    onSuccess: ({ blob, contentType }) => {
+      // Determine file extension from content type
+      const extension = getFileExtensionFromContentType(contentType);
+      // Create download link
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `datev-export-${latestDatevExport?.uuid || "data"}.${extension}`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      showToast.success(t("reports.accountingExports.datev.downloadSuccess"));
+    },
+    onError: (error: unknown) => {
+      showToast.apiError(error, t("reports.accountingExports.datev.downloadError"));
+    },
+  });
+
+  const handleDownloadDatev = () => {
+    if (latestDatevExport?.uuid) {
+      downloadDatevMutation.mutate(latestDatevExport.uuid);
     }
   };
 
@@ -315,148 +350,74 @@ export default function ReportsPage() {
           </CardContent>
         </Card>
 
-        {/* Bottom Row */}
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-          {/* Profit Trend */}
-          <Card>
-            <CardHeader>
-              <h3 className="text-lg font-semibold text-slate-900">
-                {t("reports.profitTrend")}
-              </h3>
-            </CardHeader>
-            <CardContent>
-              <div ref={profitChartRef} style={{ width: "100%", height: 250 }}>
-                {isMounted && profitLossData && !pnlError && profitDimensions.width > 0 && (
-                  <AreaChart
-                    width={profitDimensions.width}
-                    height={profitDimensions.height}
-                    data={profitLossData}
-                    margin={{ top: 10, right: 10, left: 10, bottom: 0 }}
-                  >
-                    <defs>
-                      <linearGradient
-                        id="profitGradient"
-                        x1="0"
-                        y1="0"
-                        x2="0"
-                        y2="1"
-                      >
-                        <stop
-                          offset="5%"
-                          stopColor="#10b981"
-                          stopOpacity={0.3}
-                        />
-                        <stop
-                          offset="95%"
-                          stopColor="#10b981"
-                          stopOpacity={0}
-                        />
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid
-                      strokeDasharray="3 3"
-                      stroke="#e2e8f0"
-                      vertical={false}
-                    />
-                    <XAxis
-                      dataKey="month"
-                      axisLine={false}
-                      tickLine={false}
-                      tick={{ fill: "#64748b", fontSize: 12 }}
-                    />
-                    <YAxis
-                      axisLine={false}
-                      tickLine={false}
-                      tick={{ fill: "#64748b", fontSize: 12 }}
-                      tickFormatter={(value) =>
-                        `€${(value / 1000).toFixed(0)}k`
-                      }
-                    />
-                    <Tooltip
-                      contentStyle={{
-                        backgroundColor: "#fff",
-                        border: "1px solid #e2e8f0",
-                        borderRadius: "8px",
-                        boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
-                      }}
-                      formatter={(value) => [
-                        `€${Number(value).toLocaleString()}`,
-                        t("reports.profit"),
-                      ]}
-                    />
-                    <Area
-                      type="monotone"
-                      dataKey="profit"
-                      stroke="#10b981"
-                      strokeWidth={2}
-                      fill="url(#profitGradient)"
-                    />
-                  </AreaChart>
-                )}
-                {(!profitLossData || pnlError) && (
-                  <div className="flex h-full items-center justify-center text-slate-500">
-                    <div className="text-center">
-                      <p className="text-sm">{t("reports.dataNotAvailable")}</p>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
 
-          {/* Expenses by Category */}
-          <Card>
-            <CardHeader>
+        {/* Accounting Exports Section */}
+        <Card>
+          {/* Header */}
+          <div className="flex items-center gap-4 border-b border-slate-200 p-6">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-100">
+              <FileText className="h-6 w-6 text-blue-600" />
+            </div>
+            <div>
               <h3 className="text-lg font-semibold text-slate-900">
-                {t("reports.expensesByCategory")}
+                {t("reports.accountingExports.title")}
               </h3>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {categoryData && !pnlError ? categoryData.map((category) => {
-                  const maxAmount = Math.max(
-                    ...(categoryData?.map((c) => c.amount) || [0])
-                  );
-                  const percentage = (category.amount / maxAmount) * 100;
-                  return (
-                    <div key={category.category}>
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-slate-700">
-                          {category.category}
-                        </span>
-                        <span className="font-medium text-slate-900">
-                          {formatCurrency(category.amount)}
-                        </span>
-                      </div>
-                      <div className="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-slate-100">
-                        <div
-                          className="h-full rounded-full transition-all duration-500"
-                          style={{
-                            width: `${percentage}%`,
-                            backgroundColor: category.color,
-                          }}
-                        />
-                      </div>
-                    </div>
-                  );
-                }) : (
-                  <div className="flex h-32 items-center justify-center text-slate-500">
-                    <div className="text-center">
-                      <p className="text-sm">{t("reports.dataNotAvailable")}</p>
-                    </div>
-                  </div>
-                )}
-                {pnlError && !categoryData && (
-                  <div className="flex h-32 items-center justify-center text-slate-500">
-                    <div className="text-center">
-                      <p className="text-sm">{t("reports.dataNotAvailable")}</p>
-                    </div>
-                  </div>
-                )}
+              <p className="text-sm text-slate-500">
+                {t("reports.accountingExports.description")}
+              </p>
+            </div>
+          </div>
+
+          {/* DATEV Export */}
+          <div className="p-6">
+            <div className="flex items-center justify-between rounded-lg border border-slate-200 p-4">
+              <div className="flex items-center gap-3">
+                <Download className="h-5 w-5 text-slate-400" />
+                <div>
+                  <p className="font-medium text-slate-900">
+                    {t("reports.accountingExports.datev.title")}
+                  </p>
+                  <p className="text-sm text-slate-500">
+                    {t("reports.accountingExports.datev.description")}
+                  </p>
+                  <p className="mt-1 text-xs text-slate-400">
+                    {t("reports.accountingExports.datev.includes")}
+                  </p>
+                </div>
               </div>
-            </CardContent>
-          </Card>
-        </div>
+              <div className="flex items-center gap-3">
+                {latestDatevExport?.status === "completed" && (
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-slate-500">
+                      {latestDatevExport.completedAt
+                        ? `${t("reports.accountingExports.datev.completed")} ${formatDateTime(latestDatevExport.completedAt)}`
+                        : latestDatevExport.createdAt
+                        ? `${t("reports.accountingExports.datev.created")} ${formatDateTime(latestDatevExport.createdAt)}`
+                        : ""}
+                    </span>
+                    <button
+                      onClick={handleDownloadDatev}
+                      disabled={downloadDatevMutation.isPending}
+                      className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                      title={t("reports.accountingExports.datev.downloadTitle")}
+                    >
+                      <Download className="h-4 w-4" />
+                    </button>
+                  </div>
+                )}
+                <button
+                  className={buttonStyles("secondary")}
+                  onClick={() => createDatevExportMutation.mutate()}
+                  disabled={createDatevExportMutation.isPending}
+                >
+                  {createDatevExportMutation.isPending
+                    ? t("reports.accountingExports.datev.requesting")
+                    : t("reports.accountingExports.datev.button")}
+                </button>
+              </div>
+            </div>
+          </div>
+        </Card>
       </div>
     </AppShell>
   );
