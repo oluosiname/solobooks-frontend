@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import { ArrowLeft, Check } from "lucide-react";
 import { AppShell } from "@/components/layout";
 import { cn } from "@/lib/utils";
@@ -17,6 +18,7 @@ import { FileUpload } from "@/components/molecules/FileUpload";
 import type { TransactionInput, ApiError } from "@/types";
 
 export default function EditExpensePage() {
+  const t = useTranslations();
   const router = useRouter();
   const searchParams = useSearchParams();
   const queryClient = useQueryClient();
@@ -66,7 +68,8 @@ export default function EditExpensePage() {
         transactionType: transactionData.transactionType || "Expense",
         categoryId: (transactionData.financialCategory ?? transactionData.category)?.id.toString() || "",
         date: transactionData.date || new Date().toISOString().split("T")[0],
-        amount: Math.abs(transactionData.amount).toString(),
+        // Ensure amount uses period as decimal separator (not locale-aware)
+        amount: Math.abs(transactionData.amount).toFixed(2).replace(/,/g, "."),
         description: transactionData.description || "",
         vatRate: transactionData.vatRate || 19,
         customerLocation: transactionData.customerLocation || "germany",
@@ -124,7 +127,7 @@ export default function EditExpensePage() {
 
   if (isLoadingTransaction) {
     return (
-      <AppShell title="Edit Expense">
+      <AppShell title={t("transactions.editExpense")}>
         <div className="flex items-center justify-center py-12">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
         </div>
@@ -133,7 +136,7 @@ export default function EditExpensePage() {
   }
 
   return (
-    <AppShell title="Edit Expense">
+    <AppShell title={t("transactions.editExpense")}>
       <div className="mb-6">
         <button
           onClick={() => router.back()}
@@ -141,7 +144,7 @@ export default function EditExpensePage() {
         >
           <ArrowLeft className="h-5 w-5" />
           <span className="text-xl font-semibold text-slate-900">
-            Edit Expense
+            {t("transactions.editExpense")}
           </span>
         </button>
       </div>
@@ -153,28 +156,28 @@ export default function EditExpensePage() {
             <div className={styles.cardContent}>
               <form id="expense-form" onSubmit={handleSubmit}>
                 <h3 className="text-lg font-semibold text-slate-900">
-                  Transaction Information
+                  {t("transactions.form.transactionInfo")}
                 </h3>
 
                 <div className="mt-6 space-y-6">
                   <div className="grid gap-6 md:grid-cols-2">
                     <div>
                       <label className="block text-sm font-medium text-slate-700">
-                        Type
+                        {t("transactions.form.type")}
                       </label>
                       <select
                         className={cn(styles.input, "mt-1.5")}
                         value={formData.transactionType}
                         disabled
                       >
-                        <option value="Income">Income</option>
-                        <option value="Expense">Expense</option>
+                        <option value="Income">{t("transactions.types.income")}</option>
+                        <option value="Expense">{t("transactions.types.expense")}</option>
                       </select>
                     </div>
 
                     <div>
                       <label className="block text-sm font-medium text-slate-700">
-                        Category
+                        {t("transactions.form.category")}
                       </label>
                       <select
                         className={cn(styles.input, "mt-1.5")}
@@ -187,7 +190,7 @@ export default function EditExpensePage() {
                         }
                         required
                       >
-                        <option value="">Select category</option>
+                        <option value="">{t("transactions.form.placeholders.selectCategory")}</option>
                         {categories?.map((category) => (
                           <option
                             key={category.id}
@@ -202,7 +205,7 @@ export default function EditExpensePage() {
                   <div className="grid gap-6 md:grid-cols-2">
                     <div>
                       <label className="block text-sm font-medium text-slate-700">
-                        Date *
+                        {t("transactions.form.date")} *
                       </label>
                       <input
                         type="date"
@@ -217,7 +220,7 @@ export default function EditExpensePage() {
 
                     <div>
                       <label className="block text-sm font-medium text-slate-700">
-                        Amount (€)
+                        {t("transactions.form.amount")}
                       </label>
                       <input
                         type="number"
@@ -235,7 +238,7 @@ export default function EditExpensePage() {
 
                   <div>
                     <label className="block text-sm font-medium text-slate-700">
-                      Description
+                      {t("transactions.form.description")}
                     </label>
                     <textarea
                       className={cn(styles.input, "mt-1.5")}
@@ -247,13 +250,13 @@ export default function EditExpensePage() {
                         })
                       }
                       rows={3}
-                      placeholder="Transaction description"
+                      placeholder={t("transactions.form.placeholders.enterDescription")}
                     />
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-slate-700">
-                      Customer Location
+                      {t("transactions.form.customerLocation")}
                     </label>
                     <select
                       className={cn(styles.input, "mt-1.5")}
@@ -265,16 +268,16 @@ export default function EditExpensePage() {
                         })
                       }
                     >
-                      <option value="germany">Germany</option>
-                      <option value="in_eu">In EU (other EU countries)</option>
-                      <option value="outside_eu">Outside EU</option>
+                      <option value="germany">{t("transactions.form.customerLocationOptions.germany")}</option>
+                      <option value="in_eu">{t("transactions.form.customerLocationOptions.inEu")}</option>
+                      <option value="outside_eu">{t("transactions.form.customerLocationOptions.outsideEu")}</option>
                     </select>
                   </div>
 
                   {formData.customerLocation === "germany" && (
                     <div>
                       <label className="block text-sm font-medium text-slate-700">
-                        VAT Rate (%)
+                        {t("transactions.form.vatRate")}
                       </label>
                       <select
                         className={cn(styles.input, "mt-1.5")}
@@ -297,7 +300,7 @@ export default function EditExpensePage() {
                   {formData.customerLocation === "in_eu" && (
                     <div>
                       <label className="block text-sm font-medium text-slate-700">
-                        Customer VAT Number
+                        {t("transactions.form.customerVatNumber")}
                       </label>
                       <input
                         type="text"
@@ -309,14 +312,14 @@ export default function EditExpensePage() {
                             customerVatNumber: e.target.value,
                           })
                         }
-                        placeholder="VAT number"
+                        placeholder={t("transactions.form.placeholders.vatNumber")}
                       />
                     </div>
                   )}
 
                   <div>
                     <label className="block text-sm font-medium text-slate-700">
-                      Receipt / Attachment
+                      {t("transactions.form.receipt")}
                     </label>
                     <div className="mt-1.5">
                       <FileUpload
@@ -343,23 +346,23 @@ export default function EditExpensePage() {
             <div className={cn(styles.card)}>
               <div className={styles.cardContent}>
                 <h3 className="text-lg font-semibold text-slate-900">
-                  Summary
+                  {t("transactions.form.summary")}
                 </h3>
                 <div className="mt-4 space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-slate-600">Amount</span>
+                    <span className="text-slate-600">{t("transactions.form.amount")}</span>
                     <span className="font-semibold text-slate-900">
                       €{parseFloat(formData.amount || "0").toFixed(2)}
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-slate-600">Receipt</span>
+                    <span className="text-slate-600">{t("transactions.form.receipt")}</span>
                     <span className="text-sm text-slate-900">
-                      {receiptFile ? "Attached" : "None"}
+                      {receiptFile ? t("transactions.form.attached") : t("transactions.form.none")}
                     </span>
                   </div>
                   <div className="flex items-center justify-between border-t border-slate-200 pt-3">
-                    <span className="font-semibold text-slate-900">Total</span>
+                    <span className="font-semibold text-slate-900">{t("transactions.form.total")}</span>
                     <span className="text-lg font-semibold text-slate-900">
                       €{parseFloat(formData.amount || "0").toFixed(2)}
                     </span>
@@ -377,8 +380,8 @@ export default function EditExpensePage() {
               >
                 <Check className="h-4 w-4" />
                 {updateTransactionMutation.isPending
-                  ? "Updating..."
-                  : "Update Expense"}
+                  ? t("transactions.form.updating")
+                  : t("transactions.form.updateExpense")}
               </button>
               <button
                 type="button"
@@ -389,7 +392,7 @@ export default function EditExpensePage() {
                   "w-full justify-center"
                 )}
               >
-                Cancel
+                {t("common.cancel")}
               </button>
             </div>
           </div>

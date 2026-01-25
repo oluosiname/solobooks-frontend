@@ -242,6 +242,8 @@
     "noSyncedTransactions": "Keine synchronisierten Transaktionen",
     "newExpense": "Neue Ausgabe",
     "newIncome": "Neue Einnahme",
+    "editExpense": "Ausgabe bearbeiten",
+    "editIncome": "Einnahme bearbeiten",
     "addExpense": "Ausgabe hinzufügen",
     "addIncome": "Einnahme hinzufügen",
     "addManualExpense": "Manuelle Ausgabe hinzufügen",
@@ -302,10 +304,28 @@
       "noReceipt": "Kein Beleg",
       "receiptAttached": "Beleg angehängt",
       "saveTransaction": "Transaktion speichern",
+      "customerLocation": "Kundenstandort",
+      "vatRate": "Umsatzsteuersatz (%)",
+      "customerVatNumber": "Kunden-USt-IdNr.",
+      "total": "Gesamt",
+      "attached": "Angehängt",
+      "none": "Keine",
+      "creating": "Wird erstellt...",
+      "updating": "Wird aktualisiert...",
+      "createExpense": "Ausgabe erstellen",
+      "createIncome": "Einnahme erstellen",
+      "updateExpense": "Ausgabe aktualisieren",
+      "updateIncome": "Einnahme aktualisieren",
+      "customerLocationOptions": {
+        "germany": "Deutschland",
+        "inEu": "In der EU (andere EU-Länder)",
+        "outsideEu": "Außerhalb der EU"
+      },
       "placeholders": {
         "selectCategory": "Kategorie auswählen",
         "enterDescription": "Transaktionsbeschreibung eingeben...",
-        "addNotes": "Zusätzliche Notizen hinzufügen..."
+        "addNotes": "Zusätzliche Notizen hinzufügen...",
+        "vatNumber": "DE123456789"
       }
     },
     "import": {

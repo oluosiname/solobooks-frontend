@@ -256,6 +256,8 @@
     "discardSelected": "Discard {count} transaction(s)",
     "newExpense": "New Expense",
     "newIncome": "New Income",
+    "editExpense": "Edit Expense",
+    "editIncome": "Edit Income",
     "addExpense": "Add Expense",
     "addIncome": "Add Income",
     "addManualExpense": "Add Manual Expense",
@@ -341,10 +343,28 @@
       "noReceipt": "No Receipt",
       "receiptAttached": "Receipt Attached",
       "saveTransaction": "Save Transaction",
+      "customerLocation": "Customer Location",
+      "vatRate": "VAT Rate (%)",
+      "customerVatNumber": "Customer VAT Number",
+      "total": "Total",
+      "attached": "Attached",
+      "none": "None",
+      "creating": "Creating...",
+      "updating": "Updating...",
+      "createExpense": "Create Expense",
+      "createIncome": "Create Income",
+      "updateExpense": "Update Expense",
+      "updateIncome": "Update Income",
+      "customerLocationOptions": {
+        "germany": "Germany",
+        "inEu": "In EU (other EU countries)",
+        "outsideEu": "Outside EU"
+      },
       "placeholders": {
         "selectCategory": "Select category",
         "enterDescription": "Enter transaction description...",
-        "addNotes": "Add any additional notes..."
+        "addNotes": "Add any additional notes...",
+        "vatNumber": "DE123456789"
       }
     },
     "categories": {
