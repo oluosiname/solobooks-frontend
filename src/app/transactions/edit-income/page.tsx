@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, Check } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { ArrowLeft, Check, FileText } from "lucide-react";
 import { AppShell } from "@/components/layout";
 import { cn } from "@/lib/utils";
 import { styles, buttonStyles } from "@/lib/styles";
@@ -13,6 +14,7 @@ import { FileUpload } from "@/components/molecules/FileUpload";
 import type { TransactionInput, ApiError } from "@/types";
 
 export default function EditIncomePage() {
+  const t = useTranslations();
   const router = useRouter();
   const searchParams = useSearchParams();
   const queryClient = useQueryClient();
@@ -62,7 +64,8 @@ export default function EditIncomePage() {
         transactionType: transactionData.transactionType || "Income",
         categoryId: (transactionData.financialCategory ?? transactionData.category)?.id.toString() || "",
         date: transactionData.date || new Date().toISOString().split("T")[0],
-        amount: Math.abs(transactionData.amount).toString(),
+        // Ensure amount uses period as decimal separator (not locale-aware)
+        amount: Math.abs(transactionData.amount).toFixed(2).replace(/,/g, "."),
         description: transactionData.description || "",
         vatRate: transactionData.vatRate || 19,
         customerLocation: transactionData.customerLocation || "germany",
@@ -118,7 +121,7 @@ export default function EditIncomePage() {
 
   if (isLoadingTransaction) {
     return (
-      <AppShell title="Edit Income">
+      <AppShell title={t("transactions.editIncome")}>
         <div className="flex items-center justify-center py-12">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
         </div>
@@ -127,7 +130,7 @@ export default function EditIncomePage() {
   }
 
   return (
-    <AppShell title="Edit Income">
+    <AppShell title={t("transactions.editIncome")}>
       <div className="mb-6">
         <button
           onClick={() => router.back()}
@@ -135,7 +138,7 @@ export default function EditIncomePage() {
         >
           <ArrowLeft className="h-5 w-5" />
           <span className="text-xl font-semibold text-slate-900">
-            Edit Income
+            {t("transactions.editIncome")}
           </span>
         </button>
       </div>
@@ -147,28 +150,28 @@ export default function EditIncomePage() {
             <div className={styles.cardContent}>
               <form id="income-form" onSubmit={handleSubmit}>
                 <h3 className="text-lg font-semibold text-slate-900">
-                  Transaction Information
+                  {t("transactions.form.transactionInfo")}
                 </h3>
 
                 <div className="mt-6 space-y-6">
                   <div className="grid gap-6 md:grid-cols-2">
                     <div>
                       <label className="block text-sm font-medium text-slate-700">
-                        Type
+                        {t("transactions.form.type")}
                       </label>
                       <select
                         className={cn(styles.input, "mt-1.5")}
                         value={formData.transactionType}
                         disabled
                       >
-                        <option value="Income">Income</option>
-                        <option value="Expense">Expense</option>
+                        <option value="Income">{t("transactions.types.income")}</option>
+                        <option value="Expense">{t("transactions.types.expense")}</option>
                       </select>
                     </div>
 
                     <div>
                       <label className="block text-sm font-medium text-slate-700">
-                        Category
+                        {t("transactions.form.category")}
                       </label>
                       <select
                         className={cn(styles.input, "mt-1.5")}
@@ -177,7 +180,7 @@ export default function EditIncomePage() {
                         required
                       >
                         <option value="">
-                          Select category
+                          {t("transactions.form.placeholders.selectCategory")}
                         </option>
                         {categories?.map((category) => (
                           <option
@@ -193,7 +196,7 @@ export default function EditIncomePage() {
                   <div className="grid gap-6 md:grid-cols-2">
                     <div>
                       <label className="block text-sm font-medium text-slate-700">
-                        Date *
+                        {t("transactions.form.date")} *
                       </label>
                       <input
                         type="date"
@@ -206,7 +209,7 @@ export default function EditIncomePage() {
 
                     <div>
                       <label className="block text-sm font-medium text-slate-700">
-                        Amount (€)
+                        {t("transactions.form.amount")}
                       </label>
                       <input
                         type="number"
@@ -222,36 +225,36 @@ export default function EditIncomePage() {
 
                   <div>
                     <label className="block text-sm font-medium text-slate-700">
-                      Description
+                      {t("transactions.form.description")}
                     </label>
                     <textarea
                       className={cn(styles.input, "mt-1.5")}
                       value={formData.description}
                       onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                       rows={3}
-                      placeholder="Transaction description"
+                      placeholder={t("transactions.form.placeholders.enterDescription")}
                     />
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-slate-700">
-                      Customer Location
+                      {t("transactions.form.customerLocation")}
                     </label>
                     <select
                       className={cn(styles.input, "mt-1.5")}
                       value={formData.customerLocation}
                       onChange={(e) => setFormData({ ...formData, customerLocation: e.target.value })}
                     >
-                      <option value="germany">Germany</option>
-                      <option value="in_eu">In EU (other EU countries)</option>
-                      <option value="outside_eu">Outside EU</option>
+                      <option value="germany">{t("transactions.form.customerLocationOptions.germany")}</option>
+                      <option value="in_eu">{t("transactions.form.customerLocationOptions.inEu")}</option>
+                      <option value="outside_eu">{t("transactions.form.customerLocationOptions.outsideEu")}</option>
                     </select>
                   </div>
 
                   {formData.customerLocation === "germany" && (
                     <div>
                       <label className="block text-sm font-medium text-slate-700">
-                        VAT Rate (%)
+                        {t("transactions.form.vatRate")}
                       </label>
                       <select
                         className={cn(styles.input, "mt-1.5")}
@@ -269,23 +272,40 @@ export default function EditIncomePage() {
                   {formData.customerLocation === "in_eu" && (
                     <div>
                       <label className="block text-sm font-medium text-slate-700">
-                        Customer VAT Number
+                        {t("transactions.form.customerVatNumber")}
                       </label>
                       <input
                         type="text"
                         className={cn(styles.input, "mt-1.5")}
                         value={formData.customerVatNumber}
                         onChange={(e) => setFormData({ ...formData, customerVatNumber: e.target.value })}
-                        placeholder="VAT number"
+                        placeholder={t("transactions.form.placeholders.vatNumber")}
                       />
                     </div>
                   )}
 
                   <div>
                     <label className="block text-sm font-medium text-slate-700">
-                      Receipt / Attachment
+                      {t("transactions.form.receipt")}
                     </label>
                     <div className="mt-1.5">
+                      {/* Show existing receipt if available */}
+                      {transactionData?.receiptUrl && !receiptFile && (
+                        <div className="mb-3 flex items-center gap-2 rounded-md border border-slate-200 bg-slate-50 p-3">
+                          <FileText className="h-4 w-4 text-slate-500" />
+                          <a
+                            href={transactionData.receiptUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm text-indigo-600 hover:text-indigo-700 hover:underline"
+                          >
+                            {t("transactions.form.viewReceipt")}
+                          </a>
+                          <span className="text-xs text-slate-500">
+                            ({t("transactions.form.currentAttachment")})
+                          </span>
+                        </div>
+                      )}
                       <FileUpload
                         onFileSelect={(file) => setReceiptFile(file)}
                         accept="image/*,.pdf"
@@ -293,7 +313,7 @@ export default function EditIncomePage() {
                       />
                       {receiptFile && (
                         <p className="mt-2 text-sm text-slate-600">
-                          Selected: {receiptFile.name}
+                          {t("transactions.form.newFileSelected")}: {receiptFile.name}
                         </p>
                       )}
                     </div>
@@ -309,18 +329,18 @@ export default function EditIncomePage() {
           <div className="space-y-6">
             <div className={cn(styles.card)}>
               <div className={styles.cardContent}>
-                <h3 className="text-lg font-semibold text-slate-900">Summary</h3>
+                <h3 className="text-lg font-semibold text-slate-900">{t("transactions.form.summary")}</h3>
                 <div className="mt-4 space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-slate-600">Amount</span>
+                    <span className="text-slate-600">{t("transactions.form.amount")}</span>
                     <span className="font-semibold text-slate-900">€{parseFloat(formData.amount || "0").toFixed(2)}</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-slate-600">Receipt</span>
-                    <span className="text-sm text-slate-900">{receiptFile ? "Attached" : "None"}</span>
+                    <span className="text-slate-600">{t("transactions.form.receipt")}</span>
+                    <span className="text-sm text-slate-900">{receiptFile ? t("transactions.form.attached") : t("transactions.form.none")}</span>
                   </div>
                   <div className="flex items-center justify-between border-t border-slate-200 pt-3">
-                    <span className="font-semibold text-slate-900">Total</span>
+                    <span className="font-semibold text-slate-900">{t("transactions.form.total")}</span>
                     <span className="text-lg font-semibold text-slate-900">€{parseFloat(formData.amount || "0").toFixed(2)}</span>
                   </div>
                 </div>
@@ -339,8 +359,8 @@ export default function EditIncomePage() {
               >
                 <Check className="h-4 w-4" />
                 {updateTransactionMutation.isPending
-                  ? "Updating..."
-                  : "Update Income"}
+                  ? t("transactions.form.updating")
+                  : t("transactions.form.updateIncome")}
               </button>
               <button
                 type="button"
@@ -351,7 +371,7 @@ export default function EditIncomePage() {
                   "w-full justify-center"
                 )}
               >
-                Cancel
+                {t("common.cancel")}
               </button>
             </div>
           </div>

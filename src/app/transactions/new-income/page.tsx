@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import { ArrowLeft, Check } from "lucide-react";
 import { AppShell } from "@/components/layout";
 import { cn } from "@/lib/utils";
@@ -13,6 +14,7 @@ import { FileUpload } from "@/components/molecules/FileUpload";
 import * as humps from "humps";
 
 export default function NewIncomePage() {
+  const t = useTranslations();
   const router = useRouter();
   const queryClient = useQueryClient();
   const searchParams = useSearchParams();
@@ -101,7 +103,7 @@ export default function NewIncomePage() {
   };
 
   return (
-    <AppShell title="New Income">
+    <AppShell title={t("transactions.newIncome")}>
       <div className="mb-6">
         <button
           onClick={() => router.back()}
@@ -109,7 +111,7 @@ export default function NewIncomePage() {
         >
           <ArrowLeft className="h-5 w-5" />
           <span className="text-xl font-semibold text-slate-900">
-            New Income
+            {t("transactions.newIncome")}
           </span>
         </button>
       </div>
@@ -121,26 +123,26 @@ export default function NewIncomePage() {
             <div className={styles.cardContent}>
               <form id="income-form" onSubmit={handleSubmit}>
                 <h3 className="text-lg font-semibold text-slate-900">
-                  Transaction Information
+                  {t("transactions.form.transactionInfo")}
                 </h3>
 
                 <div className="mt-6 space-y-6">
                   <div className="grid gap-6 md:grid-cols-2">
                     <div>
                       <label className="block text-sm font-medium text-slate-700">
-                        Type
+                        {t("transactions.form.type")}
                       </label>
                       <select
                         className={cn(styles.input, "mt-1.5")}
                         value={formData.transactionType}
                         disabled
                       >
-                        <option value="Income">Income</option>
+                        <option value="Income">{t("transactions.types.income")}</option>
                       </select>
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-slate-700">
-                        Category
+                        {t("transactions.form.category")}
                       </label>
                       <select
                         className={cn(styles.input, "mt-1.5")}
@@ -153,8 +155,8 @@ export default function NewIncomePage() {
                       >
                         <option value="">
                           {categoriesLoading
-                            ? "Loading categories..."
-                            : "Select category"}
+                            ? t("common.loading")
+                            : t("transactions.form.placeholders.selectCategory")}
                         </option>
                         {categories?.map((category) => (
                           <option
@@ -168,7 +170,7 @@ export default function NewIncomePage() {
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-slate-700">
-                        Date
+                        {t("transactions.form.date")}
                       </label>
                       <input
                         type="date"
@@ -180,7 +182,7 @@ export default function NewIncomePage() {
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-slate-700">
-                        Amount (€)
+                        {t("transactions.form.amount")}
                       </label>
                       <input
                         type="number"
@@ -196,7 +198,7 @@ export default function NewIncomePage() {
 
                   <div>
                     <label className="block text-sm font-medium text-slate-700">
-                      Customer Location
+                      {t("transactions.form.customerLocation")}
                     </label>
                     <select
                       className={cn(styles.input, "mt-1.5")}
@@ -205,16 +207,16 @@ export default function NewIncomePage() {
                         handleChange("customerLocation", e.target.value)
                       }
                     >
-                      <option value="germany">Germany</option>
-                      <option value="in_eu">In EU (other EU countries)</option>
-                      <option value="outside_eu">Outside EU</option>
+                      <option value="germany">{t("transactions.form.customerLocationOptions.germany")}</option>
+                      <option value="in_eu">{t("transactions.form.customerLocationOptions.inEu")}</option>
+                      <option value="outside_eu">{t("transactions.form.customerLocationOptions.outsideEu")}</option>
                     </select>
                   </div>
 
                   {formData.customerLocation === "germany" && (
                     <div>
                       <label className="block text-sm font-medium text-slate-700">
-                        VAT Rate (%)
+                        {t("transactions.form.vatRate")}
                       </label>
                       <select
                         className={cn(styles.input, "mt-1.5")}
@@ -234,12 +236,12 @@ export default function NewIncomePage() {
                   {formData.customerLocation === "in_eu" && (
                     <div>
                       <label className="block text-sm font-medium text-slate-700">
-                        Customer VAT Number
+                        {t("transactions.form.customerVatNumber")}
                       </label>
                       <input
                         type="text"
                         className={cn(styles.input, "mt-1.5")}
-                        placeholder="DE123456789"
+                        placeholder={t("transactions.form.placeholders.vatNumber")}
                         value={formData.customerVatNumber}
                         onChange={(e) =>
                           handleChange("customerVatNumber", e.target.value)
@@ -250,11 +252,11 @@ export default function NewIncomePage() {
 
                   <div>
                     <label className="block text-sm font-medium text-slate-700">
-                      Description
+                      {t("transactions.form.description")}
                     </label>
                     <textarea
                       className={cn(styles.input, "mt-1.5 h-24 resize-none")}
-                      placeholder="Enter transaction description..."
+                      placeholder={t("transactions.form.placeholders.enterDescription")}
                       value={formData.description}
                       onChange={(e) =>
                         handleChange("description", e.target.value)
@@ -265,7 +267,7 @@ export default function NewIncomePage() {
 
                   <div>
                     <label className="block text-sm font-medium text-slate-700">
-                      Receipt / Attachment
+                      {t("transactions.form.receipt")}
                     </label>
                     <div className="mt-1.5">
                       <FileUpload
@@ -275,7 +277,7 @@ export default function NewIncomePage() {
                         label={
                           receiptFile
                             ? `Selected: ${receiptFile.name}`
-                            : "Click to upload or drag and drop"
+                            : t("transactions.import.uploadDescription")
                         }
                         description="PDF, PNG, JPG up to 10MB"
                       />
@@ -291,22 +293,22 @@ export default function NewIncomePage() {
         <div className="lg:col-span-1">
           <div className={cn(styles.card, "sticky top-6")}>
             <div className={styles.cardContent}>
-              <h3 className="text-lg font-semibold text-slate-900">Summary</h3>
+              <h3 className="text-lg font-semibold text-slate-900">{t("transactions.form.summary")}</h3>
               <div className="mt-6 space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-slate-600">Transaction Type</span>
-                  <span className="font-medium text-emerald-600">Income</span>
+                  <span className="text-slate-600">{t("transactions.form.transactionType")}</span>
+                  <span className="font-medium text-emerald-600">{t("transactions.types.income")}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-slate-600">Date</span>
+                  <span className="text-slate-600">{t("transactions.form.date")}</span>
                   <span className="font-medium text-slate-900">
                     {formData.date}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-slate-600">Status</span>
+                  <span className="text-slate-600">{t("transactions.form.status")}</span>
                   <span className="font-medium text-slate-900">
-                    {receiptFile ? "Receipt Attached" : "No Receipt"}
+                    {receiptFile ? t("transactions.form.receiptAttached") : t("transactions.form.noReceipt")}
                   </span>
                 </div>
               </div>
@@ -322,8 +324,8 @@ export default function NewIncomePage() {
                 >
                   <Check className="h-4 w-4" />
                   {createTransactionMutation.isPending
-                    ? "Creating..."
-                    : "Create Income"}
+                    ? t("transactions.form.creating")
+                    : t("transactions.form.createIncome")}
                 </button>
                 <button
                   type="button"
@@ -334,7 +336,7 @@ export default function NewIncomePage() {
                     "w-full justify-center"
                   )}
                 >
-                  Cancel
+                  {t("common.cancel")}
                 </button>
               </div>
             </div>
