@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
-import { ArrowLeft, Check } from "lucide-react";
+import { ArrowLeft, Check, FileText } from "lucide-react";
 import { AppShell } from "@/components/layout";
 import { cn } from "@/lib/utils";
 import { styles, buttonStyles } from "@/lib/styles";
@@ -322,6 +322,23 @@ export default function EditExpensePage() {
                       {t("transactions.form.receipt")}
                     </label>
                     <div className="mt-1.5">
+                      {/* Show existing receipt if available */}
+                      {transactionData?.receiptUrl && !receiptFile && (
+                        <div className="mb-3 flex items-center gap-2 rounded-md border border-slate-200 bg-slate-50 p-3">
+                          <FileText className="h-4 w-4 text-slate-500" />
+                          <a
+                            href={transactionData.receiptUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm text-indigo-600 hover:text-indigo-700 hover:underline"
+                          >
+                            {t("transactions.form.viewReceipt")}
+                          </a>
+                          <span className="text-xs text-slate-500">
+                            ({t("transactions.form.currentAttachment")})
+                          </span>
+                        </div>
+                      )}
                       <FileUpload
                         onFileSelect={(file) => setReceiptFile(file)}
                         accept="image/*,.pdf"
@@ -329,7 +346,7 @@ export default function EditExpensePage() {
                       />
                       {receiptFile && (
                         <p className="mt-2 text-sm text-slate-600">
-                          Selected: {receiptFile.name}
+                          {t("transactions.form.newFileSelected")}: {receiptFile.name}
                         </p>
                       )}
                     </div>

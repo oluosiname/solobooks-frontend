@@ -149,10 +149,11 @@ export function GroupedTransactionsTable({
       const newRoute = isIncome ? "new-income" : "new-expense";
       
       // Create URL search parameters with transaction data to prefill the form
+      // Use absolute value for amount to ensure it's always positive in the form
       const params = new URLSearchParams({
         description: transaction.description,
         date: transaction.date,
-        amount: transaction.amount.toString(),
+        amount: Math.abs(transaction.amount).toString(),
         vatRate: transaction.vatRate.toString(),
         customerLocation: transaction.customerLocation,
         customerVatNumber: transaction.customerVatNumber || "",

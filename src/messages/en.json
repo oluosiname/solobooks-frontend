@@ -355,6 +355,9 @@
       "createIncome": "Create Income",
       "updateExpense": "Update Expense",
       "updateIncome": "Update Income",
+      "viewReceipt": "View Receipt",
+      "currentAttachment": "Current attachment",
+      "newFileSelected": "New file selected",
       "customerLocationOptions": {
         "germany": "Germany",
         "inEu": "In EU (other EU countries)",

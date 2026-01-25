@@ -316,6 +316,9 @@
       "createIncome": "Einnahme erstellen",
       "updateExpense": "Ausgabe aktualisieren",
       "updateIncome": "Einnahme aktualisieren",
+      "viewReceipt": "Beleg anzeigen",
+      "currentAttachment": "Aktueller Anhang",
+      "newFileSelected": "Neue Datei ausgewählt",
       "customerLocationOptions": {
         "germany": "Deutschland",
         "inEu": "In der EU (andere EU-Länder)",
