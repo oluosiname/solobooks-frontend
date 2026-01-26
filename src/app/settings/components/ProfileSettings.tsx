@@ -11,12 +11,16 @@ interface ProfileSettingsProps {
   profile?: Profile;
   onSave: (data: Partial<Profile>) => void;
   isSaving: boolean;
+  errors?: Record<string, string[]>;
+  errorMessage?: string;
 }
 
 export function ProfileSettings({
   profile,
   onSave,
   isSaving,
+  errors = {},
+  errorMessage = "",
 }: ProfileSettingsProps) {
   const t = useTranslations();
 
@@ -82,6 +86,50 @@ export function ProfileSettings({
     });
   };
 
+  const handleChange = (field: string, value: string, isAddress = false) => {
+    if (isAddress) {
+      setFormData({
+        ...formData,
+        address: { ...formData.address, [field]: value },
+      });
+    } else {
+      setFormData({ ...formData, [field]: value });
+    }
+  };
+
+  // Field name mapping for error messages
+  const fieldNameMap: Record<string, string> = {
+    fullName: t("clients.form.name"),
+    businessName: t("settings.profile.businessName"),
+    phoneNumber: t("settings.profile.phoneNumber"),
+    taxNumber: t("settings.profile.taxId"),
+    "address.streetAddress": t("clients.form.streetAddress"),
+    "address.city": t("clients.form.city"),
+    "address.country": t("clients.form.country"),
+    "address.state": t("clients.form.state"),
+    "address.postalCode": t("clients.form.postalCode"),
+  };
+
+  // Collect all field errors into a flat list for display with field names
+  const allErrors: string[] = [];
+  Object.keys(errors).forEach((key) => {
+    if (key !== "base" && errors[key]) {
+      const fieldName = fieldNameMap[key] || key;
+      errors[key].forEach((error) => {
+        // Only add field name if error doesn't already contain it
+        const errorMessage = error.toLowerCase().includes(fieldName.toLowerCase())
+          ? error
+          : `${fieldName} ${error}`;
+        allErrors.push(errorMessage);
+      });
+    }
+  });
+  if (errors.base) {
+    errors.base.forEach((error) => {
+      allErrors.push(error);
+    });
+  }
+
   return (
     <form onSubmit={handleSubmit}>
       <div className={cn(styles.card)}>
@@ -91,6 +139,27 @@ export function ProfileSettings({
           </h3>
         </div>
         <div className={styles.cardContent}>
+          {/* Error Message Banner */}
+          {errorMessage && (
+            <div className="rounded-lg bg-red-50 border border-red-200 p-4 mb-6">
+              <div className="flex">
+                <div className="flex-1">
+                  <h3 className="text-sm font-medium text-red-800">
+                    {errorMessage}
+                  </h3>
+                  {allErrors.length > 0 && (
+                    <div className="mt-2 text-sm text-red-700">
+                      <ul className="list-disc list-inside space-y-1">
+                        {allErrors.map((msg, idx) => (
+                          <li key={idx}>{msg}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
           <div className="grid gap-6 md:grid-cols-2">
             <div>
               <label className="block text-sm font-medium text-slate-700">
@@ -98,12 +167,17 @@ export function ProfileSettings({
               </label>
               <input
                 type="text"
-                className={cn(styles.input, "mt-1.5")}
+                className={cn(
+                  styles.input,
+                  "mt-1.5",
+                  errors.fullName && "border-red-500 focus:border-red-500 focus:ring-red-500"
+                )}
                 value={formData.fullName}
-                onChange={(e) =>
-                  setFormData({ ...formData, fullName: e.target.value })
-                }
+                onChange={(e) => handleChange("fullName", e.target.value)}
               />
+              {errors.fullName?.[0] && (
+                <p className="mt-1 text-sm text-red-500">{errors.fullName[0]}</p>
+              )}
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-700">
@@ -111,12 +185,17 @@ export function ProfileSettings({
               </label>
               <input
                 type="text"
-                className={cn(styles.input, "mt-1.5")}
+                className={cn(
+                  styles.input,
+                  "mt-1.5",
+                  errors.businessName && "border-red-500 focus:border-red-500 focus:ring-red-500"
+                )}
                 value={formData.businessName}
-                onChange={(e) =>
-                  setFormData({ ...formData, businessName: e.target.value })
-                }
+                onChange={(e) => handleChange("businessName", e.target.value)}
               />
+              {errors.businessName?.[0] && (
+                <p className="mt-1 text-sm text-red-500">{errors.businessName[0]}</p>
+              )}
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-700">
@@ -124,12 +203,17 @@ export function ProfileSettings({
               </label>
               <input
                 type="tel"
-                className={cn(styles.input, "mt-1.5")}
+                className={cn(
+                  styles.input,
+                  "mt-1.5",
+                  errors.phoneNumber && "border-red-500 focus:border-red-500 focus:ring-red-500"
+                )}
                 value={formData.phoneNumber}
-                onChange={(e) =>
-                  setFormData({ ...formData, phoneNumber: e.target.value })
-                }
+                onChange={(e) => handleChange("phoneNumber", e.target.value)}
               />
+              {errors.phoneNumber?.[0] && (
+                <p className="mt-1 text-sm text-red-500">{errors.phoneNumber[0]}</p>
+              )}
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-700">
@@ -137,12 +221,17 @@ export function ProfileSettings({
               </label>
               <input
                 type="text"
-                className={cn(styles.input, "mt-1.5")}
+                className={cn(
+                  styles.input,
+                  "mt-1.5",
+                  errors.taxNumber && "border-red-500 focus:border-red-500 focus:ring-red-500"
+                )}
                 value={formData.taxNumber}
-                onChange={(e) =>
-                  setFormData({ ...formData, taxNumber: e.target.value })
-                }
+                onChange={(e) => handleChange("taxNumber", e.target.value)}
               />
+              {errors.taxNumber?.[0] && (
+                <p className="mt-1 text-sm text-red-500">{errors.taxNumber[0]}</p>
+              )}
             </div>
           </div>
 
@@ -160,12 +249,7 @@ export function ProfileSettings({
                   type="text"
                   className={cn(styles.input, "mt-1.5")}
                   value={formData.address.streetAddress}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      address: { ...formData.address, streetAddress: e.target.value },
-                    })
-                  }
+                  onChange={(e) => handleChange("streetAddress", e.target.value, true)}
                 />
               </div>
               <div>
@@ -176,12 +260,7 @@ export function ProfileSettings({
                   type="text"
                   className={cn(styles.input, "mt-1.5")}
                   value={formData.address.city}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      address: { ...formData.address, city: e.target.value },
-                    })
-                  }
+                  onChange={(e) => handleChange("city", e.target.value, true)}
                 />
               </div>
               <div>
@@ -191,17 +270,13 @@ export function ProfileSettings({
                 <select
                   className={cn(styles.input, "mt-1.5")}
                   value={formData.address.country}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      address: {
-                        ...formData.address,
-                        country: e.target.value,
-                        // Clear state if country is not DE
-                        state: e.target.value === "DE" ? formData.address.state : "",
-                      },
-                    })
-                  }
+                  onChange={(e) => {
+                    handleChange("country", e.target.value, true);
+                    // Clear state if country is not DE
+                    if (e.target.value !== "DE") {
+                      handleChange("state", "", true);
+                    }
+                  }}
                 >
                   <option value="">{t("common.select")}</option>
                   {countryOptions.map((option) => (
@@ -219,12 +294,7 @@ export function ProfileSettings({
                   <select
                     className={cn(styles.input, "mt-1.5")}
                     value={formData.address.state}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        address: { ...formData.address, state: e.target.value },
-                      })
-                    }
+                    onChange={(e) => handleChange("state", e.target.value, true)}
                   >
                     <option value="">{t("common.select")}</option>
                     {GERMAN_STATES.map((option) => (
@@ -243,12 +313,7 @@ export function ProfileSettings({
                   type="text"
                   className={cn(styles.input, "mt-1.5")}
                   value={formData.address.postalCode}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      address: { ...formData.address, postalCode: e.target.value },
-                    })
-                  }
+                  onChange={(e) => handleChange("postalCode", e.target.value, true)}
                 />
               </div>
             </div>

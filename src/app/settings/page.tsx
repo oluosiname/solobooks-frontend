@@ -21,6 +21,7 @@ import { Sheet, SheetHeader, SheetContent } from "@/components/ui/sheet";
 import { api as newApi } from "@/services/api";
 import type { InvoiceSettingsInput, Profile, ApiError } from "@/types";
 import { showToast } from "@/lib/toast";
+import humps from "humps";
 import {
   ProfileSettings,
   AppSettings,
@@ -59,6 +60,10 @@ export default function SettingsPage() {
 
   // 2FA state
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
+
+  // Profile form errors
+  const [profileErrors, setProfileErrors] = useState<Record<string, string[]>>({});
+  const [profileErrorMessage, setProfileErrorMessage] = useState<string>("");
 
   const { data: user } = useQuery({
     queryKey: ["user"],
@@ -133,9 +138,24 @@ export default function SettingsPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user"] });
       showToast.success("Profile updated successfully");
+      setProfileErrors({});
+      setProfileErrorMessage("");
     },
     onError: (error: ApiError) => {
       showToast.apiError(error, "Failed to update profile");
+      
+      // Extract error message
+      const errorMsg = error?.error?.message || "Failed to update profile";
+      setProfileErrorMessage(errorMsg);
+      
+      // Extract and transform field-specific validation errors
+      if (error?.error?.details) {
+        // Transform snake_case keys to camelCase using humps
+        const transformedErrors = humps.camelizeKeys(error.error.details) as Record<string, string[]>;
+        setProfileErrors(transformedErrors);
+      } else {
+        setProfileErrors({});
+      }
     },
   });
 
@@ -334,6 +354,8 @@ export default function SettingsPage() {
               profile={user}
               onSave={(data) => updateProfileMutation.mutate(data)}
               isSaving={updateProfileMutation.isPending}
+              errors={profileErrors}
+              errorMessage={profileErrorMessage}
             />
           )}
           {activeTab === "app" && <AppSettings settings={unifiedSettings} />}
