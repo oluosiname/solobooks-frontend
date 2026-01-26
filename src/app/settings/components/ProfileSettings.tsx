@@ -97,38 +97,8 @@ export function ProfileSettings({
     }
   };
 
-  // Field name mapping for error messages
-  const fieldNameMap: Record<string, string> = {
-    fullName: t("clients.form.name"),
-    businessName: t("settings.profile.businessName"),
-    phoneNumber: t("settings.profile.phoneNumber"),
-    taxNumber: t("settings.profile.taxId"),
-    "address.streetAddress": t("clients.form.streetAddress"),
-    "address.city": t("clients.form.city"),
-    "address.country": t("clients.form.country"),
-    "address.state": t("clients.form.state"),
-    "address.postalCode": t("clients.form.postalCode"),
-  };
-
-  // Collect all field errors into a flat list for display with field names
-  const allErrors: string[] = [];
-  Object.keys(errors).forEach((key) => {
-    if (key !== "base" && errors[key]) {
-      const fieldName = fieldNameMap[key] || key;
-      errors[key].forEach((error) => {
-        // Only add field name if error doesn't already contain it
-        const errorMessage = error.toLowerCase().includes(fieldName.toLowerCase())
-          ? error
-          : `${fieldName} ${error}`;
-        allErrors.push(errorMessage);
-      });
-    }
-  });
-  if (errors.base) {
-    errors.base.forEach((error) => {
-      allErrors.push(error);
-    });
-  }
+  // Only show base errors in the banner list
+  const baseErrors = errors.base || [];
 
   return (
     <form onSubmit={handleSubmit}>
@@ -147,10 +117,10 @@ export function ProfileSettings({
                   <h3 className="text-sm font-medium text-red-800">
                     {errorMessage}
                   </h3>
-                  {allErrors.length > 0 && (
+                  {baseErrors.length > 0 && (
                     <div className="mt-2 text-sm text-red-700">
                       <ul className="list-disc list-inside space-y-1">
-                        {allErrors.map((msg, idx) => (
+                        {baseErrors.map((msg, idx) => (
                           <li key={idx}>{msg}</li>
                         ))}
                       </ul>
