@@ -12,6 +12,8 @@ interface InvoiceSettingsProps {
   formData: InvoiceSettingsInput;
   onFormChange: (data: InvoiceSettingsProps["formData"]) => void;
   onSave: () => void;
+  errors?: Record<string, string[]>;
+  errorMessage?: string;
 }
 
 export function InvoiceSettings({
@@ -21,6 +23,8 @@ export function InvoiceSettings({
   formData,
   onFormChange,
   onSave,
+  errors = {},
+  errorMessage = "",
 }: InvoiceSettingsProps) {
   const t = useTranslations();
 
@@ -38,6 +42,28 @@ export function InvoiceSettings({
 
   return (
     <>
+      {/* Error Message Banner */}
+      {errorMessage && (
+        <div className="rounded-lg bg-red-50 border border-red-200 p-4">
+          <div className="flex">
+            <div className="flex-1">
+              <h3 className="text-sm font-medium text-red-800">
+                {errorMessage}
+              </h3>
+              {errors.base && errors.base.length > 0 && (
+                <div className="mt-2 text-sm text-red-700">
+                  <ul className="list-disc list-inside space-y-1">
+                    {errors.base.map((msg, idx) => (
+                      <li key={idx}>{msg}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Bank Account Details */}
       <div className={cn(styles.card)}>
         <div className={styles.cardContent}>
@@ -54,7 +80,11 @@ export function InvoiceSettings({
               </label>
               <input
                 type="text"
-                className={cn(styles.input, "mt-1.5")}
+                className={cn(
+                  styles.input,
+                  "mt-1.5",
+                  errors.account_holder && "border-red-300 focus:border-red-500 focus:ring-red-500"
+                )}
                 value={formData.accountHolder}
                 onChange={(e) =>
                   onFormChange({
@@ -63,6 +93,9 @@ export function InvoiceSettings({
                   })
                 }
               />
+              {errors.account_holder && (
+                <p className="mt-1 text-sm text-red-500">{errors.account_holder[0]}</p>
+              )}
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-700">
@@ -232,7 +265,11 @@ export function InvoiceSettings({
               </label>
               <input
                 type="text"
-                className={cn(styles.input, "mt-1.5")}
+                className={cn(
+                  styles.input,
+                  "mt-1.5",
+                  errors.prefix && "border-red-300 focus:border-red-500 focus:ring-red-500"
+                )}
                 value={formData.prefix}
                 onChange={(e) =>
                   onFormChange({
@@ -241,6 +278,42 @@ export function InvoiceSettings({
                   })
                 }
               />
+              {errors.prefix && (
+                <p className="mt-1 text-sm text-red-500">{errors.prefix[0]}</p>
+              )}
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700">
+                {t("settings.invoiceSettings.defaults.startingSequence")}
+              </label>
+              <input
+                type="number"
+                min="1"
+                className={cn(
+                  styles.input,
+                  "mt-1.5",
+                  errors.starting_sequence && "border-red-300 focus:border-red-500 focus:ring-red-500"
+                )}
+                value={formData.startingSequence || ""}
+                onChange={(e) => {
+                  const value = e.target.value === "" ? 0 : parseInt(e.target.value);
+                  onFormChange({
+                    ...formData,
+                    startingSequence: value,
+                  });
+                }}
+                onBlur={(e) => {
+                  if (!e.target.value || parseInt(e.target.value) < 1) {
+                    onFormChange({
+                      ...formData,
+                      startingSequence: 1,
+                    });
+                  }
+                }}
+              />
+              {errors.starting_sequence && (
+                <p className="mt-1 text-sm text-red-500">{errors.starting_sequence[0]}</p>
+              )}
             </div>
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-slate-700">

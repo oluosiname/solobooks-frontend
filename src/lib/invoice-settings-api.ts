@@ -21,6 +21,7 @@ export interface CurrencyData {
 export interface InvoiceSettingData {
   id: number;
   prefix: string;
+  starting_sequence: number;
   language: 'en' | 'de';
   account_holder: string;
   account_number: string | null;
@@ -45,6 +46,7 @@ export interface CurrenciesResponse {
 export interface CreateInvoiceSettingRequest {
   invoice_setting: {
     prefix: string;
+    starting_sequence: number;
     currency_id: number;
     language: 'en' | 'de';
     account_holder: string;
@@ -62,6 +64,7 @@ export interface CreateInvoiceSettingRequest {
 export interface UpdateInvoiceSettingRequest {
   invoice_setting: {
     prefix?: string;
+    starting_sequence?: number;
     currency_id?: number;
     language?: 'en' | 'de';
     account_holder?: string;
