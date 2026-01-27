@@ -705,6 +705,7 @@
         "title": "Rechnungs-Standardwerte",
         "paymentTerms": "Zahlungsbedingungen",
         "invoicePrefix": "Rechnungsnummer-Präfix",
+        "startingSequence": "Startsequenz",
         "defaultNotes": "Standard-Notizen",
         "save": "Standardwerte speichern"
       },

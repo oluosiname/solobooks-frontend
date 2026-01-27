@@ -174,6 +174,7 @@ export default function SettingsPage() {
   // Invoice settings form state
   const [invoiceFormData, setInvoiceFormData] = useState<InvoiceSettingsInput>({
     prefix: "",
+    startingSequence: 1,
     currencyId: 0, // Will be set when currencies load
     language: "en",
     accountHolder: "",
@@ -186,6 +187,10 @@ export default function SettingsPage() {
     routingNumber: "",
     defaultNote: "",
   });
+
+  // Invoice settings errors
+  const [invoiceErrors, setInvoiceErrors] = useState<Record<string, string[]>>({});
+  const [invoiceErrorMessage, setInvoiceErrorMessage] = useState<string>("");
 
   // Set default currency when currencies are loaded
   useEffect(() => {
@@ -214,6 +219,7 @@ export default function SettingsPage() {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setInvoiceFormData({
         prefix: invoiceSettings.prefix,
+        startingSequence: invoiceSettings.startingSequence,
         currencyId: invoiceSettings.currency.id,
         language: invoiceSettings.language,
         accountHolder: invoiceSettings.accountHolder,
@@ -240,9 +246,22 @@ export default function SettingsPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["invoiceSettings"] });
       showToast.success("Invoice settings saved successfully");
+      setInvoiceErrors({});
+      setInvoiceErrorMessage("");
     },
-    onError: (error: unknown) => {
+    onError: (error: ApiError) => {
       showToast.apiError(error, "Failed to save invoice settings");
+
+      // Extract error message
+      const errorMsg = error?.error?.message || "Failed to save invoice settings";
+      setInvoiceErrorMessage(errorMsg);
+
+      // Extract and set field-specific validation errors
+      if (error?.error?.details) {
+        setInvoiceErrors(error.error.details);
+      } else {
+        setInvoiceErrors({});
+      }
     },
   });
 
@@ -368,6 +387,8 @@ export default function SettingsPage() {
               formData={invoiceFormData}
               onFormChange={setInvoiceFormData}
               onSave={handleInvoiceSettingsSave}
+              errors={invoiceErrors}
+              errorMessage={invoiceErrorMessage}
             />
           )}
           {activeTab === "vat" && <VatSettings />}

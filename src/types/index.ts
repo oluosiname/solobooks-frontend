@@ -366,6 +366,7 @@ export interface Currency {
 export interface InvoiceSettings {
   id: number;
   prefix: string;
+  startingSequence: number;
   language: "en" | "de";
   accountHolder: string;
   accountNumber: string | null;
@@ -381,6 +382,7 @@ export interface InvoiceSettings {
 
 export interface InvoiceSettingsInput {
   prefix: string;
+  startingSequence: number;
   currencyId: number;
   language: "en" | "de";
   accountHolder: string;

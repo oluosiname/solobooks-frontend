@@ -704,6 +704,7 @@
         "title": "Invoice Defaults",
         "paymentTerms": "Payment Terms",
         "invoicePrefix": "Invoice Number Prefix",
+        "startingSequence": "Starting Sequence",
         "defaultNotes": "Default Notes",
         "save": "Save Invoice Defaults"
       },
