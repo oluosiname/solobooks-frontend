@@ -4,8 +4,10 @@ import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
-import { Plus, MoreVertical, ChevronLeft, ChevronRight, Send, CreditCard, Download, ArrowUpDown, Check } from 'lucide-react';
+import { Plus, MoreVertical, ChevronLeft, ChevronRight, Send, CreditCard, Download, ArrowUpDown, Check, Edit } from 'lucide-react';
 import Link from 'next/link';
+import { useAuth } from '@/contexts/AuthContext';
+import { entitledToEditInvoices } from '@/lib/entitlements';
 import { AppShell } from '@/components/layout';
 import { SearchInput, Tabs, Badge } from '@/components/ui';
 import { fetchInvoices, sendInvoice, payInvoice, downloadInvoicePdf } from '@/services/api';
@@ -25,6 +27,8 @@ export default function InvoicesPage() {
   const t = useTranslations();
   const searchParams = useSearchParams();
   const clientId = searchParams.get('client_id');
+  const { user } = useAuth();
+  const canEditInvoices = entitledToEditInvoices(user);
 
   const [activeTab, setActiveTab] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -272,6 +276,16 @@ export default function InvoicesPage() {
 
                         {openDropdownId === invoice.id && (
                           <div data-dropdown className="absolute right-0 z-10 mt-1 w-48 rounded-md border border-slate-200 bg-white py-1 shadow-lg">
+                            {invoice.status === 'draft' && canEditInvoices && (
+                              <Link
+                                href={`/invoices/${invoice.id}/edit`}
+                                onClick={() => setOpenDropdownId(null)}
+                                className="flex w-full items-center gap-2 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50"
+                              >
+                                <Edit className="h-4 w-4" />
+                                {t('invoices.actions.edit')}
+                              </Link>
+                            )}
                             {invoice.status === 'draft' && (
                               <button
                                 onClick={(e) => {

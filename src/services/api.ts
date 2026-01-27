@@ -220,8 +220,9 @@ export async function fetchInvoices(params?: InvoicesQueryParams): Promise<{
   };
 }
 
-export async function fetchInvoice(_id: string): Promise<Invoice | null> {
-  throw new Error("Fetch invoice by ID API endpoint not implemented yet");
+export async function fetchInvoice(id: string): Promise<Invoice> {
+  const response = await invoicesApi.getInvoice(id);
+  return transformInvoiceData(response.data);
 }
 
 export async function createInvoice(data: {
@@ -265,10 +266,51 @@ export async function createInvoice(data: {
 }
 
 export async function updateInvoice(
-  _id: string,
-  _data: Partial<Invoice>
-): Promise<Invoice | null> {
-  throw new Error("Update invoice API endpoint not implemented yet");
+  id: string,
+  data: {
+    clientId: string;
+    category: string;
+    currency: string;
+    language: string;
+    invoiceDate: string;
+    dueDate: string;
+    vatRate?: number;
+    notes?: string;
+    lineItems: Array<{
+      id?: string;
+      description: string;
+      unitPrice: number;
+      unit: string;
+      quantity: number;
+      _destroy?: boolean;
+    }>;
+  }
+): Promise<Invoice> {
+  const invoiceData = {
+    invoice: {
+      client_id: data.clientId,
+      invoice_category_id: data.category,
+      currency_id: data.currency,
+      date: data.invoiceDate,
+      due_date: data.dueDate,
+      language: data.language,
+      vat_rate: data.vatRate || 19,
+      vat_included: true,
+      vat_technique: "standard",
+      notes: data.notes,
+      line_items: data.lineItems.map((item) => ({
+        ...(item.id && !item.id.startsWith('new-') && { id: item.id }), // Keep UUID as string
+        description: item.description,
+        quantity: item.quantity,
+        unit: item.unit,
+        unit_price: item.unitPrice,
+        ...(item._destroy && { _destroy: true }),
+      })),
+    },
+  };
+
+  const response = await invoicesApi.updateInvoice(id, invoiceData);
+  return transformInvoiceData(response.data);
 }
 
 export async function deleteInvoice(_id: string): Promise<boolean> {

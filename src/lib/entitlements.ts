@@ -14,7 +14,8 @@ export type FeatureKey =
   | "exportVatCsv"
   | "vatReminders"
   | "prioritySupport"
-  | "vatSubmission";
+  | "vatSubmission"
+  | "editInvoices";
 
 export type LimitKey = "invoice" | "transaction" | "client";
 
@@ -111,6 +112,9 @@ export const entitledToExportSteuerberater = (user: AuthUser | null): boolean =>
 
 export const entitledToExportVatCsv = (user: AuthUser | null): boolean =>
   isFeatureAvailable(user, "exportVatCsv");
+
+export const entitledToEditInvoices = (user: AuthUser | null): boolean =>
+  isFeatureAvailable(user, "editInvoices");
 
 // Convenience functions for limits
 export const canCreateInvoice = (user: AuthUser | null): boolean =>

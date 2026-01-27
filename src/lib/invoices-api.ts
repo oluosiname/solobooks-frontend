@@ -141,11 +141,27 @@ class InvoicesApiClient extends BaseApiClient {
   }
 
   /**
+   * Get a single invoice
+   * GET /api/v1/invoices/{id}
+   */
+  async getInvoice(id: string | number): Promise<InvoiceResponse> {
+    return this.get<InvoiceResponse>(`/api/v1/invoices/${id}`);
+  }
+
+  /**
    * Create a new invoice
    * POST /api/v1/invoices
    */
   async createInvoice(data: CreateInvoiceRequest): Promise<InvoiceResponse> {
     return this.post<InvoiceResponse>("/api/v1/invoices", data);
+  }
+
+  /**
+   * Update an existing invoice (draft only)
+   * PATCH /api/v1/invoices/{id}
+   */
+  async updateInvoice(id: string | number, data: CreateInvoiceRequest): Promise<InvoiceResponse> {
+    return this.patch<InvoiceResponse>(`/api/v1/invoices/${id}`, data);
   }
 
   /**
