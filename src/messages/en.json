@@ -112,6 +112,8 @@
       "saveInvoice": "Save Invoice",
       "calculatingVat": "Calculating...",
       "vatCalculationError": "Could not calculate VAT",
+      "notes": "Notes (Optional)",
+      "notesPlaceholder": "Add any additional notes or comments...",
       "profileIncomplete": "Please complete your profile before creating invoices.",
       "invoiceSettingsMissing": "Please configure your invoice settings before creating invoices.",
       "completeProfile": "Complete Profile",
@@ -139,6 +141,7 @@
       "invoiceNumber": "Invoice Number"
     },
     "actions": {
+      "edit": "Edit",
       "markAsSent": "Mark as Sent",
       "markAsPaid": "Mark as Paid",
       "downloadPdf": "Download PDF",
@@ -197,7 +200,18 @@
     },
     "success": {
       "invoiceCreated": "Invoice created successfully",
-      "invoiceCreationFailed": "Failed to create invoice"
+      "invoiceCreationFailed": "Failed to create invoice",
+      "invoiceUpdated": "Invoice updated successfully",
+      "invoiceUpdateFailed": "Failed to update invoice"
+    },
+    "errors": {
+      "cannotEditNonDraft": "Only draft invoices can be edited",
+      "editNotAvailable": "Invoice editing is not available on your current plan",
+      "invoiceNotFound": "Invoice not found"
+    },
+    "edit": {
+      "title": "Edit Invoice",
+      "updateInvoice": "Update Invoice"
     }
   },
   "clients": {

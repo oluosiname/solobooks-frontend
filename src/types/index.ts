@@ -79,9 +79,21 @@ export interface Invoice {
   status: InvoiceStatus;
   lineItems: InvoiceLineItem[];
   currency: string;
+  currencyCode?: string;
+  currencySymbol?: string;
   notes?: string;
+  language?: string;
+  vatRate?: number;
+  vatIncluded?: boolean;
+  vatTechnique?: string;
+  subtotal?: number;
+  vat?: number;
   createdAt: string;
   pdfAttached: boolean;
+  // Nested objects for editing
+  invoiceCategory?: InvoiceCategory;
+  client?: Client;
+  currencyData?: Currency;
 }
 
 export interface InvoiceCreationRequirements {

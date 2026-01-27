@@ -112,6 +112,8 @@
       "saveInvoice": "Rechnung speichern",
       "calculatingVat": "Berechnung...",
       "vatCalculationError": "USt.-Berechnung fehlgeschlagen",
+      "notes": "Notizen (Optional)",
+      "notesPlaceholder": "Zusätzliche Notizen oder Kommentare hinzufügen...",
       "profileIncomplete": "Bitte vervollständigen Sie Ihr Profil, bevor Sie Rechnungen erstellen.",
       "invoiceSettingsMissing": "Bitte konfigurieren Sie Ihre Rechnungseinstellungen, bevor Sie Rechnungen erstellen.",
       "completeProfile": "Profil vervollständigen",
@@ -139,6 +141,7 @@
       "invoiceNumber": "Rechnungsnummer"
     },
     "actions": {
+      "edit": "Bearbeiten",
       "markAsSent": "Als gesendet markieren",
       "markAsPaid": "Als bezahlt markieren",
       "downloadPdf": "PDF herunterladen",
@@ -197,7 +200,18 @@
     },
     "success": {
       "invoiceCreated": "Rechnung erfolgreich erstellt",
-      "invoiceCreationFailed": "Rechnung konnte nicht erstellt werden"
+      "invoiceCreationFailed": "Rechnung konnte nicht erstellt werden",
+      "invoiceUpdated": "Rechnung erfolgreich aktualisiert",
+      "invoiceUpdateFailed": "Rechnung konnte nicht aktualisiert werden"
+    },
+    "errors": {
+      "cannotEditNonDraft": "Nur Entwurfsrechnungen können bearbeitet werden",
+      "editNotAvailable": "Das Bearbeiten von Rechnungen ist in Ihrem aktuellen Plan nicht verfügbar",
+      "invoiceNotFound": "Rechnung nicht gefunden"
+    },
+    "edit": {
+      "title": "Rechnung bearbeiten",
+      "updateInvoice": "Rechnung aktualisieren"
     }
   },
   "clients": {

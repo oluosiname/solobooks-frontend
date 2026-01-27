@@ -57,6 +57,7 @@ export function transformClientData(data: ClientData): Client {
   const base = camelize<Client>(data);
   return {
     ...base,
+    // ID is already a UUID string from backend, no conversion needed
     totalInvoiced: 0, // TODO: Add when backend provides this
     outstanding: 0, // TODO: Add when backend provides this
     invoiceCount: 0, // TODO: Add when backend provides this
@@ -65,7 +66,7 @@ export function transformClientData(data: ClientData): Client {
 }
 
 export function transformInvoiceSettingData(
-  data: InvoiceSettingData
+  data: InvoiceSettingData,
 ): InvoiceSettings {
   const base = camelize<InvoiceSettings>(data);
   return {
@@ -88,7 +89,7 @@ export function transformVatReportData(data: VatReportData): VatReport {
 }
 
 export function transformVatReportPreviewData(
-  data: VatReportPreviewData
+  data: VatReportPreviewData,
 ): VatReportPreview {
   return {
     report: transformVatReportData(data.report),
@@ -101,11 +102,25 @@ export function transformTransactionData(data: TransactionData): Transaction {
 }
 
 export function transformSyncedTransactionData(
-  data: SyncedTransactionData
+  data: SyncedTransactionData,
 ): Transaction {
   // Use camelize to transform the data, which will convert financial_category to financialCategory
-  const base = camelize<Omit<Transaction, "date" | "vatRate" | "vatAmount" | "customerLocation" | "customerVatNumber" | "vatTechnique" | "source" | "receiptUrl" | "transactionType">>(data);
-  
+  const base =
+    camelize<
+      Omit<
+        Transaction,
+        | "date"
+        | "vatRate"
+        | "vatAmount"
+        | "customerLocation"
+        | "customerVatNumber"
+        | "vatTechnique"
+        | "source"
+        | "receiptUrl"
+        | "transactionType"
+      >
+    >(data);
+
   return {
     ...base,
     date: data.booked_at,
@@ -125,19 +140,19 @@ export function transformProfileData(data: ProfileData): Profile {
 }
 
 export function transformSubscriptionData(
-  data: SubscriptionData
+  data: SubscriptionData,
 ): Subscription {
   return camelize<Subscription>(data);
 }
 
 export function transformPaymentMethodData(
-  data: PaymentMethodData
+  data: PaymentMethodData,
 ): PaymentMethod {
   return camelize<PaymentMethod>(data);
 }
 
 export function transformBankConnectionData(
-  data: BankConnectionData
+  data: BankConnectionData,
 ): BankConnection {
   return camelize<BankConnection>(data);
 }
@@ -151,19 +166,19 @@ export function transformSettingsData(data: ApiSettingsData): Settings {
 }
 
 export function transformDashboardStatsData(
-  data: DashboardStatsData
+  data: DashboardStatsData,
 ): DashboardStats {
   return camelize<DashboardStats>(data);
 }
 
 export function transformFinancialCategoryData(
-  data: FinancialCategoryData
+  data: FinancialCategoryData,
 ): TransactionCategory {
   return camelize<TransactionCategory>(data);
 }
 
 export function transformInvoiceCategoryData(
-  data: InvoiceCategoryData
+  data: InvoiceCategoryData,
 ): InvoiceCategory {
   return camelize<InvoiceCategory>(data);
 }
@@ -173,13 +188,23 @@ export function transformBankData(data: BankData): Bank {
 }
 
 export function transformInvoiceData(data: InvoiceData): Invoice {
-  const base =
-    camelize<Omit<Invoice, "clientId" | "currency">>(data);
+  const base = camelize<Invoice>(data);
 
   return {
     ...base,
-    clientId: data.client.id.toString(),
+    clientId: String(data.client.id), // Ensure UUID is a string
     currency: data.currency.code,
+    // Preserve nested objects for editing
+    invoiceCategory: base.invoiceCategory,
+    currencyData: data.currency
+      ? {
+          id: data.currency.id,
+          code: data.currency.code,
+          symbol: data.currency.symbol,
+          name: data.currency.name,
+          default: data.currency.default,
+        }
+      : undefined,
   };
 }
 
@@ -188,7 +213,7 @@ export function transformPnlData(data: PnlReportResponse["data"]): PnlData {
 }
 
 export function transformInvoiceCreationRequirements(
-  data: InvoiceCreationRequirementsResponse
+  data: InvoiceCreationRequirementsResponse,
 ): InvoiceCreationRequirements {
   return camelize<InvoiceCreationRequirements>(data);
 }
@@ -206,11 +231,15 @@ export function transformVatPreviewData(data: VatPreviewResponse): VatPreview {
   return camelize<VatPreview>(data);
 }
 
-export function transformStripeInvoiceData(data: StripeInvoiceData): StripeInvoice {
+export function transformStripeInvoiceData(
+  data: StripeInvoiceData,
+): StripeInvoice {
   return camelize<StripeInvoice>(data);
 }
 
-export function transformNotificationData(data: ApiNotificationData): Notification {
+export function transformNotificationData(
+  data: ApiNotificationData,
+): Notification {
   const base = camelize<Omit<Notification, "title" | "read" | "type">>(data);
   return {
     ...base,
@@ -236,7 +265,7 @@ export function transformZmdoReportData(data: ZmdoReportData): ZmdoReport {
 }
 
 export function transformZmdoReportPreviewData(
-  data: ZmdoReportPreviewData
+  data: ZmdoReportPreviewData,
 ): ZmdoReportPreview {
   return camelize<ZmdoReportPreview>(data);
 }
