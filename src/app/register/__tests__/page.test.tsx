@@ -25,6 +25,8 @@ describe('RegisterPage', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    // Clear sessionStorage to ensure tests start fresh on plan selection step
+    sessionStorage.clear();
 
     vi.mocked(AuthContext.useAuth).mockReturnValue({
       login: vi.fn(),
@@ -33,6 +35,8 @@ describe('RegisterPage', () => {
       register: mockRegister,
       logout: vi.fn(),
       deleteAccount: vi.fn(),
+      confirmEmail: vi.fn(),
+      resendConfirmation: vi.fn(),
       clearError: mockClearError,
       error: null,
       isLoading: false,
@@ -198,13 +202,15 @@ describe('RegisterPage', () => {
         register: mockRegister,
         logout: vi.fn(),
         deleteAccount: vi.fn(),
+        confirmEmail: vi.fn(),
+        resendConfirmation: vi.fn(),
         clearError: mockClearError,
         error: 'Email already exists',
         isLoading: false,
         isAuthenticated: false,
         user: null,
         token: null,
-      refreshToken: null,
+        refreshToken: null,
       });
 
       render(<RegisterPage />);
@@ -234,13 +240,15 @@ describe('RegisterPage', () => {
         register: mockRegister,
         logout: vi.fn(),
         deleteAccount: vi.fn(),
+        confirmEmail: vi.fn(),
+        resendConfirmation: vi.fn(),
         clearError: mockClearError,
         error: null,
         isLoading: true,
         isAuthenticated: false,
         user: null,
         token: null,
-      refreshToken: null,
+        refreshToken: null,
       });
 
       render(<RegisterPage />);

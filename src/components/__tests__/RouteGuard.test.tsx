@@ -17,6 +17,46 @@ vi.mock('@/contexts/AuthContext', () => ({
   useAuth: vi.fn(),
 }));
 
+// Helper to create mock auth context
+const createMockAuthContext = (overrides: Partial<ReturnType<typeof AuthContext.useAuth>> = {}) => ({
+  isAuthenticated: false,
+  isLoading: false,
+  user: null,
+  token: null,
+  refreshToken: null,
+  login: vi.fn(),
+  loginWithGoogle: vi.fn(),
+  registerWithGoogle: vi.fn(),
+  register: vi.fn(),
+  logout: vi.fn(),
+  deleteAccount: vi.fn(),
+  confirmEmail: vi.fn(),
+  resendConfirmation: vi.fn(),
+  error: null,
+  clearError: vi.fn(),
+  ...overrides,
+});
+
+const mockAuthenticatedUser = {
+  id: '123',
+  email: 'test@example.com',
+  confirmed: true,
+  createdAt: '2024-01-01',
+  updatedAt: '2024-01-01',
+  locale: 'en',
+  onTrial: false,
+  trialEndsAt: undefined,
+  plan: 'free',
+  permissions: {
+    limits: {
+      invoice: { current: 0, max: 0, available: true },
+      transaction: { current: 0, max: 0, available: true },
+      client: { current: 0, max: 0, available: true },
+    },
+    features: {},
+  },
+};
+
 describe('RouteGuard', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -24,21 +64,9 @@ describe('RouteGuard', () => {
 
   describe('Loading state', () => {
     it('should show loading spinner while authentication is being checked', () => {
-      vi.mocked(AuthContext.useAuth).mockReturnValue({
-        isAuthenticated: false,
-        isLoading: true,
-        user: null,
-        token: null,
-        refreshToken: null,
-        login: vi.fn(),
-        loginWithGoogle: vi.fn(),
-        registerWithGoogle: vi.fn(),
-        register: vi.fn(),
-        logout: vi.fn(),
-        deleteAccount: vi.fn(),
-        error: null,
-        clearError: vi.fn(),
-      });
+      vi.mocked(AuthContext.useAuth).mockReturnValue(
+        createMockAuthContext({ isLoading: true })
+      );
 
       mockPathname.mockReturnValue('/dashboard');
 
@@ -59,21 +87,7 @@ describe('RouteGuard', () => {
 
   describe('Protected routes', () => {
     it('should redirect unauthenticated users to login', async () => {
-      vi.mocked(AuthContext.useAuth).mockReturnValue({
-        isAuthenticated: false,
-        isLoading: false,
-        user: null,
-        token: null,
-        refreshToken: null,
-        login: vi.fn(),
-        loginWithGoogle: vi.fn(),
-        registerWithGoogle: vi.fn(),
-        register: vi.fn(),
-        logout: vi.fn(),
-        deleteAccount: vi.fn(),
-        error: null,
-        clearError: vi.fn(),
-      });
+      vi.mocked(AuthContext.useAuth).mockReturnValue(createMockAuthContext());
 
       mockPathname.mockReturnValue('/dashboard');
 
@@ -92,39 +106,13 @@ describe('RouteGuard', () => {
     });
 
     it('should show content for authenticated users on protected routes', () => {
-      vi.mocked(AuthContext.useAuth).mockReturnValue({
-        isAuthenticated: true,
-        isLoading: false,
-        user: {
-          id: '123',
-          email: 'test@example.com',
-          confirmed: true,
-          createdAt: '2024-01-01',
-          updatedAt: '2024-01-01',
-          locale: 'en',
-          onTrial: false,
-          trialEndsAt: undefined,
-          plan: 'free',
-          permissions: {
-            limits: {
-              invoice: { current: 0, max: 0, available: true },
-              transaction: { current: 0, max: 0, available: true },
-              client: { current: 0, max: 0, available: true },
-            },
-            features: {},
-          },
-        },
-        token: 'valid-token',
-        refreshToken: null,
-        login: vi.fn(),
-        loginWithGoogle: vi.fn(),
-        registerWithGoogle: vi.fn(),
-        register: vi.fn(),
-        logout: vi.fn(),
-        deleteAccount: vi.fn(),
-        error: null,
-        clearError: vi.fn(),
-      });
+      vi.mocked(AuthContext.useAuth).mockReturnValue(
+        createMockAuthContext({
+          isAuthenticated: true,
+          user: mockAuthenticatedUser,
+          token: 'valid-token',
+        })
+      );
 
       mockPathname.mockReturnValue('/dashboard');
 
@@ -139,21 +127,7 @@ describe('RouteGuard', () => {
     });
 
     it('should handle home route as protected', async () => {
-      vi.mocked(AuthContext.useAuth).mockReturnValue({
-        isAuthenticated: false,
-        isLoading: false,
-        user: null,
-        token: null,
-        refreshToken: null,
-        login: vi.fn(),
-        loginWithGoogle: vi.fn(),
-        registerWithGoogle: vi.fn(),
-        register: vi.fn(),
-        logout: vi.fn(),
-        deleteAccount: vi.fn(),
-        error: null,
-        clearError: vi.fn(),
-      });
+      vi.mocked(AuthContext.useAuth).mockReturnValue(createMockAuthContext());
 
       mockPathname.mockReturnValue('/');
 
@@ -171,21 +145,7 @@ describe('RouteGuard', () => {
 
   describe('Public routes', () => {
     it('should show login page for unauthenticated users', () => {
-      vi.mocked(AuthContext.useAuth).mockReturnValue({
-        isAuthenticated: false,
-        isLoading: false,
-        user: null,
-        token: null,
-        refreshToken: null,
-        login: vi.fn(),
-        loginWithGoogle: vi.fn(),
-        registerWithGoogle: vi.fn(),
-        register: vi.fn(),
-        logout: vi.fn(),
-        deleteAccount: vi.fn(),
-        error: null,
-        clearError: vi.fn(),
-      });
+      vi.mocked(AuthContext.useAuth).mockReturnValue(createMockAuthContext());
 
       mockPathname.mockReturnValue('/login');
 
@@ -200,21 +160,7 @@ describe('RouteGuard', () => {
     });
 
     it('should show register page for unauthenticated users', () => {
-      vi.mocked(AuthContext.useAuth).mockReturnValue({
-        isAuthenticated: false,
-        isLoading: false,
-        user: null,
-        token: null,
-        refreshToken: null,
-        login: vi.fn(),
-        loginWithGoogle: vi.fn(),
-        registerWithGoogle: vi.fn(),
-        register: vi.fn(),
-        logout: vi.fn(),
-        deleteAccount: vi.fn(),
-        error: null,
-        clearError: vi.fn(),
-      });
+      vi.mocked(AuthContext.useAuth).mockReturnValue(createMockAuthContext());
 
       mockPathname.mockReturnValue('/register');
 
@@ -229,39 +175,13 @@ describe('RouteGuard', () => {
     });
 
     it('should redirect authenticated users away from login', async () => {
-      vi.mocked(AuthContext.useAuth).mockReturnValue({
-        isAuthenticated: true,
-        isLoading: false,
-        user: {
-          id: '123',
-          email: 'test@example.com',
-          confirmed: true,
-          createdAt: '2024-01-01',
-          updatedAt: '2024-01-01',
-          locale: 'en',
-          onTrial: false,
-          trialEndsAt: undefined,
-          plan: 'free',
-          permissions: {
-            limits: {
-              invoice: { current: 0, max: 0, available: true },
-              transaction: { current: 0, max: 0, available: true },
-              client: { current: 0, max: 0, available: true },
-            },
-            features: {},
-          },
-        },
-        token: 'valid-token',
-        refreshToken: null,
-        login: vi.fn(),
-        loginWithGoogle: vi.fn(),
-        registerWithGoogle: vi.fn(),
-        register: vi.fn(),
-        logout: vi.fn(),
-        deleteAccount: vi.fn(),
-        error: null,
-        clearError: vi.fn(),
-      });
+      vi.mocked(AuthContext.useAuth).mockReturnValue(
+        createMockAuthContext({
+          isAuthenticated: true,
+          user: mockAuthenticatedUser,
+          token: 'valid-token',
+        })
+      );
 
       mockPathname.mockReturnValue('/login');
 
@@ -277,39 +197,13 @@ describe('RouteGuard', () => {
     });
 
     it('should redirect authenticated users away from register', async () => {
-      vi.mocked(AuthContext.useAuth).mockReturnValue({
-        isAuthenticated: true,
-        isLoading: false,
-        user: {
-          id: '123',
-          email: 'test@example.com',
-          confirmed: true,
-          createdAt: '2024-01-01',
-          updatedAt: '2024-01-01',
-          locale: 'en',
-          onTrial: false,
-          trialEndsAt: undefined,
-          plan: 'free',
-          permissions: {
-            limits: {
-              invoice: { current: 0, max: 0, available: true },
-              transaction: { current: 0, max: 0, available: true },
-              client: { current: 0, max: 0, available: true },
-            },
-            features: {},
-          },
-        },
-        token: 'valid-token',
-        refreshToken: null,
-        login: vi.fn(),
-        loginWithGoogle: vi.fn(),
-        registerWithGoogle: vi.fn(),
-        register: vi.fn(),
-        logout: vi.fn(),
-        deleteAccount: vi.fn(),
-        error: null,
-        clearError: vi.fn(),
-      });
+      vi.mocked(AuthContext.useAuth).mockReturnValue(
+        createMockAuthContext({
+          isAuthenticated: true,
+          user: mockAuthenticatedUser,
+          token: 'valid-token',
+        })
+      );
 
       mockPathname.mockReturnValue('/register');
 
@@ -334,21 +228,7 @@ describe('RouteGuard', () => {
       );
 
       // Start on login page (unauthenticated)
-      vi.mocked(AuthContext.useAuth).mockReturnValue({
-        isAuthenticated: false,
-        isLoading: false,
-        user: null,
-        token: null,
-        refreshToken: null,
-        login: vi.fn(),
-        loginWithGoogle: vi.fn(),
-        registerWithGoogle: vi.fn(),
-        register: vi.fn(),
-        logout: vi.fn(),
-        deleteAccount: vi.fn(),
-        error: null,
-        clearError: vi.fn(),
-      });
+      vi.mocked(AuthContext.useAuth).mockReturnValue(createMockAuthContext());
       mockPathname.mockReturnValue('/login');
 
       rerender(
@@ -361,39 +241,13 @@ describe('RouteGuard', () => {
       expect(screen.getByText('Content')).toBeInTheDocument();
 
       // Now authenticate and try to access login
-      vi.mocked(AuthContext.useAuth).mockReturnValue({
-        isAuthenticated: true,
-        isLoading: false,
-        user: {
-          id: '123',
-          email: 'test@example.com',
-          confirmed: true,
-          createdAt: '2024-01-01',
-          updatedAt: '2024-01-01',
-          locale: 'en',
-          onTrial: false,
-          trialEndsAt: undefined,
-          plan: 'free',
-          permissions: {
-            limits: {
-              invoice: { current: 0, max: 0, available: true },
-              transaction: { current: 0, max: 0, available: true },
-              client: { current: 0, max: 0, available: true },
-            },
-            features: {},
-          },
-        },
-        token: 'valid-token',
-        refreshToken: null,
-        login: vi.fn(),
-        loginWithGoogle: vi.fn(),
-        registerWithGoogle: vi.fn(),
-        register: vi.fn(),
-        logout: vi.fn(),
-        deleteAccount: vi.fn(),
-        error: null,
-        clearError: vi.fn(),
-      });
+      vi.mocked(AuthContext.useAuth).mockReturnValue(
+        createMockAuthContext({
+          isAuthenticated: true,
+          user: mockAuthenticatedUser,
+          token: 'valid-token',
+        })
+      );
 
       rerender(
         <RouteGuard>
