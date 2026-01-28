@@ -3,6 +3,7 @@
 import { ReactNode, useState } from 'react';
 import { Sidebar } from './sidebar';
 import { Header } from './header';
+import { CrispChat } from '@/components/CrispChat';
 
 interface AppShellProps {
   children: ReactNode;
@@ -36,6 +37,7 @@ export function AppShell({ children, title }: AppShellProps) {
           {children}
         </main>
       </div>
+      <CrispChat />
     </div>
   );
 }

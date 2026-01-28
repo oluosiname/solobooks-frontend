@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from "next";
 import { DM_Sans, JetBrains_Mono } from "next/font/google";
 import { getLocale, getMessages } from "next-intl/server";
 import { Providers } from "@/components/providers";
-import { CrispChat } from "@/components/CrispChat";
 import "./globals.css";
 
 const dmSans = DM_Sans({
@@ -70,7 +69,6 @@ export default async function RootLayout({
         <Providers locale={locale} messages={messages}>
           {children}
         </Providers>
-        <CrispChat />
       </body>
     </html>
   );
