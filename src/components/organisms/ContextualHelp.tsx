@@ -55,9 +55,13 @@ export function ContextualHelp({
           }
 
           if (Date.now() - startTime > ELEMENT_WAIT_TIMEOUT) {
-            console.warn(
-              `Help target element not found: ${selector} (timeout after ${ELEMENT_WAIT_TIMEOUT}ms)`
-            );
+            // Silently resolve null - this is expected when help items are for different pages
+            // Only log in development for debugging purposes
+            if (process.env.NODE_ENV === 'development') {
+              console.debug(
+                `Help target element not found: ${selector} (timeout after ${ELEMENT_WAIT_TIMEOUT}ms)`
+              );
+            }
             resolve(null);
             return;
           }
