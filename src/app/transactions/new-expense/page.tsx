@@ -8,9 +8,12 @@ import { ArrowLeft, Check } from "lucide-react";
 import { AppShell } from "@/components/layout";
 import { cn } from "@/lib/utils";
 import { styles, buttonStyles } from "@/lib/styles";
-import { createTransaction, fetchCategories } from "@/services/api";
+import { createTransaction, fetchCategories, linkSyncedTransaction, dismissSuggestion } from "@/services/api";
 import { showToast } from "@/lib/toast";
 import { FileUpload } from "@/components/molecules/FileUpload";
+import { PossibleMatchBanner } from "@/components/molecules/PossibleMatchBanner";
+import { transactionsApi } from "@/lib/transactions-api";
+import type { PossibleTransaction } from "@/types";
 import * as humps from "humps";
 
 export default function NewExpensePage() {
@@ -42,6 +45,25 @@ export default function NewExpensePage() {
   });
 
   const [receiptFile, setReceiptFile] = useState<File | null>(null);
+  const [possibleMatch, setPossibleMatch] = useState<PossibleTransaction | null>(null);
+  const [matchDismissed, setMatchDismissed] = useState(false);
+
+  // Fetch synced transaction details to get possible_transaction
+  const syncedTransactionId = searchParams.get("syncedTransactionId");
+  useQuery({
+    queryKey: ["synced-transaction", syncedTransactionId],
+    queryFn: async () => {
+      const response = await transactionsApi.getSyncedTransactions();
+      const syncedTx = response.data.find(
+        (tx) => tx.id.toString() === syncedTransactionId
+      );
+      if (syncedTx?.possible_transaction) {
+        setPossibleMatch(humps.camelizeKeys(syncedTx.possible_transaction) as PossibleTransaction);
+      }
+      return syncedTx;
+    },
+    enabled: !!syncedTransactionId && !matchDismissed,
+  });
 
   const { data: categories, isLoading: categoriesLoading } = useQuery({
     queryKey: ["categories", "expense"],
@@ -54,10 +76,47 @@ export default function NewExpensePage() {
       showToast.created("Transaction");
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
       queryClient.invalidateQueries({ queryKey: ["unchecked-transactions"] });
+      queryClient.invalidateQueries({ queryKey: ["synced-transactions"] });
       router.push("/transactions");
     },
     onError: () => {
       showToast.error("Failed to create transaction. Please try again.");
+    },
+  });
+
+  const linkMutation = useMutation({
+    mutationFn: () => {
+      if (!syncedTransactionId || !possibleMatch) {
+        throw new Error("Missing transaction IDs");
+      }
+      return linkSyncedTransaction(syncedTransactionId, possibleMatch.id);
+    },
+    onSuccess: () => {
+      showToast.success(t("transactions.possibleMatch.linkSuccess"));
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      queryClient.invalidateQueries({ queryKey: ["unchecked-transactions"] });
+      queryClient.invalidateQueries({ queryKey: ["synced-transactions"] });
+      router.push("/transactions/synced");
+    },
+    onError: () => {
+      showToast.error(t("transactions.possibleMatch.linkError"));
+    },
+  });
+
+  const dismissMutation = useMutation({
+    mutationFn: () => {
+      if (!syncedTransactionId) {
+        throw new Error("Missing synced transaction ID");
+      }
+      return dismissSuggestion(syncedTransactionId);
+    },
+    onSuccess: () => {
+      showToast.success(t("transactions.possibleMatch.dismissSuccess"));
+      setPossibleMatch(null);
+      setMatchDismissed(true);
+    },
+    onError: () => {
+      showToast.error(t("transactions.possibleMatch.dismissError"));
     },
   });
 
@@ -115,6 +174,18 @@ export default function NewExpensePage() {
           </span>
         </button>
       </div>
+
+      {/* Design 1: Alert Banner at top */}
+      {possibleMatch && !matchDismissed && (
+        <PossibleMatchBanner
+          possibleTransaction={possibleMatch}
+          onLink={() => linkMutation.mutate()}
+          onDismiss={() => dismissMutation.mutate()}
+          isLinking={linkMutation.isPending}
+          isDismissing={dismissMutation.isPending}
+          className="mb-6"
+        />
+      )}
 
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Main Form */}

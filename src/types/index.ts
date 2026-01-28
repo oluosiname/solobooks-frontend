@@ -113,6 +113,23 @@ export interface TransactionCategory {
   translatedName: string;
 }
 
+export interface PossibleTransaction {
+  id: string;
+  transactionType: "Income" | "Expense";
+  amount: number;
+  date: string;
+  description: string;
+  vatRate: number;
+  vatAmount: number;
+  customerLocation: "germany" | "in_eu" | "outside_eu";
+  customerVatNumber: string;
+  source: "manual" | "bank_sync";
+  receiptUrl: string;
+  category: TransactionCategory;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface Transaction {
   id: number;
   description: string;
@@ -128,6 +145,7 @@ export interface Transaction {
   transactionType: "Expense" | "Income";
   category?: TransactionCategory; // For normal transactions
   financialCategory?: TransactionCategory | null; // For synced transactions (camelized from financial_category)
+  possibleTransaction?: PossibleTransaction | null; // For synced transactions with possible matches
   createdAt: string;
   updatedAt: string;
 }

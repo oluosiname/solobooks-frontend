@@ -27,6 +27,7 @@ import {
   ZmdoReportPreview,
   Profile,
   Transaction,
+  PossibleTransaction,
   Subscription,
   PaymentMethod,
   BankConnection,
@@ -101,6 +102,13 @@ export function transformTransactionData(data: TransactionData): Transaction {
   return camelize<Transaction>(data);
 }
 
+export function transformPossibleTransactionData(
+  data: SyncedTransactionData["possible_transaction"],
+): PossibleTransaction | null {
+  if (!data) return null;
+  return camelize<PossibleTransaction>(data);
+}
+
 export function transformSyncedTransactionData(
   data: SyncedTransactionData,
 ): Transaction {
@@ -118,6 +126,7 @@ export function transformSyncedTransactionData(
         | "source"
         | "receiptUrl"
         | "transactionType"
+        | "possibleTransaction"
       >
     >(data);
 
@@ -132,6 +141,7 @@ export function transformSyncedTransactionData(
     source: "bank_sync", // Indicate this came from bank sync
     receiptUrl: null, // Not provided in synced data
     transactionType: data.amount >= 0 ? "Income" : "Expense", // Infer from amount
+    possibleTransaction: transformPossibleTransactionData(data.possible_transaction),
   } as Transaction;
 }
 

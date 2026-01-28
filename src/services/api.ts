@@ -425,6 +425,27 @@ export async function bulkDiscardSyncedTransactions(
 }
 
 /**
+ * Link synced transaction to existing transaction
+ * POST /api/v1/synced_transactions/{id}/link_transaction
+ */
+export async function linkSyncedTransaction(
+  syncedTransactionId: string | number,
+  transactionId: string | number
+): Promise<{ message: string }> {
+  return await transactionsApi.linkSyncedTransaction(syncedTransactionId, transactionId);
+}
+
+/**
+ * Dismiss possible transaction suggestion
+ * POST /api/v1/synced_transactions/{id}/dismiss_match
+ */
+export async function dismissSuggestion(
+  syncedTransactionId: string | number
+): Promise<{ message: string }> {
+  return await transactionsApi.dismissSuggestion(syncedTransactionId);
+}
+
+/**
  * Fetch a single transaction
  * GET /api/v1/transactions/{id}
  */
@@ -956,6 +977,8 @@ export const api = {
   fetchUncheckedTransactions,
   discardSyncedTransaction,
   bulkDiscardSyncedTransactions,
+  linkSyncedTransaction,
+  dismissSuggestion,
   createTransaction,
   updateTransaction,
   deleteTransaction,

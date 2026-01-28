@@ -78,6 +78,23 @@ export interface BankConnectionSummary {
   pending_transactions_count: number;
 }
 
+export interface PossibleTransactionData {
+  id: string;
+  transaction_type: "Income" | "Expense";
+  amount: number;
+  date: string;
+  description: string;
+  vat_rate: number;
+  vat_amount: number;
+  customer_location: "germany" | "in_eu" | "outside_eu";
+  customer_vat_number: string;
+  source: "manual" | "bank_sync";
+  receipt_url: string;
+  category: CategoryData;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface SyncedTransactionData {
   id: number;
   amount: number;
@@ -91,6 +108,7 @@ export interface SyncedTransactionData {
     category_type: "income" | "expense";
     translated_name: string;
   } | null;
+  possible_transaction: PossibleTransactionData | null;
   created_at: string;
   updated_at: string;
 }
@@ -191,6 +209,32 @@ class TransactionsApiClient extends BaseApiClient {
     return this.post<{ message: string }>(
       "/api/v1/synced_transactions/bulk_discard",
       { ids }
+    );
+  }
+
+  /**
+   * Link synced transaction to existing transaction
+   * POST /api/v1/synced_transactions/{id}/link_transaction
+   */
+  async linkSyncedTransaction(
+    syncedTransactionId: string | number,
+    transactionId: string | number
+  ): Promise<{ message: string }> {
+    return this.post<{ message: string }>(
+      `/api/v1/synced_transactions/${syncedTransactionId}/link_transaction`,
+      { transaction_id: transactionId }
+    );
+  }
+
+  /**
+   * Dismiss possible transaction suggestion
+   * POST /api/v1/synced_transactions/{id}/dismiss_match
+   */
+  async dismissSuggestion(
+    syncedTransactionId: string | number
+  ): Promise<{ message: string }> {
+    return this.post<{ message: string }>(
+      `/api/v1/synced_transactions/${syncedTransactionId}/dismiss_match`
     );
   }
 

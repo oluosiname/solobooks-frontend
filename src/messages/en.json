@@ -342,6 +342,20 @@
     "deleteSuccess": "Transaction deleted successfully",
     "deleteError": "Failed to delete transaction",
     "deleting": "Deleting...",
+    "possibleMatch": {
+      "title": "Possible duplicate found",
+      "cardTitle": "Possible Match",
+      "description": "A similar transaction was manually entered. Is this the same transaction?",
+      "question": "Is this the same transaction?",
+      "linkButton": "Yes, link them",
+      "dismissButton": "No, dismiss",
+      "linking": "Linking...",
+      "dismissing": "Dismissing...",
+      "linkSuccess": "Transaction linked successfully",
+      "linkError": "Failed to link transaction",
+      "dismissSuccess": "Suggestion dismissed",
+      "dismissError": "Failed to dismiss suggestion"
+    },
     "form": {
       "transactionInfo": "Transaction Information",
       "type": "Type",
