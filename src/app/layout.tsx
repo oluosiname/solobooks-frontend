@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { DM_Sans, JetBrains_Mono } from "next/font/google";
 import { getLocale, getMessages } from "next-intl/server";
+import Script from "next/script";
 import { Providers } from "@/components/providers";
 import "./globals.css";
 
@@ -63,6 +64,13 @@ export default async function RootLayout({
 
   return (
     <html lang={locale}>
+      <head>
+        <Script
+          id="hs-script-loader"
+          src="//js-eu1.hs-scripts.com/147626384.js"
+          strategy="afterInteractive"
+        />
+      </head>
       <body
         className={`${dmSans.variable} ${jetbrainsMono.variable} font-sans antialiased`}
       >

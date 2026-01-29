@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
-import { CreditCard, Check, Sparkles, ExternalLink, FileText } from "lucide-react";
+import { CreditCard, Check, Sparkles, ExternalLink, FileText, AlertTriangle } from "lucide-react";
 import { AppShell } from "@/components/layout";
 import { Button, Card, Select } from "@/components/atoms";
 import { AlertBanner } from "@/components/organisms";
@@ -52,7 +52,9 @@ export default function SubscriptionPage() {
   const t = useTranslations();
   const queryClient = useQueryClient();
   const [showPaymentForm, setShowPaymentForm] = useState(false);
-  
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
+  const [isCancelling, setIsCancelling] = useState(false);
+
   // Year selector for invoices
   const currentYear = new Date().getFullYear();
   const [selectedYear, setSelectedYear] = useState(currentYear);
@@ -110,6 +112,20 @@ export default function SubscriptionPage() {
       } else {
         showToast.error(t("subscription.planChangeFailed"));
       }
+    }
+  };
+
+  const handleCancelSubscription = async () => {
+    setIsCancelling(true);
+    try {
+      await api.cancelSubscription();
+      queryClient.invalidateQueries({ queryKey: ["subscription"] });
+      showToast.success(t("subscription.cancelSuccess"));
+      setShowCancelDialog(false);
+    } catch {
+      showToast.error(t("subscription.cancelFailed"));
+    } finally {
+      setIsCancelling(false);
     }
   };
 
@@ -212,6 +228,17 @@ export default function SubscriptionPage() {
             onSuccess={handlePaymentSuccess}
             onCancel={() => setShowPaymentForm(false)}
             isUpdate={!!paymentMethod}
+          />
+        )}
+
+        {/* Cancellation Pending Banner */}
+        {subscription?.cancelAtPeriodEnd && (
+          <AlertBanner
+            variant="warning"
+            title={t("subscription.cancellationPendingTitle")}
+            message={t("subscription.cancellationPendingMessage", {
+              date: formatDate(subscription.currentPeriodEnd),
+            })}
           />
         )}
 
@@ -394,6 +421,70 @@ export default function SubscriptionPage() {
           title={t("subscription.flexibleBillingTitle")}
           message={t("subscription.flexibleBillingMessage")}
         />
+
+        {/* Cancel Subscription */}
+        {subscription && currentPlan !== "free" && !subscription.cancelAtPeriodEnd && (
+          <Card className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold text-slate-900">
+                  {t("subscription.cancelSubscription")}
+                </h3>
+                <p className="text-sm text-slate-500 mt-1">
+                  {t("subscription.cancelDescription")}
+                </p>
+              </div>
+              <Button
+                variant="secondary"
+                onClick={() => setShowCancelDialog(true)}
+                className="text-red-600 hover:text-red-700 hover:bg-red-50"
+              >
+                <AlertTriangle className="h-4 w-4" />
+                {t("subscription.cancelSubscription")}
+              </Button>
+            </div>
+          </Card>
+        )}
+
+        {/* Cancel Confirmation Dialog */}
+        {showCancelDialog && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+            <div className="mx-4 w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-100">
+                  <AlertTriangle className="h-5 w-5 text-red-600" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold text-slate-900">
+                    {t("subscription.cancelDialogTitle")}
+                  </h3>
+                  <p className="text-sm text-slate-600 mt-1">
+                    {t("subscription.cancelDialogMessage")}
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-6 flex gap-3">
+                <button
+                  onClick={() => setShowCancelDialog(false)}
+                  className="flex-1 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
+                  disabled={isCancelling}
+                >
+                  {t("common.cancel")}
+                </button>
+                <button
+                  onClick={handleCancelSubscription}
+                  disabled={isCancelling}
+                  className="flex-1 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isCancelling
+                    ? t("common.loading")
+                    : t("subscription.confirmCancel")}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </AppShell>
   );

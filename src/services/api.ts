@@ -732,8 +732,8 @@ export async function updateSubscription(data: { plan: string }): Promise<Subscr
 }
 
 export async function cancelSubscription(): Promise<Subscription> {
-  // TODO: Implement subscription cancellation API call
-  throw new Error("Subscription cancellation not implemented yet");
+  const response = await subscriptionApi.cancelSubscription();
+  return transformSubscriptionData(response.data);
 }
 
 // ============================================

@@ -53,6 +53,14 @@ export class SubscriptionApiClient extends BaseApiClient {
   async changeSubscription(data: ChangeSubscriptionRequest): Promise<SubscriptionResponse> {
     return this.post<SubscriptionResponse>("/api/v1/subscription", data);
   }
+
+  /**
+   * Cancel subscription at the end of the current billing period
+   * DELETE /api/v1/subscription
+   */
+  async cancelSubscription(): Promise<SubscriptionResponse> {
+    return this.delete<SubscriptionResponse>("/api/v1/subscription");
+  }
 }
 
 // ============================================
